@@ -13,6 +13,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final PeopleController pc = Get.put(PeopleController());
     final TextEditingController searchController = TextEditingController();
+    final FocusNode searchFocusNode = FocusNode();
 
     return Obx(
       () => Scaffold(
@@ -39,6 +40,8 @@ class HomeScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       child: TextField(
+                        focusNode: searchFocusNode,
+                        autofocus: true,
                         controller: searchController,
                         decoration: InputDecoration(
                           hintText: 'Search...',
