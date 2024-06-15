@@ -14,6 +14,7 @@ class PeopleGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PeopleController pc = Get.put(PeopleController());
+    pc.fetchPeople();
 
     // Method to show a popup menu for editing or deleting a person
     void showPopupMenu(
@@ -60,7 +61,7 @@ class PeopleGrid extends StatelessWidget {
           crossAxisCount: 2, // Number of columns in the grid
           crossAxisSpacing: 16, // Space between columns
           mainAxisSpacing: 24, // Space between rows
-          children: pc.people.map((person) {
+          children: pc.filteredPeople.map((person) {
             final isFile = File(person.photo).existsSync();
             return GestureDetector(
               onLongPressStart: (details) {
