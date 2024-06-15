@@ -36,22 +36,28 @@ class _PersonBioScreenState extends State<PersonBioScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize default image randomly from _defaultImages list
     _defaultImage = _defaultImages[Random().nextInt(_defaultImages.length)];
 
+    // Populate form fields if editing an existing person
     if (widget.personToEdit != null) {
-      // Initialize fields if editing an existing person
       _nameController.text = widget.personToEdit!.name;
-      !startsWithAssets(widget.personToEdit!.photo)
-          ? _selectedImage = File(widget.personToEdit!.photo)
-          : _defaultImage = widget.personToEdit!.photo;
+      // Check if the person's photo is an asset or a file path
+      if (startsWithAssets(widget.personToEdit!.photo)) {
+        _defaultImage = widget.personToEdit!.photo;
+      } else {
+        _selectedImage = File(widget.personToEdit!.photo);
+      }
     }
   }
 
+  // Method to check if a string starts with 'assets/'
   bool startsWithAssets(String input) {
     RegExp regex = RegExp(r'^assets/');
     return regex.hasMatch(input);
   }
 
+  // Method to pick an image from gallery
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -63,10 +69,11 @@ class _PersonBioScreenState extends State<PersonBioScreen> {
     });
   }
 
+  // Method to submit the form data
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      final name = _nameController.text;
-      final imagePath =
+      final String name = _nameController.text;
+      final String imagePath =
           _selectedImage != null ? _selectedImage!.path : _defaultImage;
 
       if (widget.personToEdit != null) {
@@ -74,7 +81,8 @@ class _PersonBioScreenState extends State<PersonBioScreen> {
         pc.updatePerson(widget.personToEdit!, name, imagePath);
       } else {
         // Add new person
-        pc.addPerson(Person(name: name, photo: imagePath, info: []));
+        pc.addPerson(
+            Person(name: name.removeAllWhitespace, photo: imagePath, info: []));
       }
 
       Get.back();

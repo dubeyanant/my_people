@@ -15,12 +15,17 @@ class PeopleGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final PeopleController pc = Get.put(PeopleController());
 
+    // Method to show a popup menu for editing or deleting a person
     void showPopupMenu(
         BuildContext context, Person person, Offset offset) async {
       final result = await showMenu<String>(
         context: context,
         position: RelativeRect.fromLTRB(
-            offset.dx, offset.dy, offset.dx + 1, offset.dy + 1),
+          offset.dx,
+          offset.dy,
+          offset.dx + 1,
+          offset.dy + 1,
+        ),
         items: [
           const PopupMenuItem<String>(
             value: 'edit',
@@ -33,11 +38,11 @@ class PeopleGrid extends StatelessWidget {
         ],
       );
 
+      // Handle the selected action from the popup menu
       if (result == 'delete') {
         pc.deletePerson(person);
-      }
-
-      if (result == 'edit') {
+      } else if (result == 'edit') {
+        // Navigate to PersonBioScreen to edit the selected person
         Get.to(() => PersonBioScreen(personToEdit: person));
       }
     }
@@ -53,6 +58,7 @@ class PeopleGrid extends StatelessWidget {
             final isFile = File(person.photo).existsSync();
             return GestureDetector(
               onLongPressStart: (details) {
+                // Show the popup menu on long press
                 showPopupMenu(context, person, details.globalPosition);
               },
               child: GridTile(
