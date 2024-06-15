@@ -17,7 +17,7 @@ class EmptyHome extends StatelessWidget {
             onPressed: () => Get.to(() => const PersonBioScreen()),
             icon: const Icon(
               Icons.add,
-              size: 24,
+              size: 32,
             ),
           ),
           const SizedBox(height: 16),

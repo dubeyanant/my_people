@@ -17,7 +17,10 @@ class HomeScreen extends StatelessWidget {
       () => Scaffold(
         appBar: AppBar(
           title: const Text('My People'),
-          centerTitle: true,
+          actions: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
+          ],
         ),
         body: pc.people.isEmpty ? const EmptyHome() : const PeopleGrid(),
         floatingActionButton: pc.people.isEmpty

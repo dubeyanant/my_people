@@ -32,6 +32,10 @@ class PeopleGrid extends StatelessWidget {
             child: Text('Edit'),
           ),
           const PopupMenuItem<String>(
+            value: 'share',
+            child: Text('Share'),
+          ),
+          const PopupMenuItem<String>(
             value: 'delete',
             child: Text('Delete'),
           ),
@@ -44,6 +48,8 @@ class PeopleGrid extends StatelessWidget {
       } else if (result == 'edit') {
         // Navigate to PersonBioScreen to edit the selected person
         Get.to(() => PersonBioScreen(personToEdit: person));
+      } else if (result == 'share') {
+        // Share the selected person data
       }
     }
 
