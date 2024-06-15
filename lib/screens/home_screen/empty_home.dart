@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import 'package:my_people/screens/add_person_screen.dart';
+import 'package:my_people/screens/person_bio_screen.dart';
 
 class EmptyHome extends StatelessWidget {
   const EmptyHome({super.key});
@@ -14,7 +14,7 @@ class EmptyHome extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton.filled(
-            onPressed: () => Get.to(() => const AddPersonScreen()),
+            onPressed: () => Get.to(() => const PersonBioScreen()),
             icon: const Icon(
               Icons.add,
               size: 24,

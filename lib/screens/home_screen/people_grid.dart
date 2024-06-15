@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/model/person.dart';
+import 'package:my_people/screens/person_bio_screen.dart';
 
 class PeopleGrid extends StatelessWidget {
   const PeopleGrid({super.key});
@@ -37,7 +38,7 @@ class PeopleGrid extends StatelessWidget {
       }
 
       if (result == 'edit') {
-        // Add logic for 'edit' option here
+        Get.to(() => PersonBioScreen(personToEdit: person));
       }
     }
 

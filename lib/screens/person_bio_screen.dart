@@ -9,14 +9,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/model/person.dart';
 
-class AddPersonScreen extends StatefulWidget {
-  const AddPersonScreen({super.key});
+class PersonBioScreen extends StatefulWidget {
+  final Person? personToEdit;
+
+  const PersonBioScreen({super.key, this.personToEdit});
 
   @override
-  State<AddPersonScreen> createState() => _AddPersonScreenState();
+  State<PersonBioScreen> createState() => _PersonBioScreenState();
 }
 
-class _AddPersonScreenState extends State<AddPersonScreen> {
+class _PersonBioScreenState extends State<PersonBioScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final PeopleController pc = Get.put(PeopleController());
@@ -35,6 +37,19 @@ class _AddPersonScreenState extends State<AddPersonScreen> {
   void initState() {
     super.initState();
     _defaultImage = _defaultImages[Random().nextInt(_defaultImages.length)];
+
+    if (widget.personToEdit != null) {
+      // Initialize fields if editing an existing person
+      _nameController.text = widget.personToEdit!.name;
+      !startsWithAssets(widget.personToEdit!.photo)
+          ? _selectedImage = File(widget.personToEdit!.photo)
+          : _defaultImage = widget.personToEdit!.photo;
+    }
+  }
+
+  bool startsWithAssets(String input) {
+    RegExp regex = RegExp(r'^assets/');
+    return regex.hasMatch(input);
   }
 
   Future<void> _pickImage() async {
@@ -53,7 +68,15 @@ class _AddPersonScreenState extends State<AddPersonScreen> {
       final name = _nameController.text;
       final imagePath =
           _selectedImage != null ? _selectedImage!.path : _defaultImage;
-      pc.addPerson(Person(name: name, photo: imagePath, info: []));
+
+      if (widget.personToEdit != null) {
+        // Update existing person
+        pc.updatePerson(widget.personToEdit!, name, imagePath);
+      } else {
+        // Add new person
+        pc.addPerson(Person(name: name, photo: imagePath, info: []));
+      }
+
       Get.back();
     }
   }
@@ -61,7 +84,9 @@ class _AddPersonScreenState extends State<AddPersonScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Person')),
+      appBar: AppBar(
+          title:
+              Text(widget.personToEdit == null ? 'Add Person' : 'Edit Person')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -107,7 +132,9 @@ class _AddPersonScreenState extends State<AddPersonScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: const Text('Add Person'),
+                child: Text(widget.personToEdit == null
+                    ? 'Add Person'
+                    : 'Save Changes'),
               ),
             ],
           ),
