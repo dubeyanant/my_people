@@ -48,7 +48,9 @@ class PeopleGrid extends StatelessWidget {
         pc.deletePerson(person);
       } else if (result == 'edit') {
         // Navigate to PersonBioScreen to edit the selected person
-        Get.to(() => PersonBioScreen(personToEdit: person));
+        if (context.mounted) {
+          showPersonBioBottomSheet(context, personToEdit: person);
+        }
       } else if (result == 'share') {
         // Share the selected person data
       }

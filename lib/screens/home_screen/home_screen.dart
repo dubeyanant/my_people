@@ -69,7 +69,7 @@ class HomeScreen extends StatelessWidget {
             ? null
             : FloatingActionButton(
                 tooltip: 'Add Person',
-                onPressed: () => Get.to(() => const PersonBioScreen()),
+                onPressed: () => showPersonBioBottomSheet(context),
                 child: const Icon(Icons.add),
               ),
       ),
