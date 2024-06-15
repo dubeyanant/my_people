@@ -53,7 +53,7 @@ class _AddPersonScreenState extends State<AddPersonScreen> {
       final name = _nameController.text;
       final imagePath =
           _selectedImage != null ? _selectedImage!.path : _defaultImage;
-      pc.people.add(Person(name: name, photo: imagePath, info: []));
+      pc.addPerson(Person(name: name, photo: imagePath, info: []));
       Get.back();
     }
   }
