@@ -81,8 +81,7 @@ class _PersonBioScreenState extends State<PersonBioScreen> {
         pc.updatePerson(widget.personToEdit!, name, imagePath);
       } else {
         // Add new person
-        pc.addPerson(
-            Person(name: name.removeAllWhitespace, photo: imagePath, info: []));
+        pc.addPerson(Person(name: name.trim(), photo: imagePath, info: []));
       }
 
       Get.back();

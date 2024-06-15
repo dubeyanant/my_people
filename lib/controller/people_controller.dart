@@ -18,7 +18,7 @@ class PeopleController extends GetxController {
     // Initialize filteredPeople with all people at startup
     filteredPeople.assignAll(people);
     DebugPrint.log(
-      'People fetched: ${filteredPeople.length}',
+      'People fetched: ${filteredPeople.length}\n',
       color: DebugColor.green,
       tag: 'PeopleController',
     );
@@ -32,6 +32,7 @@ class PeopleController extends GetxController {
       color: DebugColor.green,
       tag: 'PeopleController',
     );
+    fetchPeople();
   }
 
   // Method to delete a person from the list
@@ -42,6 +43,7 @@ class PeopleController extends GetxController {
       color: DebugColor.green,
       tag: 'PeopleController',
     );
+    fetchPeople();
   }
 
   // Method to update a person in the list
@@ -59,6 +61,7 @@ class PeopleController extends GetxController {
         tag: 'PeopleController',
       );
     }
+    fetchPeople();
   }
 
   // Method to filter people based on the search query
