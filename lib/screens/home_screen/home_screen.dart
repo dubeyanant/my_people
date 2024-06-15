@@ -24,6 +24,11 @@ class HomeScreen extends StatelessWidget {
               IconButton(
                 onPressed: () {
                   pc.isSearchOpen.value = !pc.isSearchOpen.value;
+                  if (!pc.isSearchOpen.value) {
+                    searchController.clear();
+                    pc.filterPeople('');
+                    searchFocusNode.unfocus();
+                  }
                 },
                 icon: Icon(
                   pc.isSearchOpen.value ? Icons.cancel_outlined : Icons.search,
