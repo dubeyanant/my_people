@@ -11,18 +11,11 @@ class PeopleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
-    people.add(
-      Person(name: 'John Doe', photo: 'assets/default1.webp', info: [
-        'Age: 25',
-        'Son name: Alex',
-      ]),
-    );
     fetchPeople();
   }
 
+  // Initialize filteredPeople with all people at startup
   void fetchPeople() {
-    // Initialize filteredPeople with all people at startup
     filteredPeople.assignAll(people);
     DebugPrint.log(
       'People fetched: ${filteredPeople.length}',
@@ -119,10 +112,11 @@ class PeopleController extends GetxController {
     }
   }
 
+  // Method to add info to a person
   void addInfoToPerson(String uuid, String info) {
     final index = people.indexWhere((person) => person.uuid == uuid);
     if (index != -1) {
-      people[index].info.add(info);
+      people[index].info.insert(0, info);
       people.refresh();
       DebugPrint.log(
         'Info Added to ${people[index].name}: $info',
