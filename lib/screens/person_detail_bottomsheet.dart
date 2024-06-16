@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/model/person.dart';
+import 'package:my_people/utility/constants.dart';
 
 class PersonDetailBottomSheet extends StatefulWidget {
   final Person? personToEdit;
@@ -112,7 +113,9 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
             child: Column(
               children: [
                 Text(
-                  widget.personToEdit == null ? 'Add Person' : 'Edit Person',
+                  widget.personToEdit == null
+                      ? AppStrings.addPerson
+                      : AppStrings.editPerson,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -123,15 +126,15 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
                   autofocus: true,
                   controller: _nameController,
                   decoration: InputDecoration(
-                    labelText: 'Name',
-                    hintText: 'Jane Doe',
+                    labelText: AppStrings.personDetailTextFieldLabel,
+                    hintText: AppStrings.personDetailTextFieldHint,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a name';
+                      return AppStrings.personDetailTextFieldError;
                     }
                     return null;
                   },
@@ -165,9 +168,11 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: Text(widget.personToEdit == null
-                      ? 'Add Person'
-                      : 'Save Changes'),
+                  child: Text(
+                    widget.personToEdit == null
+                        ? AppStrings.addPerson
+                        : AppStrings.savePerson,
+                  ),
                 ),
               ],
             ),

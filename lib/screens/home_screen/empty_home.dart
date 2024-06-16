@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:my_people/screens/person_detail_bottomsheet.dart';
+import 'package:my_people/utility/constants.dart';
 
 class EmptyHome extends StatelessWidget {
   const EmptyHome({super.key});
@@ -19,7 +20,7 @@ class EmptyHome extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('Add Your People!'),
+          const Text(AppStrings.homeScreenTagline),
         ],
       ),
     );

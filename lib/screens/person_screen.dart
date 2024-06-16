@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
+import 'package:my_people/utility/constants.dart';
 
 class PersonScreen extends StatelessWidget {
   final String id;
@@ -30,11 +31,11 @@ class PersonScreen extends StatelessWidget {
           items: [
             const PopupMenuItem<String>(
               value: 'edit',
-              child: Text('Edit'),
+              child: Text(AppStrings.edit),
             ),
             const PopupMenuItem<String>(
               value: 'delete',
-              child: Text('Delete'),
+              child: Text(AppStrings.delete),
             ),
           ],
         );
@@ -93,7 +94,7 @@ class PersonScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        const Text('Add a detail and it will appear here!'),
+                        const Text(AppStrings.personScreenTagline),
                       ],
                     )
                   : Expanded(
@@ -143,7 +144,7 @@ class PersonScreen extends StatelessWidget {
         floatingActionButton: person.info.isEmpty
             ? null
             : FloatingActionButton(
-                tooltip: 'Add Detail',
+                tooltip: AppStrings.addDetail,
                 onPressed: () {},
                 child: const Icon(Icons.add),
               ),

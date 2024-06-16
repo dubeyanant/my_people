@@ -6,6 +6,7 @@ import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/screens/person_detail_bottomsheet.dart';
 import 'package:my_people/screens/home_screen/empty_home.dart';
 import 'package:my_people/screens/home_screen/people_grid.dart';
+import 'package:my_people/utility/constants.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,7 +19,7 @@ class HomeScreen extends StatelessWidget {
     return Obx(
       () => Scaffold(
         appBar: AppBar(
-          title: const Text('My People'),
+          title: const Text(AppStrings.appName),
           actions: [
             if (pc.people.isNotEmpty)
               IconButton(
@@ -49,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                         autofocus: true,
                         controller: searchController,
                         decoration: InputDecoration(
-                          hintText: 'Search...',
+                          hintText: AppStrings.searchBarHintText,
                           prefixIcon: const Icon(Icons.search),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -68,7 +69,7 @@ class HomeScreen extends StatelessWidget {
         floatingActionButton: pc.people.isEmpty
             ? null
             : FloatingActionButton(
-                tooltip: 'Add Person',
+                tooltip: AppStrings.addPerson,
                 onPressed: () => showPersonDetailBottomSheet(context),
                 child: const Icon(Icons.add),
               ),
