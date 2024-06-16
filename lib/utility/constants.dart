@@ -14,4 +14,10 @@ class AppStrings {
   static const String personDetailTextFieldLabel = 'Name';
   static const String personDetailTextFieldHint = 'Jane Doe';
   static const String personDetailTextFieldError = 'Please enter a name';
+
+  // Add Info Bottom Sheet
+  static const String addInfoTextFieldLabel = 'Add Info';
+  static const String addInfoTextFieldHint = 'Enter info';
+  static const String addInfoTextFieldError = 'Info cannot be empty';
+  static const String saveInfoButton = 'Save Info';
 }

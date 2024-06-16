@@ -118,4 +118,18 @@ class PeopleController extends GetxController {
       );
     }
   }
+
+  void addInfoToPerson(String uuid, String info) {
+    final index = people.indexWhere((person) => person.uuid == uuid);
+    if (index != -1) {
+      people[index].info.add(info);
+      people.refresh();
+      DebugPrint.log(
+        'Info Added to ${people[index].name}: $info',
+        color: DebugColor.magenta,
+        tag: 'PeopleController',
+      );
+      fetchPeople();
+    }
+  }
 }

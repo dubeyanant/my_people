@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
+import 'package:my_people/screens/add_info_bottomsheet.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PersonScreen extends StatelessWidget {
@@ -87,7 +88,9 @@ class PersonScreen extends StatelessWidget {
                           height: 80,
                         ),
                         IconButton.filled(
-                          onPressed: () {},
+                          onPressed: () {
+                            showAddInfoBottomSheet(context, person.uuid);
+                          },
                           icon: const Icon(
                             Icons.add,
                             size: 32,
@@ -145,7 +148,9 @@ class PersonScreen extends StatelessWidget {
             ? null
             : FloatingActionButton(
                 tooltip: AppStrings.addDetail,
-                onPressed: () {},
+                onPressed: () {
+                  showAddInfoBottomSheet(context, person.uuid);
+                },
                 child: const Icon(Icons.add),
               ),
       );
