@@ -92,90 +92,81 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Material(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            // color: Colors.blue,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Text(
-                  widget.personToEdit == null
-                      ? AppStrings.addPerson
-                      : AppStrings.editPerson,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+    return Material(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(24),
+        topRight: Radius.circular(24),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                widget.personToEdit == null
+                    ? AppStrings.addPerson
+                    : AppStrings.editPerson,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                autofocus: true,
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: AppStrings.personDetailTextFieldLabel,
+                  hintText: AppStrings.personDetailTextFieldHint,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  autofocus: true,
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: AppStrings.personDetailTextFieldLabel,
-                    hintText: AppStrings.personDetailTextFieldHint,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return AppStrings.personDetailTextFieldError;
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+              GestureDetector(
+                onTap: _pickImage,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundImage: _selectedImage != null
+                          ? FileImage(_selectedImage!)
+                          : AssetImage(_defaultImage) as ImageProvider,
                     ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppStrings.personDetailTextFieldError;
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: _selectedImage != null
-                            ? FileImage(_selectedImage!)
-                            : AssetImage(_defaultImage) as ImageProvider,
-                      ),
-                      const Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CircleAvatar(
-                          radius: 12,
-                          child: Icon(
-                            Icons.edit,
-                            size: 16,
-                            color: Colors.black,
-                          ),
+                    const Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        radius: 12,
+                        child: Icon(
+                          Icons.edit,
+                          size: 16,
+                          color: Colors.black,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  child: Text(
-                    widget.personToEdit == null
-                        ? AppStrings.addPerson
-                        : AppStrings.savePerson,
-                  ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: Text(
+                  widget.personToEdit == null
+                      ? AppStrings.addPerson
+                      : AppStrings.savePerson,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -189,9 +180,13 @@ void showPersonDetailBottomSheet(BuildContext context, {Person? personToEdit}) {
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: PersonDetailBottomSheet(personToEdit: personToEdit),
+      return SingleChildScrollView(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: PersonDetailBottomSheet(personToEdit: personToEdit),
+        ),
       );
     },
   );
