@@ -70,7 +70,12 @@ class PeopleGrid extends StatelessWidget {
             return GestureDetector(
               onLongPressStart: (details) =>
                   showPopupMenu(context, person, details.globalPosition),
-              onTap: () => Get.to(() => PersonScreen(person.uuid)),
+              onTap: () {
+                Get.to(() => PersonScreen(person.uuid));
+                Future.delayed(const Duration(milliseconds: 10), () {
+                  pc.isSearchOpen.value = false;
+                });
+              },
               child: GridTile(
                 child: Column(
                   children: [
