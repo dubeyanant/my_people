@@ -7,8 +7,15 @@ import 'package:my_people/utility/constants.dart';
 
 class AddInfoBottomSheet extends StatefulWidget {
   final String personId;
+  final String? initialInfo;
+  final int? infoIndex;
 
-  const AddInfoBottomSheet({super.key, required this.personId});
+  const AddInfoBottomSheet({
+    super.key,
+    required this.personId,
+    this.initialInfo,
+    this.infoIndex,
+  });
 
   @override
   State<AddInfoBottomSheet> createState() => _AddInfoBottomSheetState();
@@ -19,10 +26,22 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
   final _infoController = TextEditingController();
   final PeopleController pc = Get.put(PeopleController());
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialInfo != null) {
+      _infoController.text = widget.initialInfo!;
+    }
+  }
+
   void _submitInfo() {
     if (_formKey.currentState?.validate() ?? false) {
       final String info = _infoController.text.trim();
-      pc.addInfoToPerson(widget.personId, info);
+      if (widget.initialInfo != null && widget.infoIndex != null) {
+        pc.updatePersonInfo(widget.personId, info, widget.infoIndex!);
+      } else {
+        pc.addInfoToPerson(widget.personId, info);
+      }
       Get.back();
     }
   }
@@ -53,7 +72,9 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
                       autofocus: true,
                       controller: _infoController,
                       decoration: InputDecoration(
-                        labelText: AppStrings.addInfoTextFieldLabel,
+                        labelText: widget.initialInfo == null
+                            ? AppStrings.addInfoTextFieldLabel
+                            : AppStrings.editInfoTextFieldLabel,
                         hintText: AppStrings.addInfoTextFieldHint,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -69,7 +90,11 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _submitInfo,
-                      child: const Text(AppStrings.saveInfoButton),
+                      child: Text(
+                        widget.initialInfo == null
+                            ? AppStrings.addInfoButton
+                            : AppStrings.saveInfoButton,
+                      ),
                     ),
                   ],
                 ),
@@ -82,12 +107,21 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
   }
 }
 
-void showAddInfoBottomSheet(BuildContext context, String personId) {
+void showAddInfoBottomSheet(
+  BuildContext context,
+  String personId, {
+  String? initialInfo,
+  int? infoIndex,
+}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
-      return AddInfoBottomSheet(personId: personId);
+      return AddInfoBottomSheet(
+        personId: personId,
+        initialInfo: initialInfo,
+        infoIndex: infoIndex,
+      );
     },
   );
 }

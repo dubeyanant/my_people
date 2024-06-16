@@ -44,7 +44,16 @@ class PersonScreen extends StatelessWidget {
         // Handle the selected action from the popup menu
         if (result == 'delete') {
           pc.deletePersonInfo(person.uuid, infoItemIndex);
-        } else if (result == 'edit') {}
+        } else if (result == 'edit') {
+          if (context.mounted) {
+            showAddInfoBottomSheet(
+              context,
+              id,
+              initialInfo: person.info[infoItemIndex],
+              infoIndex: infoItemIndex,
+            );
+          }
+        }
       }
 
       return Scaffold(

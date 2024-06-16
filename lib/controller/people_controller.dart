@@ -76,13 +76,13 @@ class PeopleController extends GetxController {
   }
 
   // Method to update info of a person
-  void updatePersonInfo(String uuid, List<String> info) {
-    final index = people.indexWhere((person) => person.uuid == uuid);
+  void updatePersonInfo(String uuid, String newInfo, int index) {
+    final person = people.firstWhere((person) => person.uuid == uuid);
     if (index != -1) {
-      people[index].info = info;
+      person.info[index] = newInfo;
       people.refresh();
       DebugPrint.log(
-        'Person Info Updated: ${people[index].name}\nNew Info: $info',
+        'Person Info Updated: ${person.name}\nNew Info: ${person.info[index]}',
         color: DebugColor.magenta,
         tag: 'PeopleController',
       );
