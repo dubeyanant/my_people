@@ -90,6 +90,21 @@ class PeopleController extends GetxController {
     }
   }
 
+  // Method to delete info of a person
+  void deletePersonInfo(String uuid, int infoItemIndex) {
+    final index = people.indexWhere((person) => person.uuid == uuid);
+    if (index != -1) {
+      people[index].info.removeAt(infoItemIndex);
+      people.refresh();
+      DebugPrint.log(
+        'Person Info Deleted: ${people[index].name}\nInfo Index: $infoItemIndex',
+        color: DebugColor.magenta,
+        tag: 'PeopleController',
+      );
+      fetchPeople();
+    }
+  }
+
   // Method to filter people based on the search query
   void filterPeople(String query) {
     if (query.isEmpty) {

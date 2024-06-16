@@ -67,10 +67,9 @@ class PeopleGrid extends StatelessWidget {
           children: pc.filteredPeople.map((person) {
             final isFile = File(person.photo).existsSync();
             return GestureDetector(
-              onLongPressStart: (details) {
-                showPopupMenu(context, person, details.globalPosition);
-              },
-              onTap: () => Get.to(() => PersonScreen(person)),
+              onLongPressStart: (details) =>
+                  showPopupMenu(context, person, details.globalPosition),
+              onTap: () => Get.to(() => PersonScreen(person.uuid)),
               child: GridTile(
                 child: Column(
                   children: [
