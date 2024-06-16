@@ -10,8 +10,8 @@ class PeopleController extends GetxController {
 
   @override
   void onInit() {
-    fetchPeople();
     super.onInit();
+    fetchPeople();
   }
 
   void fetchPeople() {
@@ -22,6 +22,13 @@ class PeopleController extends GetxController {
       color: DebugColor.green,
       tag: 'PeopleController',
     );
+    for (var element in filteredPeople) {
+      DebugPrint.log(
+        'Name: ${element.name}\n UUID: ${element.uuid}',
+        color: DebugColor.magenta,
+        tag: 'PeopleController',
+      );
+    }
   }
 
   // Method to add a person to the list
@@ -48,20 +55,17 @@ class PeopleController extends GetxController {
 
   // Method to update a person in the list
   void updatePerson(Person oldPerson, String newName, String newPhoto) {
-    final index = people.indexWhere((person) => person == oldPerson);
+    final index = people.indexWhere((person) => person.uuid == oldPerson.uuid);
     if (index != -1) {
-      people[index] = Person(
-        name: newName,
-        photo: newPhoto,
-        info: oldPerson.info,
-      );
+      people[index].name = newName;
+      people[index].photo = newPhoto;
       DebugPrint.log(
         'Person Updated: ${oldPerson.name}\nNew Name: $newName\nNew Photo: $newPhoto',
         color: DebugColor.green,
         tag: 'PeopleController',
       );
+      fetchPeople();
     }
-    fetchPeople();
   }
 
   // Method to filter people based on the search query

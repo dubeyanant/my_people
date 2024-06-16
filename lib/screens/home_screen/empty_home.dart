@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:my_people/screens/person_bio_screen.dart';
+import 'package:my_people/screens/person_detail_bottomsheet.dart';
 
 class EmptyHome extends StatelessWidget {
   const EmptyHome({super.key});
@@ -12,7 +12,7 @@ class EmptyHome extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           IconButton.filled(
-            onPressed: () => showPersonBioBottomSheet(context),
+            onPressed: () => showPersonDetailBottomSheet(context),
             icon: const Icon(
               Icons.add,
               size: 32,

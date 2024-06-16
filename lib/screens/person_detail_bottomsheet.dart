@@ -9,16 +9,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/model/person.dart';
 
-class PersonBioScreen extends StatefulWidget {
+class PersonDetailBottomSheet extends StatefulWidget {
   final Person? personToEdit;
 
-  const PersonBioScreen({super.key, this.personToEdit});
+  const PersonDetailBottomSheet({super.key, this.personToEdit});
 
   @override
-  State<PersonBioScreen> createState() => _PersonBioScreenState();
+  State<PersonDetailBottomSheet> createState() =>
+      _PersonDetailBottomSheetState();
 }
 
-class _PersonBioScreenState extends State<PersonBioScreen> {
+class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final PeopleController pc = Get.put(PeopleController());
@@ -178,14 +179,14 @@ class _PersonBioScreenState extends State<PersonBioScreen> {
 }
 
 // Function to show PersonBioScreen as a bottom sheet
-void showPersonBioBottomSheet(BuildContext context, {Person? personToEdit}) {
+void showPersonDetailBottomSheet(BuildContext context, {Person? personToEdit}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     builder: (BuildContext context) {
       return SizedBox(
         height: MediaQuery.of(context).size.height * 0.8,
-        child: PersonBioScreen(personToEdit: personToEdit),
+        child: PersonDetailBottomSheet(personToEdit: personToEdit),
       );
     },
   );

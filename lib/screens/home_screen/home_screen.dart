@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
-import 'package:my_people/screens/person_bio_screen.dart';
+import 'package:my_people/screens/person_detail_bottomsheet.dart';
 import 'package:my_people/screens/home_screen/empty_home.dart';
 import 'package:my_people/screens/home_screen/people_grid.dart';
 
@@ -69,7 +69,7 @@ class HomeScreen extends StatelessWidget {
             ? null
             : FloatingActionButton(
                 tooltip: 'Add Person',
-                onPressed: () => showPersonBioBottomSheet(context),
+                onPressed: () => showPersonDetailBottomSheet(context),
                 child: const Icon(Icons.add),
               ),
       ),

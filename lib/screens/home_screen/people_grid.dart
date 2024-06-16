@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/model/person.dart';
-import 'package:my_people/screens/person_bio_screen.dart';
+import 'package:my_people/screens/person_detail_bottomsheet.dart';
+import 'package:my_people/screens/person_screen.dart';
 
 class PeopleGrid extends StatelessWidget {
   const PeopleGrid({super.key});
@@ -49,7 +50,7 @@ class PeopleGrid extends StatelessWidget {
       } else if (result == 'edit') {
         // Navigate to PersonBioScreen to edit the selected person
         if (context.mounted) {
-          showPersonBioBottomSheet(context, personToEdit: person);
+          showPersonDetailBottomSheet(context, personToEdit: person);
         }
       } else if (result == 'share') {
         // Share the selected person data
@@ -70,6 +71,7 @@ class PeopleGrid extends StatelessWidget {
                 // Show the popup menu on long press
                 showPopupMenu(context, person, details.globalPosition);
               },
+              onTap: () => Get.to(() => PersonScreen(person.uuid)),
               child: GridTile(
                 child: Column(
                   children: [
@@ -92,7 +94,7 @@ class PeopleGrid extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       person.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.w500),
                       textAlign: TextAlign.center,
                     ),
                   ],
