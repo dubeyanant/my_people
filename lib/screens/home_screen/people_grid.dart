@@ -68,10 +68,9 @@ class PeopleGrid extends StatelessWidget {
             final isFile = File(person.photo).existsSync();
             return GestureDetector(
               onLongPressStart: (details) {
-                // Show the popup menu on long press
                 showPopupMenu(context, person, details.globalPosition);
               },
-              onTap: () => Get.to(() => PersonScreen(person.uuid)),
+              onTap: () => Get.to(() => PersonScreen(person)),
               child: GridTile(
                 child: Column(
                   children: [

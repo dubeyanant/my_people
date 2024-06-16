@@ -11,6 +11,13 @@ class PeopleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    people.add(
+      Person(name: 'John Doe', photo: 'assets/default1.webp', info: [
+        'Age: 25',
+        'Son name: Alex',
+      ]),
+    );
     fetchPeople();
   }
 
@@ -18,14 +25,14 @@ class PeopleController extends GetxController {
     // Initialize filteredPeople with all people at startup
     filteredPeople.assignAll(people);
     DebugPrint.log(
-      'People fetched: ${filteredPeople.length}\n',
+      'People fetched: ${filteredPeople.length}',
       color: DebugColor.green,
       tag: 'PeopleController',
     );
     for (var element in filteredPeople) {
       DebugPrint.log(
-        'Name: ${element.name}\n UUID: ${element.uuid}',
-        color: DebugColor.magenta,
+        'Name: ${element.name}\tUUID: ${element.uuid}',
+        color: DebugColor.green,
         tag: 'PeopleController',
       );
     }
@@ -62,6 +69,21 @@ class PeopleController extends GetxController {
       DebugPrint.log(
         'Person Updated: ${oldPerson.name}\nNew Name: $newName\nNew Photo: $newPhoto',
         color: DebugColor.green,
+        tag: 'PeopleController',
+      );
+      fetchPeople();
+    }
+  }
+
+  // Method to update info of a person
+  void updatePersonInfo(String uuid, List<String> info) {
+    final index = people.indexWhere((person) => person.uuid == uuid);
+    if (index != -1) {
+      people[index].info = info;
+      people.refresh();
+      DebugPrint.log(
+        'Person Info Updated: ${people[index].name}\nNew Info: $info',
+        color: DebugColor.magenta,
         tag: 'PeopleController',
       );
       fetchPeople();
