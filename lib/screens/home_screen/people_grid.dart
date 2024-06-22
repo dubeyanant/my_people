@@ -35,10 +35,6 @@ class PeopleGrid extends StatelessWidget {
             child: Text(AppStrings.edit),
           ),
           const PopupMenuItem<String>(
-            value: 'share',
-            child: Text(AppStrings.share),
-          ),
-          const PopupMenuItem<String>(
             value: 'delete',
             child: Text(AppStrings.delete),
           ),
@@ -53,8 +49,6 @@ class PeopleGrid extends StatelessWidget {
         if (context.mounted) {
           showPersonDetailBottomSheet(context, personToEdit: person);
         }
-      } else if (result == 'share') {
-        // Share the selected person data
       }
     }
 

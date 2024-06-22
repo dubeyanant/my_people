@@ -11,6 +11,28 @@ class PeopleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    people.addAll([
+      Person(
+        name: 'John Doe',
+        photo: 'assets/default1.webp',
+        info: ['Age: 25', 'Occupation: Developer'],
+      ),
+      Person(
+        name: 'Jane Doe',
+        photo: 'assets/default2.webp',
+        info: ['Age: 23', 'Occupation: Designer'],
+      ),
+      Person(
+        name: 'Alice',
+        photo: 'assets/default3.webp',
+        info: ['Age: 30', 'Occupation: Manager'],
+      ),
+      Person(
+        name: 'Bob',
+        photo: 'assets/default4.webp',
+        info: ['Age: 28', 'Occupation: Engineer'],
+      ),
+    ]);
     fetchPeople();
   }
 

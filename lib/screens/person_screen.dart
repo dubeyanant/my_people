@@ -8,18 +8,26 @@ import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/screens/add_info_bottomsheet.dart';
 import 'package:my_people/utility/constants.dart';
 
-class PersonScreen extends StatelessWidget {
+class PersonScreen extends StatefulWidget {
   final String id;
   const PersonScreen(this.id, {super.key});
+
+  @override
+  State<PersonScreen> createState() => _PersonScreenState();
+}
+
+class _PersonScreenState extends State<PersonScreen> {
+  String searchQuery = '';
+  final TextEditingController searchController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final PeopleController pc = Get.put(PeopleController());
-      final person = pc.people.firstWhere((element) => element.uuid == id);
+      final person =
+          pc.people.firstWhere((element) => element.uuid == widget.id);
       final isFile = File(person.photo).existsSync();
-      final TextEditingController searchController = TextEditingController();
-      final FocusNode searchFocusNode = FocusNode();
 
       void showPopupMenu(
           BuildContext context, int infoItemIndex, Offset offset) async {
@@ -50,7 +58,7 @@ class PersonScreen extends StatelessWidget {
           if (context.mounted) {
             showAddInfoBottomSheet(
               context,
-              id,
+              widget.id,
               initialInfo: person.info[infoItemIndex],
               infoIndex: infoItemIndex,
             );
@@ -80,6 +88,7 @@ class PersonScreen extends StatelessWidget {
                     if (!pc.isSearchOpen.value) {
                       searchController.clear();
                       searchFocusNode.unfocus();
+                      searchQuery = '';
                     }
                   },
                 ),
@@ -103,7 +112,9 @@ class PersonScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onChanged: (value) {},
+                    onChanged: (value) => setState(() {
+                      searchQuery = value.toLowerCase();
+                    }),
                   ),
                 const SizedBox(height: 16),
                 CircleAvatar(
@@ -145,35 +156,40 @@ class PersonScreen extends StatelessWidget {
                         child: ListView.builder(
                           itemCount: person.info.length,
                           itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                Container(
-                                  color: Colors.black,
-                                  width: 1,
-                                  height: 60,
-                                ),
-                                GestureDetector(
-                                  onLongPressStart: (details) {
-                                    showPopupMenu(
-                                      context,
-                                      index,
-                                      details.globalPosition,
-                                    );
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .inversePrimary,
-                                      borderRadius: BorderRadius.circular(32),
-                                    ),
-                                    padding: const EdgeInsets.all(16),
-                                    width: double.maxFinite,
-                                    child: Text(person.info[index]),
+                            final item = person.info[index].toLowerCase();
+                            if (searchQuery.isEmpty ||
+                                item.contains(searchQuery)) {
+                              return Column(
+                                children: [
+                                  Container(
+                                    color: Colors.black,
+                                    width: 1,
+                                    height: 60,
                                   ),
-                                ),
-                              ],
-                            );
+                                  GestureDetector(
+                                    onLongPressStart: (details) {
+                                      showPopupMenu(
+                                        context,
+                                        index,
+                                        details.globalPosition,
+                                      );
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .inversePrimary,
+                                        borderRadius: BorderRadius.circular(32),
+                                      ),
+                                      padding: const EdgeInsets.all(16),
+                                      width: double.maxFinite,
+                                      child: Text(person.info[index]),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                            return const SizedBox.shrink();
                           },
                         ),
                       ),
