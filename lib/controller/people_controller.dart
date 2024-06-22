@@ -42,6 +42,21 @@ class PeopleController extends GetxController {
     fetchPeople();
   }
 
+  // Method to update a person in the list
+  void updatePerson(Person oldPerson, String newName, String newPhoto) {
+    final index = people.indexWhere((person) => person.uuid == oldPerson.uuid);
+    if (index != -1) {
+      people[index].name = newName;
+      people[index].photo = newPhoto;
+      DebugPrint.log(
+        'Person Updated: ${oldPerson.name}\nNew Name: $newName\nNew Photo: $newPhoto',
+        color: DebugColor.green,
+        tag: 'PeopleController',
+      );
+      fetchPeople();
+    }
+  }
+
   // Method to delete a person from the list
   void deletePerson(Person person) {
     people.remove(person);
@@ -53,15 +68,15 @@ class PeopleController extends GetxController {
     fetchPeople();
   }
 
-  // Method to update a person in the list
-  void updatePerson(Person oldPerson, String newName, String newPhoto) {
-    final index = people.indexWhere((person) => person.uuid == oldPerson.uuid);
+  // Method to add info to a person
+  void addInfoToPerson(String uuid, String info) {
+    final index = people.indexWhere((person) => person.uuid == uuid);
     if (index != -1) {
-      people[index].name = newName;
-      people[index].photo = newPhoto;
+      people[index].info.insert(0, info);
+      people.refresh();
       DebugPrint.log(
-        'Person Updated: ${oldPerson.name}\nNew Name: $newName\nNew Photo: $newPhoto',
-        color: DebugColor.green,
+        'Info Added to ${people[index].name}: $info',
+        color: DebugColor.magenta,
         tag: 'PeopleController',
       );
       fetchPeople();
@@ -109,21 +124,6 @@ class PeopleController extends GetxController {
                 person.name.toLowerCase().contains(query.toLowerCase()))
             .toList(),
       );
-    }
-  }
-
-  // Method to add info to a person
-  void addInfoToPerson(String uuid, String info) {
-    final index = people.indexWhere((person) => person.uuid == uuid);
-    if (index != -1) {
-      people[index].info.insert(0, info);
-      people.refresh();
-      DebugPrint.log(
-        'Info Added to ${people[index].name}: $info',
-        color: DebugColor.magenta,
-        tag: 'PeopleController',
-      );
-      fetchPeople();
     }
   }
 }

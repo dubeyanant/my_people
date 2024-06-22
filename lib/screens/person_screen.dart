@@ -125,7 +125,7 @@ class PersonScreen extends StatelessWidget {
                         children: [
                           Container(
                             color: Colors.black,
-                            width: 2,
+                            width: 1,
                             height: 60,
                           ),
                           IconButton.filled(
@@ -149,7 +149,7 @@ class PersonScreen extends StatelessWidget {
                               children: [
                                 Container(
                                   color: Colors.black,
-                                  width: 2,
+                                  width: 1,
                                   height: 60,
                                 ),
                                 GestureDetector(

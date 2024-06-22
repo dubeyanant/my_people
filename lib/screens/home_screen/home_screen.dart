@@ -35,7 +35,6 @@ class HomeScreen extends StatelessWidget {
                   pc.isSearchOpen.value ? Icons.cancel_outlined : Icons.search,
                 ),
               ),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
           ],
         ),
         body: pc.people.isEmpty
