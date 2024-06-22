@@ -156,9 +156,34 @@ class _PersonScreenState extends State<PersonScreen> {
                         child: ListView.builder(
                           itemCount: person.info.length,
                           itemBuilder: (context, index) {
-                            final item = person.info[index].toLowerCase();
-                            if (searchQuery.isEmpty ||
-                                item.contains(searchQuery)) {
+                            if (person.info[index].isEmpty &&
+                                person.info.length == 1) {
+                              return Column(
+                                children: [
+                                  Container(
+                                    color: Colors.black,
+                                    width: 1,
+                                    height: 60,
+                                  ),
+                                  IconButton.filled(
+                                    onPressed: () {
+                                      showAddInfoBottomSheet(
+                                          context, person.uuid);
+                                    },
+                                    icon: const Icon(
+                                      Icons.add,
+                                      size: 32,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  const Text(AppStrings.personScreenTagline),
+                                ],
+                              );
+                            } else if ((searchQuery.isEmpty ||
+                                    person.info[index]
+                                        .toLowerCase()
+                                        .contains(searchQuery)) &&
+                                person.info[index].isNotEmpty) {
                               return Column(
                                 children: [
                                   Container(
@@ -196,7 +221,8 @@ class _PersonScreenState extends State<PersonScreen> {
               ],
             ),
           ),
-          floatingActionButton: person.info.isEmpty
+          floatingActionButton: person.info.isEmpty ||
+                  (person.info.length == 1 && person.info[0].isEmpty)
               ? null
               : FloatingActionButton(
                   tooltip: AppStrings.addDetail,
