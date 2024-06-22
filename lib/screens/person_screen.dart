@@ -21,6 +21,8 @@ class _PersonScreenState extends State<PersonScreen> {
   final TextEditingController searchController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
 
+  final double barHeight = 40;
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -137,7 +139,7 @@ class _PersonScreenState extends State<PersonScreen> {
                           Container(
                             color: Colors.black,
                             width: 1,
-                            height: 60,
+                            height: barHeight,
                           ),
                           IconButton.filled(
                             onPressed: () {
@@ -163,7 +165,7 @@ class _PersonScreenState extends State<PersonScreen> {
                                   Container(
                                     color: Colors.black,
                                     width: 1,
-                                    height: 60,
+                                    height: barHeight,
                                   ),
                                   IconButton.filled(
                                     onPressed: () {
@@ -189,7 +191,7 @@ class _PersonScreenState extends State<PersonScreen> {
                                   Container(
                                     color: Colors.black,
                                     width: 1,
-                                    height: 60,
+                                    height: barHeight,
                                   ),
                                   GestureDetector(
                                     onLongPressStart: (details) {
@@ -224,10 +226,55 @@ class _PersonScreenState extends State<PersonScreen> {
           floatingActionButton: person.info.isEmpty ||
                   (person.info.length == 1 && person.info[0].isEmpty)
               ? null
-              : FloatingActionButton(
-                  tooltip: AppStrings.addDetail,
-                  onPressed: () => showAddInfoBottomSheet(context, person.uuid),
-                  child: const Icon(Icons.add),
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (person.info.length >= 6)
+                      Tooltip(
+                        message: AppStrings.chat,
+                        child: GestureDetector(
+                          onTap: () {
+                            // Open chat screen
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .tertiaryContainer,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.24),
+                                  blurRadius: 6.0,
+                                  spreadRadius: 0.0,
+                                  offset: const Offset(0, 4),
+                                )
+                              ],
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Chat',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(Icons.chat),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    FloatingActionButton(
+                      tooltip: AppStrings.addDetail,
+                      onPressed: () =>
+                          showAddInfoBottomSheet(context, person.uuid),
+                      child: const Icon(Icons.add),
+                    ),
+                  ],
                 ),
         ),
       );

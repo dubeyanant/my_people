@@ -10,6 +10,7 @@ class AppStrings {
   static const String personScreenTagline =
       'Add a detail and it will appear here!';
   static const String addDetail = 'Add Info';
+  static const String chat = 'Chat With AI';
   static const String edit = 'Edit';
   static const String share = 'Share';
   static const String delete = 'Delete';
