@@ -56,6 +56,7 @@ class PeopleGrid extends StatelessWidget {
       () => Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: GridView.count(
+          childAspectRatio: 17 / 20,
           crossAxisCount: 2, // Number of columns in the grid
           crossAxisSpacing: 16, // Space between columns
           mainAxisSpacing: 24, // Space between rows

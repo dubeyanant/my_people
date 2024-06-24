@@ -29,10 +29,14 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
   late String _defaultImage;
 
   final List<String> _defaultImages = [
-    'assets/default1.webp',
-    'assets/default2.webp',
-    'assets/default3.webp',
-    'assets/default4.webp',
+    'assets/default1.png',
+    'assets/default2.png',
+    'assets/default3.png',
+    'assets/default4.png',
+    'assets/default5.png',
+    'assets/default6.png',
+    'assets/default7.png',
+    'assets/default8.png',
   ];
 
   @override
