@@ -9,12 +9,22 @@ import 'package:my_people/screens/home_screen/empty_home.dart';
 import 'package:my_people/screens/home_screen/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    checkForUpdate(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    checkForUpdate(context);
-
     final PeopleController pc = Get.put(PeopleController());
     final TextEditingController searchController = TextEditingController();
     final FocusNode searchFocusNode = FocusNode();
