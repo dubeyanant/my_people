@@ -62,15 +62,7 @@ class DatabaseHelper {
   Future<List<Person>> fetchPersons() async {
     Database? db = await instance.database;
     List<Map<String, dynamic>> maps = await db!.query(table);
-    return List.generate(maps.length, (i) {
-      return Person(
-        uuid: maps[i][columnUuid],
-        name: maps[i][columnName],
-        photo: maps[i][columnPhoto],
-        info: maps[i][columnInfo]
-            .split(','), // Assuming info is stored as comma-separated string
-      );
-    });
+    return maps.map((map) => Person.fromMap(map)).toList();
   }
 
   // Update a Person object

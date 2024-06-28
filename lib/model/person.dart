@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:uuid/uuid.dart';
 
 class Person {
@@ -19,7 +21,7 @@ class Person {
       'uuid': uuid,
       'name': name,
       'photo': photo,
-      'info': info.join(','), // Convert info list to comma-separated string
+      'info': jsonEncode(info), // Convert info list to JSON string
     };
   }
 
@@ -29,7 +31,8 @@ class Person {
       uuid: map['uuid'],
       name: map['name'],
       photo: map['photo'],
-      info: map['info'].split(','), // Convert comma-separated string to list
+      info: List<String>.from(
+          jsonDecode(map['info'])), // Decode JSON string to list
     );
   }
 
@@ -37,7 +40,6 @@ class Person {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-
     return other is Person && other.uuid == uuid;
   }
 
