@@ -231,45 +231,40 @@ class _PersonScreenState extends State<PersonScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (person.info.length >= 6)
-                      Tooltip(
-                        message: AppStrings.chat,
-                        child: GestureDetector(
-                          onTap: () {
-                            // Open chat screen
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .tertiaryContainer,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.24),
-                                  blurRadius: 6.0,
-                                  spreadRadius: 0.0,
-                                  offset: const Offset(0, 4),
-                                )
-                              ],
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Chat',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(Icons.chat),
-                              ],
-                            ),
+                      GestureDetector(
+                        onTap: () {
+                          // Open chat screen
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.tertiaryContainer,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.24),
+                                blurRadius: 6.0,
+                                spreadRadius: 0.0,
+                                offset: const Offset(0, 4),
+                              )
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppStrings.chat,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(Icons.chat),
+                            ],
                           ),
                         ),
                       ),
                     const SizedBox(height: 16),
                     FloatingActionButton(
-                      tooltip: AppStrings.addDetail,
                       onPressed: () =>
                           showAddInfoBottomSheet(context, person.uuid),
                       child: const Icon(Icons.add),

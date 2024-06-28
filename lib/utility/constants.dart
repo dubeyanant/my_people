@@ -9,8 +9,7 @@ class AppStrings {
   // Person Screen
   static const String personScreenTagline =
       'Add a detail and it will appear here!';
-  static const String addDetail = 'Add Info';
-  static const String chat = 'Chat With AI';
+  static const String chat = 'Chat With Persona';
   static const String edit = 'Edit';
   static const String share = 'Share';
   static const String delete = 'Delete';
@@ -30,4 +29,9 @@ class AppStrings {
   static const String addInfoTextFieldError = 'Info cannot be empty';
   static const String addInfoButton = 'Add Info';
   static const String saveInfoButton = 'Save Info';
+
+  // Update Helper
+  static const String updateAvailable = 'Update Available';
+  static const String download = 'Download';
+  static const String downloadingUpdate = 'Downloading Update';
 }

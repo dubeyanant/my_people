@@ -31,20 +31,20 @@ class PeopleGrid extends StatelessWidget {
         ),
         items: [
           const PopupMenuItem<String>(
-            value: 'edit',
+            value: AppStrings.edit,
             child: Text(AppStrings.edit),
           ),
           const PopupMenuItem<String>(
-            value: 'delete',
+            value: AppStrings.delete,
             child: Text(AppStrings.delete),
           ),
         ],
       );
 
       // Handle the selected action from the popup menu
-      if (result == 'delete') {
+      if (result == AppStrings.delete) {
         pc.deletePerson(person);
-      } else if (result == 'edit') {
+      } else if (result == AppStrings.edit) {
         // Navigate to PersonBioScreen to edit the selected person
         if (context.mounted) {
           showPersonDetailBottomSheet(context, personToEdit: person);

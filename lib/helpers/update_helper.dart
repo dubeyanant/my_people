@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:dio/dio.dart';
 import 'package:install_plugin/install_plugin.dart';
+import 'package:my_people/utility/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
@@ -69,12 +70,12 @@ void showUpdateDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Update Available'),
+        title: const Text(AppStrings.updateAvailable),
         content: Text(
             'A new version ($latestVersion) is available. Please update the app.'),
         actions: <Widget>[
           TextButton(
-            child: const Text('Download'),
+            child: const Text(AppStrings.download),
             onPressed: () {
               Navigator.of(context).pop();
               downloadAndInstall(context, downloadUrl);
@@ -98,7 +99,7 @@ Future<void> downloadAndInstall(BuildContext context, String url) async {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Downloading Update'),
+            title: const Text(AppStrings.downloadingUpdate),
             content: DownloadProgress(dio, url, filePath),
           );
         },
