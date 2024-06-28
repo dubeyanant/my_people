@@ -25,4 +25,4 @@ flutter:
   uses-material-design: true
 name: my_people
 publish_to: none
-version: 1.0.0
+version: 1.1.0

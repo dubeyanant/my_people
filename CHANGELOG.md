@@ -1,4 +1,19 @@
-# 0.1.0 (2024-06-27)
+# [1.1.0](https://github.com/dubeyanant/my_people/compare/v1.0.0...v1.1.0) (2024-06-28)
+
+
+### Bug Fixes
+
+* **info:** comma use made different info blocks ([36163a1](https://github.com/dubeyanant/my_people/commit/36163a122ebe36de01849cac57be87a28c831f91))
+* **workflow:** update java version from 12 to 17 ([e0751de](https://github.com/dubeyanant/my_people/commit/e0751dec91c0cbf8543b3615bc5cf26a1b3990c8))
+
+
+### Features
+
+* add auto update ([7175c8f](https://github.com/dubeyanant/my_people/commit/7175c8f79034a307c9f75594d6a6857bbf3e4520))
+
+
+
+# [1.0.0](https://github.com/dubeyanant/my_people/compare/5889c7d7024377327d0c86e38180033a8daddd45...v1.0.0) (2024-06-27)
 
 
 ### Bug Fixes
