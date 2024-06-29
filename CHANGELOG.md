@@ -1,4 +1,24 @@
-# [1.2.0](https://github.com/dubeyanant/my_people/compare/v1.1.0...v1.2.0) (2024-06-29)
+# [1.2.0](https://github.com/dubeyanant/my_people/compare/v1.1.1...v1.2.0) (2024-06-29)
+
+
+### Bug Fixes
+
+* **chat screen:** color scheme ([a4a0af3](https://github.com/dubeyanant/my_people/commit/a4a0af30500acf119fdb984a2c828b02fccf4a59))
+* **chat screen:** keyboard doesn't focus ([629788e](https://github.com/dubeyanant/my_people/commit/629788eb8e08ac372b70a0eec92f08557d53dc8e))
+
+
+### Features
+
+* add AI chat ([1092640](https://github.com/dubeyanant/my_people/commit/10926408f971fc02f378cdd12383763a1c5b9134))
+* add multiple AI sessions ([b1385e2](https://github.com/dubeyanant/my_people/commit/b1385e26655bdaa67899debea00d8b5257910a48))
+* AI remembers context ([77d58fe](https://github.com/dubeyanant/my_people/commit/77d58fea89feb0492d619c63cf5b915707e9c610))
+* apply markdown to AI reply ([e45dd51](https://github.com/dubeyanant/my_people/commit/e45dd51b9157bc0e3ec2a43a441999be38f8a139))
+* **chat screen:** add message bubbles ([fe6fec5](https://github.com/dubeyanant/my_people/commit/fe6fec56ceac51dd3f36b16d196518471b8e9414))
+* **chat screen:** add text field ([f94a4b2](https://github.com/dubeyanant/my_people/commit/f94a4b2f271ce35abb442a15d17a5d06072f88f4))
+
+
+
+## [1.1.1](https://github.com/dubeyanant/my_people/compare/v1.1.0...v1.1.1) (2024-06-29)
 
 
 ### Bug Fixes
