@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/screens/add_info_bottomsheet.dart';
+import 'package:my_people/screens/chat_screen.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PersonScreen extends StatefulWidget {
@@ -233,7 +234,7 @@ class _PersonScreenState extends State<PersonScreen> {
                     if (person.info.length >= 6)
                       GestureDetector(
                         onTap: () {
-                          // Open chat screen
+                          Get.to(() => const ChatScreen());
                         },
                         child: Container(
                           padding: const EdgeInsets.all(12),
@@ -255,7 +256,7 @@ class _PersonScreenState extends State<PersonScreen> {
                             children: [
                               Text(
                                 AppStrings.chat,
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 12),
                               ),
                               SizedBox(width: 8),
                               Icon(Icons.chat),
