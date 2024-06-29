@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -22,9 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid) {
-      checkForUpdate(context);
-    }
+    checkForUpdate(context);
   }
 
   @override

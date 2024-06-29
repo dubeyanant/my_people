@@ -13,6 +13,7 @@ dependencies:
   install_plugin: ^2.1.0
   package_info: ^2.0.2
   path_provider: ^2.0.2
+  shared_preferences: ^2.2.3
   sqflite: ^2.0.0
   uuid: ^4.4.0
 description: An app for noting details about people.

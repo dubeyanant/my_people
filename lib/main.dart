@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:get/get.dart';
 
 import 'package:my_people/screens/home_screen/home_screen.dart';
+import 'package:my_people/utility/shared_preferences.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
+  await SharedPrefs.init();
   runApp(const MyApp());
 }
 

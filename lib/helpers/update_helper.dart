@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:install_plugin/install_plugin.dart';
 import 'package:my_people/utility/constants.dart';
+import 'package:my_people/utility/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
@@ -36,10 +37,16 @@ Future<Map<String, dynamic>> getLatestRelease() async {
 }
 
 Future<void> checkForUpdate(BuildContext context) async {
-  if (await isConnected()) {
+  DateTime lastUpdateCheckDate = SharedPrefs.getLastUpdateCheckDate();
+  DateTime now = DateTime.now();
+
+  if (await isConnected() &&
+      Platform.isAndroid &&
+      now.difference(lastUpdateCheckDate).inDays >= 1) {
     try {
       final latestRelease = await getLatestRelease();
       if (latestRelease.isNotEmpty) {
+        await SharedPrefs.setLastUpdateCheckDate(now);
         final latestVersion = latestRelease['tag_name'];
         final String latestVersionWithoutV = latestVersion.substring(1);
 
@@ -66,7 +73,10 @@ Future<void> checkForUpdate(BuildContext context) async {
 }
 
 void showUpdateDialog(
-    BuildContext context, String latestVersion, String downloadUrl) {
+  BuildContext context,
+  String latestVersion,
+  String downloadUrl,
+) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -75,6 +85,12 @@ void showUpdateDialog(
         content: Text(
             'A new version ($latestVersion) is available. Please update the app.'),
         actions: <Widget>[
+          TextButton(
+            child: const Text(AppStrings.postpone),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
           TextButton(
             child: const Text(AppStrings.download),
             onPressed: () {

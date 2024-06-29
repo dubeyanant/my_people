@@ -33,6 +33,7 @@ class AppStrings {
   // Update Helper
   static const String updateAvailable = 'Update Available';
   static const String download = 'Download';
+  static const String postpone = 'Later';
   static const String downloadingUpdate = 'Downloading Update';
 
   // Chat Screen
