@@ -15,7 +15,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<ChatMessage> _messages = ChatMessage.messages;
+  static final Map<String, ChatSession> _chatSessions = {};
+  late ChatSession _currentSession;
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
@@ -28,6 +29,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    _currentSession =
+        _chatSessions.putIfAbsent(widget.uuid, () => ChatSession(widget.uuid));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(_focusNode);
     });
@@ -75,12 +78,12 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_controller.text.isNotEmpty) {
       final userMessage = _controller.text;
       setState(() {
-        _messages.add(ChatMessage(
+        _currentSession.messages.add(ChatMessage(
           text: userMessage,
           sender: AppStrings.user,
         ));
         _controller.clear();
-        _isTextFieldEmpty = true; // Reset the flag
+        _isTextFieldEmpty = true;
         _loading = true;
         _addThinkingMessage();
       });
@@ -90,7 +93,7 @@ class _ChatScreenState extends State<ChatScreen> {
         setState(() {
           _loading = false;
           _removeThinkingMessage();
-          _messages.add(ChatMessage(
+          _currentSession.messages.add(ChatMessage(
             text: aiResponse,
             sender: AppStrings.bot,
           ));
@@ -114,12 +117,12 @@ class _ChatScreenState extends State<ChatScreen> {
       text: AppStrings.thinking,
       sender: AppStrings.bot,
     );
-    _messages.add(_thinkingMessage!);
+    _currentSession.messages.add(_thinkingMessage!);
   }
 
   void _removeThinkingMessage() {
     if (_thinkingMessage != null) {
-      _messages.remove(_thinkingMessage);
+      _currentSession.messages.remove(_thinkingMessage);
       _thinkingMessage = null;
     }
   }
@@ -160,11 +163,12 @@ class _ChatScreenState extends State<ChatScreen> {
             children: <Widget>[
               Expanded(
                 child: ListView.builder(
-                  itemCount: _messages.length,
+                  itemCount: _currentSession.messages.length,
                   controller: _scrollController,
                   reverse: true,
                   itemBuilder: (context, index) {
-                    final message = _messages[_messages.length - 1 - index];
+                    final message = _currentSession
+                        .messages[_currentSession.messages.length - 1 - index];
                     return MessageBubble(
                       message: message,
                       isMe: message.sender == AppStrings.user,
@@ -256,4 +260,11 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
+}
+
+class ChatSession {
+  final String personUuid;
+  final List<ChatMessage> messages;
+
+  ChatSession(this.personUuid) : messages = [];
 }
