@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -88,6 +89,7 @@ void showUpdateDialog(
 }
 
 Future<void> downloadAndInstall(BuildContext context, String url) async {
+  DebugPrint.log('Download URL: $url', tag: 'UpdateHelper');
   try {
     final tempDir = await getTemporaryDirectory();
     final filePath = '${tempDir.path}/my_people_update.apk';
@@ -106,13 +108,19 @@ Future<void> downloadAndInstall(BuildContext context, String url) async {
       );
     }
 
-    InstallPlugin.installApk(filePath, appId: 'com.example.my_people')
-        .then((result) {
-      DebugPrint.log('Install result: $result', tag: 'UpdateHelper');
-    }).catchError((error) {
-      DebugPrint.log('Install error: $error',
+    final File file = File(filePath);
+    if (await file.exists()) {
+      InstallPlugin.installApk(filePath, appId: "com.example.my_people")
+          .then((result) {
+        DebugPrint.log('Install result: $result', tag: 'UpdateHelper');
+      }).catchError((error) {
+        DebugPrint.log('Install error: $error',
+            color: DebugColor.red, tag: 'UpdateHelper');
+      });
+    } else {
+      DebugPrint.log('Downloaded file does not exist',
           color: DebugColor.red, tag: 'UpdateHelper');
-    });
+    }
   } catch (e) {
     DebugPrint.log('Download error: $e',
         color: DebugColor.red, tag: 'UpdateHelper');
