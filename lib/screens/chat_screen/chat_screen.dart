@@ -35,7 +35,6 @@ class _ChatScreenState extends State<ChatScreen> {
         widget.person.uuid, () => ChatSession(widget.person.uuid));
     _geminiAIService = GeminiAIService();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(_focusNode);
       _sendInitialPrompt();
     });
     _scrollController.addListener(_scrollListener);
@@ -54,12 +53,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendInitialPrompt() async {
     final initialPrompt = '''
-    This is the information about the person I'm talking about:
-    Name: ${widget.person.name}
-    Info: ${widget.person.info.join(', ')}
+  This is the information about the person I'm talking about:
+  Name: ${widget.person.name}
+  Info: ${widget.person.info.join(', ')}
 
-    Strictly use this info while answering any of the next prompts. Do not hallucinate or generate information that is not present in this info. If you understood, say "Hi, how may I help you?"
-    ''';
+  Strictly use this info while answering any of the next prompts. Do not hallucinate or generate information that is not present in this info. If you understood, say "Hi, how may I help you?"
+  ''';
 
     setState(() {
       _loading = true;
@@ -70,23 +69,32 @@ class _ChatScreenState extends State<ChatScreen> {
           await _geminiAIService.sendInitialPrompt(initialPrompt);
       if (aiResponse.trim().toLowerCase() == "hi, how may i help you?") {
         setState(() {
-          _loading = false;
           _currentSession.messages.add(ChatMessage(
             text: aiResponse,
             sender: AppStrings.bot,
           ));
         });
       }
+      _enableTextFieldAndFocus();
     } catch (e) {
       DebugPrint.log(
         'Error sending initial prompt: $e',
         color: DebugColor.red,
-        tag: 'ChartScreen',
+        tag: 'ChatScreen',
       );
-      setState(() {
-        _loading = false;
-      });
+      _enableTextFieldAndFocus();
     }
+  }
+
+  void _enableTextFieldAndFocus() {
+    setState(() {
+      _loading = false;
+    });
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(_focusNode);
+      }
+    });
   }
 
   void _scrollListener() {
@@ -132,13 +140,13 @@ class _ChatScreenState extends State<ChatScreen> {
       try {
         final aiResponse = await _geminiAIService.sendMessage(userMessage);
         setState(() {
-          _loading = false;
           _removeThinkingMessage();
           _currentSession.messages.add(ChatMessage(
             text: aiResponse,
             sender: AppStrings.bot,
           ));
         });
+        _enableTextFieldAndFocus();
       } catch (e) {
         if (e.toString().contains('SocketException')) {
           _showError('Please check your internet connection and try again.');
@@ -146,9 +154,9 @@ class _ChatScreenState extends State<ChatScreen> {
           _showError('Error sending message to Gemini AI: $e');
         }
         setState(() {
-          _loading = false;
           _removeThinkingMessage();
         });
+        _enableTextFieldAndFocus();
       }
     }
   }

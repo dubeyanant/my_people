@@ -56,7 +56,7 @@ class FormattedTextWidget extends StatelessWidget {
     return MarkdownBody(
       data: text,
       styleSheet: MarkdownStyleSheet(
-        p: Theme.of(context).textTheme.bodyMedium,
+        p: style ?? Theme.of(context).textTheme.bodyMedium,
         code: style ??
             TextStyle(
               backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
