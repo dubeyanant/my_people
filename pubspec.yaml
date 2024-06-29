@@ -21,12 +21,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 environment:
-  sdk: ">=3.2.6 <4.0.0"
+  sdk: '>=3.2.6 <4.0.0'
 flutter:
   assets:
-    - assets/
-    - .env
+  - assets/
+  - .env
   uses-material-design: true
 name: my_people
 publish_to: none
-version: 1.2.0
+version: 1.2.1

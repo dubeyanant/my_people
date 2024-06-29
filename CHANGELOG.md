@@ -1,3 +1,12 @@
+## [1.2.1](https://github.com/dubeyanant/my_people/compare/v1.2.0...v1.2.1) (2024-06-29)
+
+
+### Bug Fixes
+
+* **workflow:** create .env file ([ca672c0](https://github.com/dubeyanant/my_people/commit/ca672c0c276420323616e475912396e137a62b70))
+
+
+
 # [1.2.0](https://github.com/dubeyanant/my_people/compare/v1.1.1...v1.2.0) (2024-06-29)
 
 
