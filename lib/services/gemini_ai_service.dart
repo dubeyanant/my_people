@@ -1,12 +1,11 @@
-// ignore_for_file: unused_field
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:my_people/utility/debug_print.dart';
 
 class GeminiAIService {
   static final _apiKey = dotenv.env['GEMINI_KEY'];
   final GenerativeModel _model;
-  late final ChatSession _chat;
+  late ChatSession _chat;
 
   GeminiAIService()
       : _model = GenerativeModel(
@@ -19,14 +18,26 @@ class GeminiAIService {
   }
 
   Future<String> sendMessage(String message) async {
-    final content = [Content.text(message)];
-    final response = await _model.generateContent(
-      content,
-      safetySettings: safetySettings,
-      generationConfig: generationConfig,
-    );
+    try {
+      final response = await _chat.sendMessage(Content.text(message));
+      return response.text ?? 'No response from Gemini AI';
+    } catch (e) {
+      DebugPrint.log(
+        'Error sending message to Gemini AI: $e',
+        color: DebugColor.red,
+        tag: 'GeminiAIService',
+      );
+      return 'Error: Unable to get a response from Gemini AI';
+    }
+  }
 
-    return response.text ?? 'No response from Gemini AI';
+  void startNewChat() {
+    _chat = _model.startChat();
+  }
+
+  Future<String> sendInitialPrompt(String initialPrompt) async {
+    startNewChat();
+    return sendMessage(initialPrompt);
   }
 }
 

@@ -44,20 +44,20 @@ class _PersonScreenState extends State<PersonScreen> {
           ),
           items: [
             const PopupMenuItem<String>(
-              value: 'edit',
+              value: AppStrings.edit,
               child: Text(AppStrings.edit),
             ),
             const PopupMenuItem<String>(
-              value: 'delete',
+              value: AppStrings.delete,
               child: Text(AppStrings.delete),
             ),
           ],
         );
 
         // Handle the selected action from the popup menu
-        if (result == 'delete') {
+        if (result == AppStrings.delete) {
           pc.deletePersonInfo(person.uuid, infoItemIndex);
-        } else if (result == 'edit') {
+        } else if (result == AppStrings.edit) {
           if (context.mounted) {
             showAddInfoBottomSheet(
               context,
@@ -234,7 +234,7 @@ class _PersonScreenState extends State<PersonScreen> {
                     if (person.info.length >= 5)
                       GestureDetector(
                         onTap: () {
-                          Get.to(() => ChatScreen(widget.id));
+                          Get.to(() => ChatScreen(person));
                         },
                         child: Container(
                           padding: const EdgeInsets.all(16),

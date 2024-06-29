@@ -37,6 +37,7 @@ class AppStrings {
 
   // Chat Screen
   static const String ask = 'Ask your question...';
+  static const String waiting = 'Waiting for AI...';
   static const String user = 'User';
   static const String bot = 'Gemini AI';
   static const String thinking = 'Thinking...';
