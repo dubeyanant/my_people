@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/screens/add_info_bottomsheet.dart';
-import 'package:my_people/screens/chat_screen.dart';
+import 'package:my_people/screens/chat_screen/chat_screen.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PersonScreen extends StatefulWidget {

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import 'package:my_people/model/chat_message.dart';
+import 'package:my_people/screens/chat_screen/message_bubble.dart';
 import 'package:my_people/utility/constants.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -9,7 +12,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<String> _messages = [];
+  final List<ChatMessage> _messages = ChatMessage.demoMessages;
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _isTextFieldEmpty = true;
@@ -44,7 +47,10 @@ class _ChatScreenState extends State<ChatScreen> {
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
       setState(() {
-        _messages.add(_controller.text);
+        _messages.add(ChatMessage(
+          text: _controller.text,
+          sender: 'User',
+        ));
         _controller.clear();
         _isTextFieldEmpty = true; // Reset the flag
       });
@@ -65,8 +71,10 @@ class _ChatScreenState extends State<ChatScreen> {
               child: ListView.builder(
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_messages[index]),
+                  final message = _messages[index];
+                  return MessageBubble(
+                    message: message,
+                    isMe: message.sender == 'User',
                   );
                 },
               ),
@@ -95,7 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
                   ),
-                  if (_controller.text.isNotEmpty)
+                  if (!_isTextFieldEmpty)
                     Container(
                       padding: const EdgeInsets.only(left: 4),
                       margin: const EdgeInsets.only(left: 8),
