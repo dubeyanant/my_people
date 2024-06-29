@@ -25,7 +25,6 @@ environment:
 flutter:
   assets:
     - assets/
-    - .env
   uses-material-design: true
 name: my_people
 publish_to: none
