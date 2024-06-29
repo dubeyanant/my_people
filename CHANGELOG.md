@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/dubeyanant/my_people/compare/v1.1.0...v1.2.0) (2024-06-29)
+
+
+### Bug Fixes
+
+* repeating update calls ([86bf491](https://github.com/dubeyanant/my_people/commit/86bf4911e213e4b1350298e185f8cd5d838f2235))
+
+
+### Features
+
+* add signed app ([cdb3847](https://github.com/dubeyanant/my_people/commit/cdb38470758cb3c1fda6ea70cce08a94f0c431b4))
+
+
+
 # [1.1.0](https://github.com/dubeyanant/my_people/compare/v1.0.0...v1.1.0) (2024-06-28)
 
 
