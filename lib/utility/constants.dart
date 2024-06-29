@@ -37,4 +37,6 @@ class AppStrings {
 
   // Chat Screen
   static const String ask = 'Ask your question...';
+  static const String user = 'User';
+  static const String bot = 'AI';
 }
