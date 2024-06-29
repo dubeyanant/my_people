@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import 'package:flutter_markdown/flutter_markdown.dart';
+
 import 'package:my_people/model/chat_message.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -30,7 +33,7 @@ class MessageBubble extends StatelessWidget {
                   bottomRight: Radius.circular(15),
                 ),
         ),
-        child: Text(
+        child: FormattedTextWidget(
           message.text,
           style: TextStyle(
             color: isMe
@@ -38,6 +41,28 @@ class MessageBubble extends StatelessWidget {
                 : Theme.of(context).colorScheme.onPrimaryContainer,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class FormattedTextWidget extends StatelessWidget {
+  final String text;
+  final TextStyle? style;
+  const FormattedTextWidget(this.text, {this.style, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MarkdownBody(
+      data: text,
+      styleSheet: MarkdownStyleSheet(
+        p: Theme.of(context).textTheme.bodyMedium,
+        code: style ??
+            TextStyle(
+              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              fontFamily: 'monospace',
+              fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize,
+            ),
       ),
     );
   }
