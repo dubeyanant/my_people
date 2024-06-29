@@ -4,7 +4,9 @@ dependencies:
   dio: ^5.4.3+1
   flutter:
     sdk: flutter
+  flutter_dotenv: ^5.1.0
   get: ^4.6.6
+  google_generative_ai: ^0.4.3
   icons_launcher: ^2.1.7
   image_picker: ^1.0.8
   install_plugin: ^2.1.0
@@ -18,10 +20,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 environment:
-  sdk: '>=3.2.6 <4.0.0'
+  sdk: ">=3.2.6 <4.0.0"
 flutter:
   assets:
-  - assets/
+    - assets/
+    - .env
   uses-material-design: true
 name: my_people
 publish_to: none

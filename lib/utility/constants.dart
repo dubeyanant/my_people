@@ -39,4 +39,7 @@ class AppStrings {
   static const String ask = 'Ask your question...';
   static const String user = 'User';
   static const String bot = 'Gemini AI';
+  static const String thinking = 'Thinking...';
+  static const String ok = 'OK';
+  static const String wentWrong = 'Something went wrong';
 }
