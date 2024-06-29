@@ -5,7 +5,9 @@ import 'package:my_people/screens/chat_screen/message_bubble.dart';
 import 'package:my_people/utility/constants.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String uuid;
+
+  const ChatScreen(this.uuid, {super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();

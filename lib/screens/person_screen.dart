@@ -231,13 +231,13 @@ class _PersonScreenState extends State<PersonScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (person.info.length >= 6)
+                    if (person.info.length >= 5)
                       GestureDetector(
                         onTap: () {
-                          Get.to(() => const ChatScreen());
+                          Get.to(() => ChatScreen(widget.id));
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color:
                                 Theme.of(context).colorScheme.tertiaryContainer,
@@ -253,10 +253,11 @@ class _PersonScreenState extends State<PersonScreen> {
                           ),
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 AppStrings.chat,
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 14),
                               ),
                               SizedBox(width: 8),
                               Icon(Icons.chat),
