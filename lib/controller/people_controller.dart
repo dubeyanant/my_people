@@ -94,7 +94,7 @@ class PeopleController extends GetxController {
     final person = people.firstWhere((person) => person.uuid == uuid);
     if (index != -1) {
       person.info[index] = newInfo;
-      await dbHelper.updatePerson(people[index]);
+      await dbHelper.updatePerson(person);
       people.refresh();
       DebugPrint.log(
         'Person Info Updated: ${person.name}\nNew Info: ${person.info[index]}',
