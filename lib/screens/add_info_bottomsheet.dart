@@ -38,12 +38,24 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
     if (_formKey.currentState?.validate() ?? false) {
       final String info = _infoController.text.trim();
       if (widget.initialInfo != null && widget.infoIndex != null) {
-        pc.updatePersonInfo(widget.personId, info, widget.infoIndex!);
+        pc.updatePersonInfo(
+            widget.personId, capitalize(info), widget.infoIndex!);
       } else {
-        pc.addInfoToPerson(widget.personId, info);
+        pc.addInfoToPerson(widget.personId, capitalize(info));
       }
       Get.back();
     }
+  }
+
+  /// Passing true will capitalize all words in the text, and false will only capitalize the first word.
+  String capitalize(String text, {bool capitalizeAll = false}) {
+    if (text.isEmpty) return text;
+    return capitalizeAll
+        ? text.toLowerCase().split(' ').map((word) {
+            if (word.isEmpty) return word;
+            return word[0].toUpperCase() + word.substring(1);
+          }).join(' ')
+        : text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
 
   @override
@@ -70,6 +82,8 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
                     const SizedBox(height: 16),
                     TextFormField(
                       autofocus: true,
+                      minLines: 1,
+                      maxLines: 3,
                       controller: _infoController,
                       decoration: InputDecoration(
                         labelText: widget.initialInfo == null

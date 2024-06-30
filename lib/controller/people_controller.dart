@@ -28,7 +28,7 @@ class PeopleController extends GetxController {
     );
     for (var element in filteredPeople) {
       DebugPrint.log(
-        'Name: ${element.name}\tUUID: ${element.uuid}',
+        'Name: ${element.name}\tUUID: ${element.uuid}\nInfo: ${element.info}',
         color: DebugColor.green,
         tag: 'PeopleController',
       );

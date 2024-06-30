@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 
@@ -137,10 +138,14 @@ class _PersonScreenState extends State<PersonScreen> {
                 person.info.isEmpty
                     ? Column(
                         children: [
-                          Container(
-                            color: Colors.black,
-                            width: 1,
-                            height: barHeight,
+                          // Container(
+                          //   color: Colors.black,
+                          //   width: 1,
+                          //   height: barHeight,
+                          // ),
+                          SvgPicture.asset(
+                            'assets/line.svg',
+                            height: 50,
                           ),
                           IconButton.filled(
                             onPressed: () {
@@ -151,48 +156,43 @@ class _PersonScreenState extends State<PersonScreen> {
                               size: 32,
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          const Text(AppStrings.personScreenTagline),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 8, left: 8, bottom: 4),
+                            child: SvgPicture.asset(
+                              'assets/arrow1.svg',
+                              height: 100,
+                              colorFilter: const ColorFilter.mode(
+                                  Colors.grey, BlendMode.srcIn),
+                            ),
+                          ),
+                          const Text(
+                            AppStrings.personScreenTagline,
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
                         ],
                       )
                     : Expanded(
                         child: ListView.builder(
                           itemCount: person.info.length,
                           itemBuilder: (context, index) {
-                            if (person.info[index].isEmpty &&
-                                person.info.length == 1) {
-                              return Column(
-                                children: [
-                                  Container(
-                                    color: Colors.black,
-                                    width: 1,
-                                    height: barHeight,
-                                  ),
-                                  IconButton.filled(
-                                    onPressed: () {
-                                      showAddInfoBottomSheet(
-                                          context, person.uuid);
-                                    },
-                                    icon: const Icon(
-                                      Icons.add,
-                                      size: 32,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  const Text(AppStrings.personScreenTagline),
-                                ],
-                              );
-                            } else if ((searchQuery.isEmpty ||
+                            if ((searchQuery.isEmpty ||
                                     person.info[index]
                                         .toLowerCase()
                                         .contains(searchQuery)) &&
                                 person.info[index].isNotEmpty) {
                               return Column(
                                 children: [
-                                  Container(
-                                    color: Colors.black,
-                                    width: 1,
-                                    height: barHeight,
+                                  // Container(
+                                  //   color: Colors.black,
+                                  //   width: 1,
+                                  //   height: barHeight,
+                                  // ),
+                                  SvgPicture.asset(
+                                    'assets/line.svg',
+                                    height: 50,
                                   ),
                                   GestureDetector(
                                     onLongPressStart: (details) {
@@ -231,7 +231,7 @@ class _PersonScreenState extends State<PersonScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (person.info.length >= 5)
+                    if (person.info.length >= 3)
                       GestureDetector(
                         onTap: () {
                           Get.to(() => ChatScreen(person));

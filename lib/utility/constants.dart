@@ -4,11 +4,10 @@ class AppStrings {
   static const String searchBarHintText = 'Search...';
 
   // Home Screen
-  static const String homeScreenTagline = 'Add Your People!';
+  static const String homeScreenTagline = 'Create Your First Profile';
 
   // Person Screen
-  static const String personScreenTagline =
-      'Add a detail and it will appear here!';
+  static const String personScreenTagline = 'Start Remembering Special Details';
   static const String chat = 'Chat With Persona';
   static const String edit = 'Edit';
   static const String share = 'Share';

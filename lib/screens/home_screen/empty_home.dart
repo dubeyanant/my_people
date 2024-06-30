@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:my_people/screens/person_detail_bottomsheet.dart';
 import 'package:my_people/utility/constants.dart';
@@ -19,8 +20,20 @@ class EmptyHome extends StatelessWidget {
               size: 32,
             ),
           ),
-          const SizedBox(height: 16),
-          const Text(AppStrings.homeScreenTagline),
+          Padding(
+            padding: const EdgeInsets.only(top: 8, left: 8, bottom: 4),
+            child: SvgPicture.asset(
+              'assets/arrow1.svg',
+              height: 100,
+              colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+            ),
+          ),
+          const Text(
+            AppStrings.homeScreenTagline,
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
         ],
       ),
     );
