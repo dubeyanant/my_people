@@ -54,8 +54,8 @@ Future<void> checkForUpdate(BuildContext context) async {
         final currentVersion = packageInfo.version;
         DebugPrint.log(
           'Current Version: $currentVersion\nLatest Version: $latestVersionWithoutV',
-          color: DebugColor.yellow,
           tag: 'UpdateHelper',
+          color: DebugColor.yellow,
         );
         if (latestVersionWithoutV != currentVersion && context.mounted) {
           showUpdateDialog(context, latestVersion,
@@ -105,7 +105,11 @@ void showUpdateDialog(
 }
 
 Future<void> downloadAndInstall(BuildContext context, String url) async {
-  DebugPrint.log('Download URL: $url', tag: 'UpdateHelper');
+  DebugPrint.log(
+    'Download URL: $url',
+    tag: 'UpdateHelper',
+    color: DebugColor.yellow,
+  );
   try {
     final tempDir = await getTemporaryDirectory();
     final filePath = '${tempDir.path}/my_people_update.apk';
@@ -128,7 +132,11 @@ Future<void> downloadAndInstall(BuildContext context, String url) async {
     if (await file.exists()) {
       InstallPlugin.installApk(filePath, appId: "com.example.my_people")
           .then((result) {
-        DebugPrint.log('Install result: $result', tag: 'UpdateHelper');
+        DebugPrint.log(
+          'Install result: $result',
+          tag: 'UpdateHelper',
+          color: DebugColor.yellow,
+        );
       }).catchError((error) {
         DebugPrint.log('Install error: $error',
             color: DebugColor.red, tag: 'UpdateHelper');
