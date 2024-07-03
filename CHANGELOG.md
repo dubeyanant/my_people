@@ -1,3 +1,20 @@
+# [1.3.0](https://github.com/dubeyanant/my_people/compare/v1.2.2...v1.3.0) (2024-07-03)
+
+
+### Bug Fixes
+
+* **update:** check for new updates ([cd36a8b](https://github.com/dubeyanant/my_people/commit/cd36a8b6d45ed423d31a39d6cb01a7c7c8b45493))
+
+
+### Features
+
+* add auth ([0a810c1](https://github.com/dubeyanant/my_people/commit/0a810c1af6003d213542ac77f49932b6f7de5f34))
+* add force update for major versions ([dac0de4](https://github.com/dubeyanant/my_people/commit/dac0de4a78195da4d67999d9961580a2762bd478))
+* add login screen ([59c38b4](https://github.com/dubeyanant/my_people/commit/59c38b4a82908e993cb0930831d8d616bfb32b86))
+* add resend otp ([5bdb1df](https://github.com/dubeyanant/my_people/commit/5bdb1df1b4bc3ea9cf608dd025371eef939b127f))
+
+
+
 ## [1.2.2](https://github.com/dubeyanant/my_people/compare/v1.2.1...v1.2.2) (2024-06-30)
 
 
