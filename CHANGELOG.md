@@ -1,4 +1,13 @@
-# [1.3.0](https://github.com/dubeyanant/my_people/compare/v1.2.2...v1.3.0) (2024-07-03)
+## [2.0.1](https://github.com/dubeyanant/my_people/compare/v2.0.0...v2.0.1) (2024-07-03)
+
+
+### Bug Fixes
+
+* **workflow:** add supabase keys ([adb6618](https://github.com/dubeyanant/my_people/commit/adb6618eda58b999826898c22f151ffb259ced9f))
+
+
+
+# [2.0.0](https://github.com/dubeyanant/my_people/compare/v1.2.2...v2.0.0) (2024-07-03)
 
 
 ### Bug Fixes
