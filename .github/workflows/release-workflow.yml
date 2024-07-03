@@ -82,10 +82,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.19.0"
-        env:
-          GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
-          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Decode Keystore
         env:
@@ -103,8 +99,8 @@ jobs:
       - name: Create .env file
         run: |
           echo "GEMINI_KEY=${{ secrets.GEMINI_KEY }}" > .env
-          echo "PUBLIC_SUPABASE_URL=${{ secrets.PUBLIC_SUPABASE_URL }}" > .env
-          echo "PUBLIC_SUPABASE_ANON_KEY=${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}" > .env
+          echo "PUBLIC_SUPABASE_URL=${{ secrets.PUBLIC_SUPABASE_URL }}" >> .env
+          echo "PUBLIC_SUPABASE_ANON_KEY=${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}" >> .env
 
       - name: Build Android (Single)
         if: github.event.inputs.release_type == 'single_android' || github.event.inputs.release_type == 'single_android_ios'
