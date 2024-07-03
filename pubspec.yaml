@@ -16,6 +16,7 @@ dependencies:
   path_provider: ^2.0.2
   shared_preferences: ^2.2.3
   sqflite: ^2.0.0
+  supabase_flutter: ^2.5.7
   uuid: ^4.4.0
 description: An app for noting details about people.
 dev_dependencies:

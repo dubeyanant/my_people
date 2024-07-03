@@ -84,6 +84,8 @@ jobs:
           flutter-version: "3.19.0"
         env:
           GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
+          PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Decode Keystore
         env:

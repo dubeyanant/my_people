@@ -4,8 +4,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:my_people/screens/home_screen/home_screen.dart';
+import 'package:my_people/utility/debug_print.dart';
 import 'package:my_people/utility/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,6 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
   bool _isReadOnly = false;
   bool _showOtpField = false;
+  String _currentOtp = '';
 
   @override
   void initState() {
@@ -67,23 +70,104 @@ class _LoginScreenState extends State<LoginScreen> {
     return emailRegex.hasMatch(email);
   }
 
-  void _submitEmail() {
+  void _submitEmail(String email) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isReadOnly = true;
-        _showOtpField = true;
         _isButtonEnabled.value = false;
       });
+
+      try {
+        final supabase = Supabase.instance.client;
+        await supabase.auth.signInWithOtp(email: email);
+
+        setState(() {
+          _isReadOnly = true;
+          _showOtpField = true;
+        });
+      } catch (error) {
+        DebugPrint.log(
+          'Error sending OTP: $error',
+          color: DebugColor.red,
+          tag: 'LoginScreen',
+        );
+        if (mounted) {
+          if (error.toString().contains('statusCode: 429') ||
+              error.toString().contains('rate limit')) {
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Failed to send OTP. Please try again later.',
+                ),
+              ),
+            );
+          }
+        }
+      } finally {
+        setState(() {
+          _isButtonEnabled.value = true;
+        });
+      }
     }
   }
 
-  void _submitOtp(String otp) async {
-    Get.off(() => const HomeScreen());
-    await SharedPrefs.setLoggedIn(true);
+  void _submitOtp(String email) async {
+    try {
+      var supabase = Supabase.instance.client;
+      await supabase.auth.verifyOTP(
+        email: email,
+        token: _currentOtp,
+        type: OtpType.email,
+      );
+
+      supabase.auth.onAuthStateChange.listen((data) async {
+        final AuthChangeEvent event = data.event;
+
+        if (event == AuthChangeEvent.signedIn) {
+          Get.off(() => const HomeScreen());
+          await SharedPrefs.setLoggedIn(true);
+        } else {}
+      });
+    } catch (err) {
+      DebugPrint.log(
+        'Error verifying OTP: $err',
+        color: DebugColor.red,
+        tag: 'LoginScreen',
+      );
+      if (mounted) {
+        if (err.toString().contains('expired') ||
+            err.toString().contains('Invalid')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Token has expired or is invalid. Please try again!',
+              ),
+            ),
+          );
+        } else if (err.toString().contains('SocketException')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Please check your internet connection and try again!',
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Failed to verify OTP. Please try again later.',
+              ),
+            ),
+          );
+        }
+      }
+    }
   }
 
   void _onOtpChanged(String otp) {
     _isButtonEnabled.value = otp.length == 6;
+    _currentOtp = otp;
   }
 
   @override
@@ -175,9 +259,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: (context, isEnabled, child) {
                   return GestureDetector(
                     onTap: isEnabled
-                        ? (_showOtpField
+                        ? _showOtpField
                             ? () => _submitOtp(_emailController.text)
-                            : _submitEmail)
+                            : () => _submitEmail(_emailController.text)
                         : null,
                     child: Container(
                       width: double.infinity,
