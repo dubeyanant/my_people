@@ -1,9 +1,10 @@
-## [2.0.1](https://github.com/dubeyanant/my_people/compare/v2.0.0...v2.0.1) (2024-07-03)
+## [2.0.2](https://github.com/dubeyanant/my_people/compare/v2.0.1...v2.0.2) (2024-07-03)
 
 
 ### Bug Fixes
 
 * **workflow:** add supabase keys ([adb6618](https://github.com/dubeyanant/my_people/commit/adb6618eda58b999826898c22f151ffb259ced9f))
+* **workflow:** correct env variables ([b120eea](https://github.com/dubeyanant/my_people/commit/b120eea8717b15c0de8ee741cefa87a1ae6fdc1b))
 
 
 
