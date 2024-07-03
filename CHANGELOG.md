@@ -1,3 +1,13 @@
+## [1.2.2](https://github.com/dubeyanant/my_people/compare/v1.2.1...v1.2.2) (2024-06-30)
+
+
+### Bug Fixes
+
+* constant update check ([aa6d740](https://github.com/dubeyanant/my_people/commit/aa6d740f1eed3fbb599cf1a605800e89739f44c0))
+* info edit issue ([e952667](https://github.com/dubeyanant/my_people/commit/e952667e4492d898f338a24f9df5e20e7a7f017d))
+
+
+
 ## [1.2.1](https://github.com/dubeyanant/my_people/compare/v1.2.0...v1.2.1) (2024-06-29)
 
 
