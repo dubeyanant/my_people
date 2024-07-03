@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 
 import 'package:dio/dio.dart';
 import 'package:install_plugin/install_plugin.dart';
-import 'package:my_people/utility/constants.dart';
-import 'package:my_people/utility/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 
+import 'package:my_people/utility/constants.dart';
+import 'package:my_people/utility/shared_preferences.dart';
 import 'package:my_people/helpers/internet_connectivity_helper.dart';
 import 'package:my_people/utility/debug_print.dart';
 
@@ -46,19 +46,18 @@ Future<void> checkForUpdate(BuildContext context) async {
     try {
       final latestRelease = await getLatestRelease();
       if (latestRelease.isNotEmpty) {
-        await SharedPrefs.setLastUpdateCheckDate(now);
         final latestVersion = latestRelease['tag_name'];
         final String latestVersionWithoutV = latestVersion.substring(1);
-
         final packageInfo = await PackageInfo.fromPlatform();
         final currentVersion = packageInfo.version;
+        bool isMajor = isMajorUpdate(currentVersion, latestVersionWithoutV);
+        if (!isMajor) await SharedPrefs.setLastUpdateCheckDate(now);
         DebugPrint.log(
           'Current Version: $currentVersion\nLatest Version: $latestVersionWithoutV',
           tag: 'UpdateHelper',
           color: DebugColor.yellow,
         );
         if (latestVersionWithoutV != currentVersion && context.mounted) {
-          bool isMajor = isMajorUpdate(currentVersion, latestVersionWithoutV);
           showUpdateDialog(
             context,
             latestVersion,
