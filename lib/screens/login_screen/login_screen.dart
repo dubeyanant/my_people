@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:my_people/helpers/internet_connectivity_helper.dart';
+import 'package:my_people/screens/login_screen/otp_input.dart';
 import 'package:my_people/screens/home_screen/home_screen.dart';
 import 'package:my_people/utility/debug_print.dart';
 import 'package:my_people/utility/shared_preferences.dart';
@@ -29,6 +31,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isReadOnly = false;
   bool _showOtpField = false;
   String _currentOtp = '';
+  bool _canResendOtp = false;
+  int _resendTimer = 60;
+  Timer? _resendOtpTimer;
 
   @override
   void initState() {
@@ -59,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     _timer.cancel();
+    _resendOtpTimer?.cancel();
     _emailController.dispose();
     _emailFocusNode.dispose();
     _isButtonEnabled.dispose();
@@ -71,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _submitEmail(String email) async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && await isConnected()) {
       setState(() {
         _isButtonEnabled.value = false;
       });
@@ -83,6 +89,16 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           _isReadOnly = true;
           _showOtpField = true;
+          _canResendOtp = false;
+        });
+
+        // Start the resend timer
+        _startResendOtpTimer();
+
+        // Focus on the OTP field
+        FocusScope.of(context).unfocus();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          FocusScope.of(context).nextFocus();
         });
       } catch (error) {
         DebugPrint.log(
@@ -108,7 +124,32 @@ class _LoginScreenState extends State<LoginScreen> {
           _isButtonEnabled.value = true;
         });
       }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Please check your internet connection!',
+            ),
+          ),
+        );
+      }
     }
+  }
+
+  void _startResendOtpTimer() {
+    _resendTimer = 60;
+    _resendOtpTimer?.cancel();
+    _resendOtpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_resendTimer > 0) {
+          _resendTimer--;
+        } else {
+          _canResendOtp = true;
+          timer.cancel();
+        }
+      });
+    });
   }
 
   void _submitOtp(String email) async {
@@ -249,6 +290,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (_showOtpField) ...[
                       const SizedBox(height: 16),
                       OTPInput(onOtpChanged: _onOtpChanged),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: _canResendOtp
+                            ? () => _submitEmail(_emailController.text)
+                            : null,
+                        child: Text(
+                          _canResendOtp
+                              ? 'Resend OTP'
+                              : 'Resend OTP in $_resendTimer seconds',
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -290,65 +342,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class OTPInput extends StatefulWidget {
-  final Function(String) onOtpChanged;
-
-  const OTPInput({super.key, required this.onOtpChanged});
-
-  @override
-  State<OTPInput> createState() => _OTPInputState();
-}
-
-class _OTPInputState extends State<OTPInput> {
-  final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
-
-  @override
-  void initState() {
-    super.initState();
-    for (var controller in _controllers) {
-      controller.addListener(() {
-        String otp = _controllers.map((c) => c.text).join();
-        widget.onOtpChanged(otp);
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(6, (index) {
-        return SizedBox(
-          width: 40,
-          child: TextFormField(
-            controller: _controllers[index],
-            onTapOutside: (event) => FocusScope.of(context).unfocus(),
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            maxLength: 1,
-            decoration: InputDecoration(
-              counterText: '',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onChanged: (value) {
-              if (value.length == 1) {
-                if (index < 5) {
-                  FocusScope.of(context).nextFocus();
-                } else {
-                  FocusScope.of(context).unfocus();
-                }
-              }
-            },
-          ),
-        );
-      }),
     );
   }
 }
