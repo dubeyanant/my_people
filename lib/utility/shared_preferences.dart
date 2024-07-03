@@ -33,4 +33,14 @@ class SharedPrefs {
     final String? dateString = _preferences!.getString("lastUpdateCheckDate");
     return dateString != null ? DateTime.parse(dateString) : DateTime.now();
   }
+
+  // Method to check if user is logged in
+  static bool getIsLoggedIn() {
+    return _preferences!.getBool("isLoggedIn") ?? false;
+  }
+
+  // Method to set user login status
+  static Future<bool> setLoggedIn(bool value) {
+    return _preferences!.setBool("isLoggedIn", value);
+  }
 }
