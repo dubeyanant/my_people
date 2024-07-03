@@ -58,8 +58,13 @@ Future<void> checkForUpdate(BuildContext context) async {
           color: DebugColor.yellow,
         );
         if (latestVersionWithoutV != currentVersion && context.mounted) {
-          showUpdateDialog(context, latestVersion,
-              latestRelease['assets'][0]['browser_download_url']);
+          bool isMajor = isMajorUpdate(currentVersion, latestVersionWithoutV);
+          showUpdateDialog(
+            context,
+            latestVersion,
+            latestRelease['assets'][0]['browser_download_url'],
+            isMajor,
+          );
         }
       }
     } catch (e) {
@@ -72,33 +77,48 @@ Future<void> checkForUpdate(BuildContext context) async {
   }
 }
 
+bool isMajorUpdate(String currentVersion, String latestVersion) {
+  List<int> current = currentVersion.split('.').map(int.parse).toList();
+  List<int> latest = latestVersion.split('.').map(int.parse).toList();
+  return latest[0] > current[0]; // Compare major version number
+}
+
 void showUpdateDialog(
   BuildContext context,
   String latestVersion,
   String downloadUrl,
+  bool isMajorUpdate,
 ) {
   showDialog(
     context: context,
+    barrierDismissible: !isMajorUpdate,
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text(AppStrings.updateAvailable),
-        content: Text(
-            'A new version ($latestVersion) is available. Please update the app.'),
-        actions: <Widget>[
-          TextButton(
-            child: const Text(AppStrings.postpone),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: const Text(AppStrings.download),
-            onPressed: () {
-              Navigator.of(context).pop();
-              downloadAndInstall(context, downloadUrl);
-            },
-          ),
-        ],
+      return PopScope(
+        canPop: !isMajorUpdate,
+        child: AlertDialog(
+          title: Text(isMajorUpdate
+              ? AppStrings.majorUpdateAvailable
+              : AppStrings.updateAvailable),
+          content: Text(isMajorUpdate
+              ? 'A major update ($latestVersion) is available. You must update the app to continue using it.'
+              : 'A new version ($latestVersion) is available. Please update the app.'),
+          actions: <Widget>[
+            if (!isMajorUpdate)
+              TextButton(
+                child: const Text(AppStrings.postpone),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            TextButton(
+              child: const Text(AppStrings.download),
+              onPressed: () {
+                Navigator.of(context).pop();
+                downloadAndInstall(context, downloadUrl);
+              },
+            ),
+          ],
+        ),
       );
     },
   );

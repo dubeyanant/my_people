@@ -34,6 +34,7 @@ class AppStrings {
   static const String download = 'Download';
   static const String postpone = 'Later';
   static const String downloadingUpdate = 'Downloading Update';
+  static const String majorUpdateAvailable = 'Major Update Available';
 
   // Chat Screen
   static const String ask = 'Ask your question...';
