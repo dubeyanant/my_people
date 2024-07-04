@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FocusNode _emailFocusNode = FocusNode();
   final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
+  final ValueNotifier<bool> _isTyping = ValueNotifier(false);
   bool _isReadOnly = false;
   bool _showOtpField = false;
   String _currentOtp = '';
@@ -53,6 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // Add listener to the email controller to enable/disable the submit button
     _emailController.addListener(() {
       _isButtonEnabled.value = _isValidEmail(_emailController.text);
+      _isTyping.value = _emailController.text.isNotEmpty;
     });
   }
 
@@ -92,11 +95,10 @@ class _LoginScreenState extends State<LoginScreen> {
           _canResendOtp = false;
         });
 
-        // Start the resend timer
         _startResendOtpTimer();
 
         // Focus on the OTP field
-        FocusScope.of(context).unfocus();
+        if (mounted) FocusScope.of(context).unfocus();
         WidgetsBinding.instance.addPostFrameCallback((_) {
           FocusScope.of(context).nextFocus();
         });
@@ -109,6 +111,13 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           if (error.toString().contains('statusCode: 429') ||
               error.toString().contains('rate limit')) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Failed to send OTP. Please try in an hour.',
+                ),
+              ),
+            );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -209,6 +218,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onOtpChanged(String otp) {
     _isButtonEnabled.value = otp.length == 6;
     _currentOtp = otp;
+    if (otp.length == 6) {
+      _submitOtp(_emailController.text);
+    }
   }
 
   @override
@@ -269,10 +281,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         hintText: 'janedoe@yourmail.com',
                         enabled: !_isReadOnly,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(32),
                         ),
                         disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(32),
                           borderSide: const BorderSide(
                             color: Colors.transparent,
                           ),
@@ -289,11 +301,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     if (_showOtpField) ...[
                       const SizedBox(height: 16),
-                      OTPInput(onOtpChanged: _onOtpChanged),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: OTPInput(onOtpChanged: _onOtpChanged),
+                      ),
                       const SizedBox(height: 8),
                       TextButton(
                         onPressed: _canResendOtp
-                            ? () => _submitEmail(_emailController.text)
+                            ? () {
+                                _submitEmail(_emailController.text);
+                                _startResendOtpTimer();
+                              }
                             : null,
                         child: Text(
                           _canResendOtp
@@ -307,33 +325,101 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
               ValueListenableBuilder<bool>(
-                valueListenable: _isButtonEnabled,
-                builder: (context, isEnabled, child) {
-                  return GestureDetector(
-                    onTap: isEnabled
-                        ? _showOtpField
-                            ? () => _submitOtp(_emailController.text)
-                            : () => _submitEmail(_emailController.text)
-                        : null,
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: _isButtonEnabled.value
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey[300],
-                      ),
-                      child: Text(
-                        _showOtpField ? 'Login' : 'Next',
-                        style: TextStyle(
-                          color: _isButtonEnabled.value
-                              ? Theme.of(context).colorScheme.onPrimary
-                              : Colors.grey[800],
-                          fontSize: 20,
+                valueListenable: _isTyping,
+                builder: (context, isTyping, child) {
+                  return Visibility(
+                    visible: !isTyping,
+                    child: Material(
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(32),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset('assets/google.svg'),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Sign in with Google',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                    ),
+                  );
+                },
+              ),
+              ValueListenableBuilder<bool>(
+                valueListenable: _isTyping,
+                builder: (context, isTyping, child) {
+                  return Visibility(
+                    visible: isTyping,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _isButtonEnabled,
+                      builder: (context, isEnabled, child) {
+                        return GestureDetector(
+                          onTap: isEnabled
+                              ? _showOtpField
+                                  ? () => _submitOtp(_emailController.text)
+                                  : () => _submitEmail(_emailController.text)
+                              : null,
+                          child: Material(
+                            elevation: _isButtonEnabled.value ? 4 : 0,
+                            borderRadius: BorderRadius.circular(32),
+                            color: _isButtonEnabled.value
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.background,
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(32),
+                                border: Border.all(
+                                  color: _isButtonEnabled.value
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onPrimaryContainer,
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    _showOtpField ? 'Login' : 'Next',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: _isButtonEnabled.value
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary
+                                          : Colors.grey[800],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    _showOtpField
+                                        ? Icons.lock_open_rounded
+                                        : Icons.arrow_forward_ios,
+                                    color: _isButtonEnabled.value
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                        : Colors.grey[800],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },

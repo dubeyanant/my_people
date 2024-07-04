@@ -40,7 +40,7 @@ class _OTPInputState extends State<OTPInput> {
             decoration: InputDecoration(
               counterText: '',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(32),
               ),
             ),
             onChanged: (value) {
