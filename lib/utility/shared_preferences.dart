@@ -29,9 +29,9 @@ class SharedPrefs {
   }
 
   // Method to get last update check date
-  static DateTime getLastUpdateCheckDate() {
+  static DateTime? getLastUpdateCheckDate() {
     final String? dateString = _preferences!.getString("lastUpdateCheckDate");
-    return dateString != null ? DateTime.parse(dateString) : DateTime.now();
+    return dateString != null ? DateTime.parse(dateString) : null;
   }
 
   // Method to check if user is logged in

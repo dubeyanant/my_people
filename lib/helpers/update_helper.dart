@@ -37,12 +37,13 @@ Future<Map<String, dynamic>> getLatestRelease() async {
 }
 
 Future<void> checkForUpdate(BuildContext context) async {
-  DateTime lastUpdateCheckDate = SharedPrefs.getLastUpdateCheckDate();
+  DateTime? lastUpdateCheckDate = SharedPrefs.getLastUpdateCheckDate();
   DateTime now = DateTime.now();
 
   if (await isConnected() &&
       Platform.isAndroid &&
-      now.difference(lastUpdateCheckDate).inDays >= 1) {
+      (lastUpdateCheckDate == null ||
+          now.difference(lastUpdateCheckDate).inDays >= 1)) {
     try {
       final latestRelease = await getLatestRelease();
       if (latestRelease.isNotEmpty) {
