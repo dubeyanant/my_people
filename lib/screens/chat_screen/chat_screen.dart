@@ -27,6 +27,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _loading = false;
   ChatMessage? _thinkingMessage;
   bool _showScrollToBottomButton = false;
+  bool _isFirstFocus = true;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _currentSession = _chatSessions.putIfAbsent(
         widget.person.uuid, () => ChatSession(widget.person.uuid));
     _geminiAIService = GeminiAIService();
+    _isFirstFocus = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _sendInitialPrompt();
     });
@@ -92,7 +94,10 @@ class _ChatScreenState extends State<ChatScreen> {
     });
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) {
-        FocusScope.of(context).requestFocus(_focusNode);
+        if (_isFirstFocus) {
+          FocusScope.of(context).requestFocus(_focusNode);
+          _isFirstFocus = false;
+        }
       }
     });
   }
@@ -237,6 +242,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         maxLines: 3,
                         minLines: 1,
                         enabled: !_loading,
+                        onTap: () => _focusNode.requestFocus(),
                         onTapOutside: (event) =>
                             FocusScope.of(context).unfocus(),
                         decoration: InputDecoration(
