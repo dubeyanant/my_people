@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_people/helpers/analytics_helper.dart';
 
 import 'package:my_people/model/person.dart';
 import 'package:my_people/services/gemini_ai_service.dart';
@@ -41,6 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
     _scrollController.addListener(_scrollListener);
     _controller.addListener(_handleTextFieldChange);
+    AnalyticsHelper.trackFeatureUsage('chat_screen_opened');
   }
 
   @override
@@ -130,6 +132,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage() async {
     if (_controller.text.isNotEmpty) {
+      AnalyticsHelper.trackFeatureUsage('send_AI_message');
       final userMessage = _controller.text;
       setState(() {
         _currentSession.messages.add(ChatMessage(

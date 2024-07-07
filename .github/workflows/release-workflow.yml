@@ -102,6 +102,10 @@ jobs:
           echo "PUBLIC_SUPABASE_URL=${{ secrets.PUBLIC_SUPABASE_URL }}" >> .env
           echo "PUBLIC_SUPABASE_ANON_KEY=${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}" >> .env
 
+      - name: Create firebase_options.dart
+        run: |
+          echo "${{ secrets.FIREBASE_OPTIONS }}" > lib/firebase_options.dart
+
       - name: Build Android (Single)
         if: github.event.inputs.release_type == 'single_android' || github.event.inputs.release_type == 'single_android_ios'
         run: flutter build apk --release

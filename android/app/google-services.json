@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "618236770067",
+    "project_id": "my-people-e916f",
+    "storage_bucket": "my-people-e916f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:618236770067:android:d5369d8d7d18f334c94ce6",
+        "android_client_info": {
+          "package_name": "com.anant.my_people"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJHpUcX257g6JHX5KOP3GX8CBTdZ_33gY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

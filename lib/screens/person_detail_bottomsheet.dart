@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:my_people/controller/people_controller.dart';
+import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/utility/constants.dart';
 
@@ -65,6 +66,7 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
 
   // Method to pick an image from gallery
   Future<void> _pickImage() async {
+    AnalyticsHelper.trackFeatureUsage('pick_image');
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 

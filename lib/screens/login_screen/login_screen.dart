@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
+import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:my_people/helpers/internet_connectivity_helper.dart';
@@ -84,6 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .then((value) async {
         Get.off(() => const HomeScreen());
         await SharedPrefs.setLoggedIn(true);
+        AnalyticsHelper.userLoggedIn('Anonymous Login');
       });
     } else {
       if (mounted) {
@@ -104,6 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _submitEmail(String email) async {
+    AnalyticsHelper.userLoginActivity('email', 'submit_email', id: email);
     if (_formKey.currentState!.validate() && await isConnected()) {
       setState(() {
         _isButtonEnabled.value = false;
@@ -186,6 +189,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleResendOtp() {
+    AnalyticsHelper.userLoginActivity('email', 'resend_otp',
+        id: _emailController.text);
     if (_canResendOtp && !_isResendPermanentlyDisabled) {
       _submitEmail(_emailController.text);
       _startResendOtpTimer();
@@ -197,6 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _submitOtp(String email) async {
+    AnalyticsHelper.userLoginActivity('email', 'submit_otp', id: email);
     try {
       var supabase = Supabase.instance.client;
       await supabase.auth.verifyOTP(
@@ -211,6 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (event == AuthChangeEvent.signedIn) {
           Get.off(() => const HomeScreen());
           await SharedPrefs.setLoggedIn(true);
+          AnalyticsHelper.userLoggedIn('Email Login');
         } else {}
       });
     } catch (err) {
@@ -408,16 +415,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         if (widget.showGithubLogin) const SizedBox(height: 16),
-                        // ElevatedButton(
-                        //   onPressed: _skipLogin,
-                        //   style: ElevatedButton.styleFrom(
-                        //     minimumSize: const Size(double.infinity, 50),
-                        //     shape: RoundedRectangleBorder(
-                        //       borderRadius: BorderRadius.circular(32),
-                        //     ),
-                        //   ),
-                        //   child: const Text('Skip Login'),
-                        // ),
                         GestureDetector(
                           onTap: _skipLogin,
                           child: Material(

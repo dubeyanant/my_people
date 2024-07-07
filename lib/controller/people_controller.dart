@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:my_people/helpers/analytics_helper.dart';
 
 import 'package:my_people/helpers/database_helper.dart';
 import 'package:my_people/model/person.dart';
@@ -43,6 +44,7 @@ class PeopleController extends GetxController {
       color: DebugColor.green,
       tag: 'PeopleController',
     );
+    AnalyticsHelper.trackFeatureUsage('add_person');
     fetchPeople();
   }
 
@@ -58,6 +60,7 @@ class PeopleController extends GetxController {
         tag: 'PeopleController',
       );
       await dbHelper.updatePerson(people[index]);
+      AnalyticsHelper.trackFeatureUsage('update_person');
       fetchPeople();
     }
   }
@@ -70,6 +73,7 @@ class PeopleController extends GetxController {
       color: DebugColor.green,
       tag: 'PeopleController',
     );
+    AnalyticsHelper.trackFeatureUsage('delete_person');
     fetchPeople();
   }
 
@@ -85,6 +89,7 @@ class PeopleController extends GetxController {
         color: DebugColor.magenta,
         tag: 'PeopleController',
       );
+      AnalyticsHelper.trackFeatureUsage('add_info');
       fetchPeople();
     }
   }
@@ -101,6 +106,7 @@ class PeopleController extends GetxController {
         color: DebugColor.magenta,
         tag: 'PeopleController',
       );
+      AnalyticsHelper.trackFeatureUsage('update_info');
       fetchPeople();
     }
   }
@@ -117,6 +123,7 @@ class PeopleController extends GetxController {
         color: DebugColor.magenta,
         tag: 'PeopleController',
       );
+      AnalyticsHelper.trackFeatureUsage('delete_info');
       fetchPeople();
     }
   }
