@@ -34,4 +34,4 @@ flutter:
   uses-material-design: true
 name: my_people
 publish_to: none
-version: 3.0.0
+version: 3.1.0

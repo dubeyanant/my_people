@@ -1,4 +1,20 @@
-# [2.1.0](https://github.com/dubeyanant/my_people/compare/v2.0.2...v2.1.0) (2024-07-07)
+# [3.1.0](https://github.com/dubeyanant/my_people/compare/v3.0.0...v3.1.0) (2024-07-07)
+
+
+### Bug Fixes
+
+* disable resend otp ([c2742ed](https://github.com/dubeyanant/my_people/commit/c2742edbc7063eee6b33672a4f55f6bda2723bca))
+* **workflow:** configure firebase cli ([78f4a81](https://github.com/dubeyanant/my_people/commit/78f4a81878b14e19a14e385fe32874dfeb7ddebd))
+
+
+### Features
+
+* add analytics ([1575c49](https://github.com/dubeyanant/my_people/commit/1575c49056908e06274ad6c7f5a26300b5eed97e))
+* **login screen:** add skip login ([1fcb68c](https://github.com/dubeyanant/my_people/commit/1fcb68cce829aac5136c1a61daf9d38835a5bec6))
+
+
+
+# [3.0.0](https://github.com/dubeyanant/my_people/compare/v2.0.2...v3.0.0) (2024-07-04)
 
 
 ### Bug Fixes
