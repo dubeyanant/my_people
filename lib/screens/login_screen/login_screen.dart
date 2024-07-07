@@ -14,7 +14,9 @@ import 'package:my_people/utility/debug_print.dart';
 import 'package:my_people/utility/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final bool showGithubLogin;
+
+  const LoginScreen({super.key, this.showGithubLogin = false});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -48,20 +50,15 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     // Request focus to the email field when the screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(_emailFocusNode);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   FocusScope.of(context).requestFocus(_emailFocusNode);
+    // });
 
     // Add listener to the email controller to enable/disable the submit button
     _emailController.addListener(() {
       _isButtonEnabled.value = _isValidEmail(_emailController.text);
       _isTyping.value = _emailController.text.isNotEmpty;
     });
-  }
-
-  void _updateImage() {
-    int imageNumber = _random.nextInt(_totalDefaultImages) + 1;
-    _defaultImage = 'assets/default$imageNumber.png';
   }
 
   @override
@@ -72,6 +69,32 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailFocusNode.dispose();
     _isButtonEnabled.dispose();
     super.dispose();
+  }
+
+  void _updateImage() {
+    int imageNumber = _random.nextInt(_totalDefaultImages) + 1;
+    _defaultImage = 'assets/default$imageNumber.png';
+  }
+
+  void _skipLogin() async {
+    if (await isConnected()) {
+      await Supabase.instance.client.auth
+          .signInAnonymously()
+          .then((value) async {
+        Get.off(() => const HomeScreen());
+        await SharedPrefs.setLoggedIn(true);
+      });
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Please check your internet connection and try again!',
+            ),
+          ),
+        );
+      }
+    }
   }
 
   bool _isValidEmail(String email) {
@@ -223,6 +246,15 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> signInWithGithub() async {
+    await Supabase.instance.client.auth
+        .signInWithOAuth(OAuthProvider.github)
+        .then((value) {
+      Get.off(() => const HomeScreen());
+      SharedPrefs.setLoggedIn(true);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -279,6 +311,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         prefixIcon: const Icon(Icons.email),
                         labelText: _isReadOnly ? '' : 'Email',
                         hintText: 'janedoe@yourmail.com',
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 32,
+                        ),
                         enabled: !_isReadOnly,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(32),
@@ -329,26 +365,90 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: (context, isTyping, child) {
                   return Visibility(
                     visible: !isTyping,
-                    child: Material(
-                      elevation: 4,
-                      borderRadius: BorderRadius.circular(32),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset('assets/google.svg'),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Sign in with Google',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                    child: Column(
+                      children: [
+                        if (widget.showGithubLogin)
+                          Material(
+                            elevation: 4,
+                            borderRadius: BorderRadius.circular(32),
+                            child: GestureDetector(
+                              onTap: () {
+                                signInWithGithub();
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(14),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset('assets/github.svg',
+                                        width: 24),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Sign in with GitHub',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
+                          ),
+                        if (widget.showGithubLogin) const SizedBox(height: 16),
+                        // ElevatedButton(
+                        //   onPressed: _skipLogin,
+                        //   style: ElevatedButton.styleFrom(
+                        //     minimumSize: const Size(double.infinity, 50),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(32),
+                        //     ),
+                        //   ),
+                        //   child: const Text('Skip Login'),
+                        // ),
+                        GestureDetector(
+                          onTap: _skipLogin,
+                          child: Material(
+                            elevation: 4,
+                            borderRadius: BorderRadius.circular(32),
+                            color: Theme.of(context).colorScheme.primary,
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(32),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    'Skip Login',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.lock_open_rounded,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   );
                 },
@@ -375,7 +475,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : Theme.of(context).colorScheme.background,
                             child: Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(32),
