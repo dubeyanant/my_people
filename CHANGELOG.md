@@ -1,3 +1,18 @@
+# [2.1.0](https://github.com/dubeyanant/my_people/compare/v2.0.2...v2.1.0) (2024-07-07)
+
+
+### Bug Fixes
+
+* **chat screen:** constant keyboard popup ([f593c22](https://github.com/dubeyanant/my_people/commit/f593c226dbf49bc95fc1f000ec95f6b7381d66a8))
+* **update:** update dialog not showing ([9a4ccfc](https://github.com/dubeyanant/my_people/commit/9a4ccfcb3277047229363a3c163d93e8b30f5e82))
+
+
+### Features
+
+* **login screen:** add google login button ([a8fa445](https://github.com/dubeyanant/my_people/commit/a8fa445852b4caa545e2d75f1731fbd96f45186a))
+
+
+
 ## [2.0.2](https://github.com/dubeyanant/my_people/compare/v2.0.1...v2.0.2) (2024-07-03)
 
 
