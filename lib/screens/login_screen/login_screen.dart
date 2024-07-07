@@ -38,6 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _canResendOtp = false;
   int _resendTimer = 60;
   Timer? _resendOtpTimer;
+  bool _isResendPermanentlyDisabled = false;
 
   @override
   void initState() {
@@ -182,6 +183,17 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       });
     });
+  }
+
+  void _handleResendOtp() {
+    if (_canResendOtp && !_isResendPermanentlyDisabled) {
+      _submitEmail(_emailController.text);
+      _startResendOtpTimer();
+      setState(() {
+        _canResendOtp = false;
+        _isResendPermanentlyDisabled = true;
+      });
+    }
   }
 
   void _submitOtp(String email) async {
@@ -343,16 +355,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 8),
                       TextButton(
-                        onPressed: _canResendOtp
-                            ? () {
-                                _submitEmail(_emailController.text);
-                                _startResendOtpTimer();
-                              }
-                            : null,
+                        onPressed:
+                            (_canResendOtp && !_isResendPermanentlyDisabled)
+                                ? _handleResendOtp
+                                : null,
                         child: Text(
                           _canResendOtp
                               ? 'Resend OTP'
-                              : 'Resend OTP in $_resendTimer seconds',
+                              : _isResendPermanentlyDisabled
+                                  ? 'Resend OTP unavailable'
+                                  : 'Resend OTP in $_resendTimer seconds',
                         ),
                       ),
                     ],
