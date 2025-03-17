@@ -59,7 +59,8 @@ class FormattedTextWidget extends StatelessWidget {
         p: style ?? Theme.of(context).textTheme.bodyMedium,
         code: style ??
             TextStyle(
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
               fontFamily: 'monospace',
               fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize,
             ),

@@ -32,7 +32,7 @@ class AnalyticsHelper {
   static void trackFeatureUsage(String featureName) async {
     return _instance.logEvent(
       name: 'feature_used',
-      parameters: <String, dynamic>{
+      parameters: <String, Object>{
         'feature_name': featureName,
       },
     );

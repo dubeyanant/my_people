@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 
 import 'package:dio/dio.dart';
 import 'package:install_plugin/install_plugin.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:package_info/package_info.dart';
 
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/shared_preferences.dart';
@@ -204,13 +204,13 @@ class _DownloadProgressState extends State<DownloadProgress> {
           }
         },
       );
-      if (context.mounted) {
+      if (mounted) {
         Navigator.of(context).pop();
       }
     } catch (e) {
       DebugPrint.log('Download error: $e',
           color: DebugColor.red, tag: 'UpdateHelper');
-      if (context.mounted) {
+      if (mounted) {
         Navigator.of(context).pop();
       }
     }

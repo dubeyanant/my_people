@@ -244,7 +244,7 @@ class _PersonScreenState extends State<PersonScreen> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.24),
+                                color: Colors.black.withAlpha(60),
                                 blurRadius: 6.0,
                                 spreadRadius: 0.0,
                                 offset: const Offset(0, 4),

@@ -9,7 +9,7 @@ class GeminiAIService {
 
   GeminiAIService()
       : _model = GenerativeModel(
-          model: 'gemini-pro',
+          model: 'gemini-1.5-pro-002',
           apiKey: _apiKey!,
           safetySettings: safetySettings,
           generationConfig: generationConfig,

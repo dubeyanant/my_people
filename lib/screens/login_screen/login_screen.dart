@@ -481,7 +481,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(32),
                             color: _isButtonEnabled.value
                                 ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.background,
+                                : Theme.of(context).colorScheme.surface,
                             child: Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 12),
