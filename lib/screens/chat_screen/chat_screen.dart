@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_people/helpers/analytics_helper.dart';
 
+import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/services/gemini_ai_service.dart';
 import 'package:my_people/model/chat_message.dart';

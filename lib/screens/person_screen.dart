@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
@@ -71,7 +71,7 @@ class _PersonScreenState extends State<PersonScreen> {
       }
 
       return PopScope(
-        onPopInvoked: (didPop) {
+        onPopInvokedWithResult: (didPop, result) {
           Future.delayed(const Duration(milliseconds: 10), () {
             pc.isSearchOpen.value = false;
           });

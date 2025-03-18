@@ -12,19 +12,6 @@ class AnalyticsHelper {
     );
   }
 
-  static void userLoggedIn(String loginMethod, {String id = 'NA'}) async {
-    return _instance.logLogin(loginMethod: loginMethod, parameters: {'id': id});
-  }
-
-  static void userLoginActivity(String loginMethod, String activity,
-      {String id = 'NA'}) async {
-    return _instance.logEvent(name: 'login_activity', parameters: {
-      'login_method': loginMethod,
-      'activity': activity,
-      'id': id,
-    });
-  }
-
   static void appLaunched() async {
     return _instance.logAppOpen();
   }
@@ -32,9 +19,7 @@ class AnalyticsHelper {
   static void trackFeatureUsage(String featureName) async {
     return _instance.logEvent(
       name: 'feature_used',
-      parameters: <String, Object>{
-        'feature_name': featureName,
-      },
+      parameters: <String, Object>{'feature_name': featureName},
     );
   }
 }

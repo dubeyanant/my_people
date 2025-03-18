@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:my_people/helpers/analytics_helper.dart';
 
+import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/helpers/database_helper.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/utility/debug_print.dart';
