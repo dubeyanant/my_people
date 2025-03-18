@@ -10,7 +10,7 @@ class GeminiAIService {
 
   GeminiAIService()
       : _model = GenerativeModel(
-          model: 'gemini-1.5-pro-002',
+          model: 'gemini-2.0-flash',
           apiKey: _apiKey!,
           safetySettings: safetySettings,
           generationConfig: generationConfig,
@@ -50,8 +50,8 @@ final safetySettings = [
 ];
 
 final generationConfig = GenerationConfig(
-  temperature: 0.2,
-  topK: 1,
+  temperature: 0.35,
+  topK: 2,
   topP: 1,
-  maxOutputTokens: 2048,
+  maxOutputTokens: 1024,
 );
