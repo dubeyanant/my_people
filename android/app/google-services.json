@@ -2,14 +2,14 @@
   "project_info": {
     "project_number": "618236770067",
     "project_id": "my-people-e916f",
-    "storage_bucket": "my-people-e916f.appspot.com"
+    "storage_bucket": "my-people-e916f.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:618236770067:android:d5369d8d7d18f334c94ce6",
+        "mobilesdk_app_id": "1:618236770067:android:e186803587272f5bc94ce6",
         "android_client_info": {
-          "package_name": "com.anant.my_people"
+          "package_name": "com.infiniteants.mypeople"
         }
       },
       "oauth_client": [],

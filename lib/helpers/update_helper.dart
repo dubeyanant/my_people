@@ -150,7 +150,7 @@ Future<void> downloadAndInstall(BuildContext context, String url) async {
 
     final File file = File(filePath);
     if (await file.exists()) {
-      InstallPlugin.installApk(filePath, appId: "com.anant.my_people")
+      InstallPlugin.installApk(filePath, appId: "com.infiniteants.mypeople")
           .then((result) {
         DebugPrint.log(
           'Install result: $result',

@@ -1,4 +1,4 @@
-package com.anant.my_people
+package com.infiniteants.mypeople
 
 import io.flutter.embedding.android.FlutterActivity
 
