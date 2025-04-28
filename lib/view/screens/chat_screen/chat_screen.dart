@@ -4,7 +4,7 @@ import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/services/gemini_ai_service.dart';
 import 'package:my_people/model/chat_message.dart';
-import 'package:my_people/view/screens/chat_screen/message_bubble.dart';
+import 'package:my_people/view/screens/chat_screen/widgets/message_bubble.dart';
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/debug_print.dart';
 
@@ -208,6 +208,51 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Future<void> _reportMessage(int listViewIndex, ChatMessage message) async {
+    final bool? confirmReport = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(AppStrings.reportMessageTitle),
+          content: const Text(AppStrings.reportMessageContent),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(AppStrings.cancelAction),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text(AppStrings.reportAction),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmReport == true && mounted) {
+      final int actualIndex =
+          _currentSession.messages.length - 1 - listViewIndex;
+
+      if (actualIndex >= 0 && actualIndex < _currentSession.messages.length) {
+        AnalyticsHelper.trackReportAIMessage(message.text);
+
+        setState(() {
+          _currentSession.messages[actualIndex] = ChatMessage(
+            text: AppStrings.reportedMessageThankYou,
+            sender: AppStrings.bot,
+          );
+        });
+      } else {
+        DebugPrint.log(
+          'Error reporting message: Invalid index $actualIndex',
+          color: DebugColor.red,
+          tag: 'ChatScreen',
+        );
+        _showError('Could not report the message due to an internal error.');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -226,9 +271,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemBuilder: (context, index) {
                     final message = _currentSession
                         .messages[_currentSession.messages.length - 1 - index];
+                    final bool isUserMessage =
+                        message.sender == AppStrings.user;
                     return MessageBubble(
                       message: message,
-                      isMe: message.sender == AppStrings.user,
+                      isMe: isUserMessage,
+                      onReport: isUserMessage
+                          ? null
+                          : () => _reportMessage(index, message),
                     );
                   },
                 ),

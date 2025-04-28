@@ -13,4 +13,11 @@ class AnalyticsHelper {
       parameters: <String, Object>{'feature_name': featureName},
     );
   }
+
+  static void trackReportAIMessage(String message) async {
+    return _instance.logEvent(
+      name: 'report_ai_message',
+      parameters: <String, Object>{'message': message},
+    );
+  }
 }

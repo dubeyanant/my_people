@@ -44,4 +44,13 @@ class AppStrings {
   static const String thinking = 'Thinking...';
   static const String ok = 'OK';
   static const String wentWrong = 'Something went wrong';
+
+  // Report Feature
+  static const String reportedMessageThankYou =
+      'Thank you for reporting this message.';
+  static const String reportMessageTitle = 'Report Message?';
+  static const String reportMessageContent =
+      'Do you want to report this message?';
+  static const String reportAction = 'Report';
+  static const String cancelAction = 'Cancel';
 }
