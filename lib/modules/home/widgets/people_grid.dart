@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
 import 'package:my_people/model/person.dart';
-import 'package:my_people/view/screens/person_detail_bottomsheet.dart';
-import 'package:my_people/view/screens/person_screen.dart';
+import 'package:my_people/modules/home/widgets/tooltip_arrows/add_more_profile_tooltip.dart';
+import 'package:my_people/modules/home/widgets/tooltip_arrows/profile_tooltip.dart';
+import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
+import 'package:my_people/modules/person/person_screen.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PeopleGrid extends StatelessWidget {
@@ -143,95 +144,18 @@ class PeopleGrid extends StatelessWidget {
                 Positioned(
                   top: MediaQuery.of(context).size.height * 0.2,
                   right: 40,
-                  child: _ProfileTooltip(),
+                  child: ProfileTooltip(),
                 ),
                 Positioned(
-                  bottom: MediaQuery.of(context).size.height * 0.125,
-                  left: 60,
-                  child: _AddMoreTooltip(),
+                  bottom: MediaQuery.of(context).size.height * 0.115,
+                  left: 80,
+                  child: AddMoreProfileTooltip(),
                 ),
               ],
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class _AddMoreTooltip extends StatelessWidget {
-  const _AddMoreTooltip();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              bottom: -40,
-              left: 150,
-              child: SvgPicture.asset(
-                'assets/arrows/arrow1.svg',
-                height: 100,
-                colorFilter: ColorFilter.mode(
-                  Colors.grey[400] ?? Colors.grey,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-            Text(
-              "Add more people here!",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.right,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _ProfileTooltip extends StatelessWidget {
-  const _ProfileTooltip();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          children: [
-            SvgPicture.asset(
-              'assets/arrows/arrow3.svg',
-              height: 100,
-              colorFilter: ColorFilter.mode(
-                Colors.grey[400] ?? Colors.grey,
-                BlendMode.srcIn,
-              ),
-              // Flipping arrow horizontally to point left toward the profile
-              matchTextDirection: true,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              AppStrings.profileTooltip,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.right,
-            ),
-          ],
-        ),
-        const SizedBox(width: 12),
-      ],
     );
   }
 }

@@ -6,8 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
-import 'package:my_people/view/screens/add_info_bottomsheet.dart';
-import 'package:my_people/view/screens/chat_screen/chat_screen.dart';
+import 'package:my_people/modules/person/add_info_bottomsheet.dart';
+import 'package:my_people/modules/chat/chat_screen.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PersonScreen extends StatefulWidget {

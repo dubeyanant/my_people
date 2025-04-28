@@ -56,4 +56,5 @@ class AppStrings {
 
   // Home Screen
   static const String profileTooltip = 'Tap to enter,\nhold to edit or delete';
+  static const String addMoreTooltip = 'Add more people here!';
 }

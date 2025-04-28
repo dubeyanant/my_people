@@ -2,36 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/svg.dart';
 
-import 'package:my_people/view/screens/home_screen/widgets/animated_press_button.dart';
-import 'package:my_people/view/screens/person_detail_bottomsheet.dart';
 import 'package:my_people/utility/constants.dart';
 
-class EmptyHome extends StatelessWidget {
-  const EmptyHome({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedPressButton(
-            onPressed: () => showPersonDetailBottomSheet(context),
-            child: const Icon(
-              Icons.add,
-              size: 28,
-              color: Colors.white,
-            ),
-          ),
-          _EmptyHomeArrow(),
-        ],
-      ),
-    );
-  }
-}
-
-class _EmptyHomeArrow extends StatelessWidget {
-  const _EmptyHomeArrow();
+class AddProfileTooltip extends StatelessWidget {
+  const AddProfileTooltip({super.key});
 
   @override
   Widget build(BuildContext context) {

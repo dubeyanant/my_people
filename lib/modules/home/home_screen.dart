@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
-import 'package:my_people/view/screens/home_screen/widgets/animated_press_button.dart';
-import 'package:my_people/view/screens/person_detail_bottomsheet.dart';
-import 'package:my_people/view/screens/home_screen/widgets/empty_home.dart';
-import 'package:my_people/view/screens/home_screen/widgets/people_grid.dart';
+import 'package:my_people/modules/home/widgets/animated_press_button.dart';
+import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
+import 'package:my_people/modules/home/widgets/empty_home.dart';
+import 'package:my_people/modules/home/widgets/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
 
 class HomeScreen extends StatelessWidget {

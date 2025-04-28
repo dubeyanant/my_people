@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/helpers/analytics_helper.dart';
-import 'package:my_people/view/screens/home_screen/home_screen.dart';
+import 'package:my_people/modules/home/home_screen.dart';
 import 'package:my_people/utility/shared_preferences.dart';
 
 void main() async {
