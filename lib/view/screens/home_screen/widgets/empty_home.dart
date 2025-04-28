@@ -17,9 +17,6 @@ class EmptyHome extends StatelessWidget {
         children: [
           AnimatedPressButton(
             onPressed: () => showPersonDetailBottomSheet(context),
-            backgroundColor: Colors.blueAccent,
-            borderRadius: 100,
-            padding: const EdgeInsets.all(12),
             child: const Icon(
               Icons.add,
               size: 28,
@@ -55,7 +52,8 @@ class _EmptyHomeArrow extends StatelessWidget {
           AppStrings.homeScreenTagline,
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey[400] ?? Colors.grey,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],

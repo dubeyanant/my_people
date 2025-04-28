@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
@@ -53,56 +54,184 @@ class PeopleGrid extends StatelessWidget {
     }
 
     return Obx(
-      () => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: GridView.count(
-          childAspectRatio: 17 / 20,
-          crossAxisCount: 2, // Number of columns in the grid
-          crossAxisSpacing: 16, // Space between columns
-          mainAxisSpacing: 24, // Space between rows
-          children: pc.filteredPeople.map((person) {
-            final isFile = File(person.photo).existsSync();
-            return GestureDetector(
-              onLongPressStart: (details) =>
-                  showPopupMenu(context, person, details.globalPosition),
-              onTap: () {
-                Get.to(() => PersonScreen(person.uuid));
-                Future.delayed(const Duration(milliseconds: 10), () {
-                  pc.isSearchOpen.value = false;
-                });
-              },
-              child: GridTile(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: isFile
-                            ? Image.file(
-                                File(person.photo),
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                              )
-                            : Image.asset(
-                                person.photo,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
+      () {
+        // Check if there's exactly one person in the list
+        final bool showTooltip = pc.filteredPeople.length == 1;
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Stack(
+            children: [
+              GridView.count(
+                // Making the aspect ratio more elongated (height-wise)
+                childAspectRatio: 2 / 3,
+                crossAxisCount: 2, // Number of columns in the grid
+                crossAxisSpacing: 16, // Space between columns
+                mainAxisSpacing: 24, // Space between rows
+                children: pc.filteredPeople.map((person) {
+                  final isFile = File(person.photo).existsSync();
+                  return GestureDetector(
+                    onLongPressStart: (details) =>
+                        showPopupMenu(context, person, details.globalPosition),
+                    onTap: () {
+                      Get.to(() => PersonScreen(person.uuid));
+                      Future.delayed(const Duration(milliseconds: 10), () {
+                        pc.isSearchOpen.value = false;
+                      });
+                    },
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        // Profile image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: isFile
+                              ? Image.file(
+                                  File(person.photo),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                )
+                              : Image.asset(
+                                  person.photo,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                        ),
+                        // Gradient overlay for the name at the bottom
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(16),
+                                bottomRight: Radius.circular(16),
                               ),
-                      ),
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [
+                                  Colors.black.withOpacity(0.8),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 8,
+                            ),
+                            child: Text(
+                              person.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      person.name,
-                      style: const TextStyle(fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                  );
+                }).toList(),
+              ),
+              if (showTooltip) ...[
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.2,
+                  right: 40,
+                  child: _ProfileTooltip(),
+                ),
+                Positioned(
+                  bottom: MediaQuery.of(context).size.height * 0.125,
+                  left: 60,
+                  child: _AddMoreTooltip(),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AddMoreTooltip extends StatelessWidget {
+  const _AddMoreTooltip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              bottom: -40,
+              left: 150,
+              child: SvgPicture.asset(
+                'assets/arrows/arrow1.svg',
+                height: 100,
+                colorFilter: ColorFilter.mode(
+                  Colors.grey[400] ?? Colors.grey,
+                  BlendMode.srcIn,
                 ),
               ),
-            );
-          }).toList(),
+            ),
+            Text(
+              "Add more people here!",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ],
         ),
-      ),
+      ],
+    );
+  }
+}
+
+class _ProfileTooltip extends StatelessWidget {
+  const _ProfileTooltip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            SvgPicture.asset(
+              'assets/arrows/arrow3.svg',
+              height: 100,
+              colorFilter: ColorFilter.mode(
+                Colors.grey[400] ?? Colors.grey,
+                BlendMode.srcIn,
+              ),
+              // Flipping arrow horizontally to point left toward the profile
+              matchTextDirection: true,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppStrings.profileTooltip,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ],
+        ),
+        const SizedBox(width: 12),
+      ],
     );
   }
 }

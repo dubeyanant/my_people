@@ -22,8 +22,8 @@ class AnimatedPressButton extends StatefulWidget {
     required this.child,
     this.backgroundColor,
     this.foregroundColor,
-    this.borderRadius = 12.0,
-    this.padding = const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+    this.borderRadius = 100.0,
+    this.padding = const EdgeInsets.all(12),
     this.elevation = 4.0,
   });
 
@@ -101,7 +101,7 @@ class _AnimatedPressButtonState extends State<AnimatedPressButton>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bgColor = widget.backgroundColor ?? theme.colorScheme.primary;
+    final bgColor = widget.backgroundColor ?? Colors.blueAccent;
     final fgColor = widget.foregroundColor ?? theme.colorScheme.onPrimary;
 
     return GestureDetector(

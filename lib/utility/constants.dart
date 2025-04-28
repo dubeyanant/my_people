@@ -18,7 +18,7 @@ class AppStrings {
   static const String editPerson = 'Edit Person';
   static const String savePerson = 'Save Changes';
   static const String personDetailTextFieldLabel = 'Name';
-  static const String personDetailTextFieldHint = 'Jane Doe';
+  static const String personDetailTextFieldHint = 'Riya Rajiv';
   static const String personDetailTextFieldError = 'Please enter a name';
 
   // Add/Edit Info Bottom Sheet
@@ -53,4 +53,7 @@ class AppStrings {
       'Do you want to report this message?';
   static const String reportAction = 'Report';
   static const String cancelAction = 'Cancel';
+
+  // Home Screen
+  static const String profileTooltip = 'Tap to enter,\nhold to edit or delete';
 }

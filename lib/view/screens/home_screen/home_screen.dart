@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
-// import 'package:my_people/helpers/update_helper.dart';
+import 'package:my_people/view/screens/home_screen/widgets/animated_press_button.dart';
 import 'package:my_people/view/screens/person_detail_bottomsheet.dart';
 import 'package:my_people/view/screens/home_screen/widgets/empty_home.dart';
 import 'package:my_people/view/screens/home_screen/widgets/people_grid.dart';
@@ -67,10 +67,13 @@ class HomeScreen extends StatelessWidget {
               ),
         floatingActionButton: pc.people.isEmpty
             ? null
-            : FloatingActionButton(
-                tooltip: AppStrings.addPerson,
+            : AnimatedPressButton(
                 onPressed: () => showPersonDetailBottomSheet(context),
-                child: const Icon(Icons.add),
+                child: const Icon(
+                  Icons.add,
+                  size: 28,
+                  color: Colors.white,
+                ),
               ),
       ),
     );

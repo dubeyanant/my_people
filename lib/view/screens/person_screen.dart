@@ -138,11 +138,6 @@ class _PersonScreenState extends State<PersonScreen> {
                 person.info.isEmpty
                     ? Column(
                         children: [
-                          // Container(
-                          //   color: Colors.black,
-                          //   width: 1,
-                          //   height: barHeight,
-                          // ),
                           SvgPicture.asset(
                             'assets/arrows/line.svg',
                             height: 50,
@@ -160,16 +155,20 @@ class _PersonScreenState extends State<PersonScreen> {
                             padding: const EdgeInsets.only(
                                 top: 8, left: 8, bottom: 4),
                             child: SvgPicture.asset(
-                              'assets/arrows/arrow1.svg',
-                              height: 100,
-                              colorFilter: const ColorFilter.mode(
-                                  Colors.grey, BlendMode.srcIn),
+                              'assets/arrows/arrow2.svg',
+                              height: 120,
+                              colorFilter: ColorFilter.mode(
+                                Colors.grey[400] ?? Colors.grey,
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ),
-                          const Text(
+                          Text(
                             AppStrings.personScreenTagline,
                             style: TextStyle(
-                              color: Colors.grey,
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -185,11 +184,6 @@ class _PersonScreenState extends State<PersonScreen> {
                                 person.info[index].isNotEmpty) {
                               return Column(
                                 children: [
-                                  // Container(
-                                  //   color: Colors.black,
-                                  //   width: 1,
-                                  //   height: barHeight,
-                                  // ),
                                   SvgPicture.asset(
                                     'assets/arrows/line.svg',
                                     height: 50,
