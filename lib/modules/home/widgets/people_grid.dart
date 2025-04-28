@@ -141,16 +141,8 @@ class PeopleGrid extends StatelessWidget {
                 }).toList(),
               ),
               if (showTooltip) ...[
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.2,
-                  right: 40,
-                  child: ProfileTooltip(),
-                ),
-                Positioned(
-                  bottom: MediaQuery.of(context).size.height * 0.115,
-                  left: 80,
-                  child: AddMoreProfileTooltip(),
-                ),
+                ProfileTooltip(),
+                AddMoreProfileTooltip(),
               ],
             ],
           ),

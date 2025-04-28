@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
+import 'package:my_people/modules/home/widgets/animated_press_button.dart';
 import 'package:my_people/modules/person/add_info_bottomsheet.dart';
 import 'package:my_people/modules/chat/chat_screen.dart';
 import 'package:my_people/utility/constants.dart';
@@ -139,21 +140,24 @@ class _PersonScreenState extends State<PersonScreen> {
                     ? Column(
                         children: [
                           SvgPicture.asset(
-                            'assets/arrows/line.svg',
+                            'assets/arrows/arrow4.svg',
                             height: 50,
+                            colorFilter: ColorFilter.mode(
+                              Colors.black,
+                              BlendMode.srcIn,
+                            ),
                           ),
-                          IconButton.filled(
-                            onPressed: () {
-                              showAddInfoBottomSheet(context, person.uuid);
-                            },
-                            icon: const Icon(
+                          AnimatedPressButton(
+                            onPressed: () =>
+                                showAddInfoBottomSheet(context, person.uuid),
+                            child: const Icon(
                               Icons.add,
-                              size: 32,
+                              size: 28,
+                              color: Colors.white,
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(
-                                top: 8, left: 8, bottom: 4),
+                            padding: const EdgeInsets.fromLTRB(8, 8, 0, 4),
                             child: SvgPicture.asset(
                               'assets/arrows/arrow2.svg',
                               height: 120,
@@ -185,8 +189,12 @@ class _PersonScreenState extends State<PersonScreen> {
                               return Column(
                                 children: [
                                   SvgPicture.asset(
-                                    'assets/arrows/line.svg',
+                                    'assets/arrows/arrow4.svg',
                                     height: 50,
+                                    colorFilter: ColorFilter.mode(
+                                      Colors.black,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                   GestureDetector(
                                     onLongPressStart: (details) {

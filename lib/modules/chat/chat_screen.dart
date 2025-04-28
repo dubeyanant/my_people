@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
+import 'package:my_people/modules/chat/widgets/report_tooltip.dart';
 import 'package:my_people/services/gemini_ai_service.dart';
 import 'package:my_people/model/chat_message.dart';
 import 'package:my_people/modules/chat/widgets/message_bubble.dart';
@@ -264,23 +265,31 @@ class _ChatScreenState extends State<ChatScreen> {
           Column(
             children: <Widget>[
               Expanded(
-                child: ListView.builder(
-                  itemCount: _currentSession.messages.length,
-                  controller: _scrollController,
-                  reverse: true,
-                  itemBuilder: (context, index) {
-                    final message = _currentSession
-                        .messages[_currentSession.messages.length - 1 - index];
-                    final bool isUserMessage =
-                        message.sender == AppStrings.user;
-                    return MessageBubble(
-                      message: message,
-                      isMe: isUserMessage,
-                      onReport: isUserMessage
-                          ? null
-                          : () => _reportMessage(index, message),
-                    );
-                  },
+                child: Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: _currentSession.messages.length,
+                      controller: _scrollController,
+                      reverse: true,
+                      itemBuilder: (context, index) {
+                        final message = _currentSession.messages[
+                            _currentSession.messages.length - 1 - index];
+                        final bool isUserMessage =
+                            message.sender == AppStrings.user;
+                        return MessageBubble(
+                          message: message,
+                          isMe: isUserMessage,
+                          onReport: isUserMessage
+                              ? null
+                              : () => _reportMessage(index, message),
+                        );
+                      },
+                    ),
+                    if (_currentSession.messages
+                            .any((m) => m.sender != AppStrings.user) &&
+                        _currentSession.messages.length < 5)
+                      ReportTooltip(),
+                  ],
                 ),
               ),
               Padding(

@@ -5,6 +5,8 @@ class AppStrings {
 
   // Home Screen
   static const String homeScreenTagline = 'Create Your First Profile';
+  static const String profileTooltip = 'Tap to enter,\nhold to edit or delete';
+  static const String addMoreTooltip = 'Add more people here!';
 
   // Person Screen
   static const String personScreenTagline = 'Start Remembering Special Details';
@@ -53,8 +55,4 @@ class AppStrings {
       'Do you want to report this message?';
   static const String reportAction = 'Report';
   static const String cancelAction = 'Cancel';
-
-  // Home Screen
-  static const String profileTooltip = 'Tap to enter,\nhold to edit or delete';
-  static const String addMoreTooltip = 'Add more people here!';
 }
