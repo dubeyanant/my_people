@@ -4,24 +4,13 @@ import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
 // import 'package:my_people/helpers/update_helper.dart';
-import 'package:my_people/screens/person_detail_bottomsheet.dart';
-import 'package:my_people/screens/home_screen/empty_home.dart';
-import 'package:my_people/screens/home_screen/people_grid.dart';
+import 'package:my_people/view/screens/person_detail_bottomsheet.dart';
+import 'package:my_people/view/screens/home_screen/empty_home.dart';
+import 'package:my_people/view/screens/home_screen/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // checkForUpdate(context);
-  }
 
   @override
   Widget build(BuildContext context) {

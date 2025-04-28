@@ -6,8 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import 'package:my_people/controller/people_controller.dart';
-import 'package:my_people/screens/add_info_bottomsheet.dart';
-import 'package:my_people/screens/chat_screen/chat_screen.dart';
+import 'package:my_people/view/screens/add_info_bottomsheet.dart';
+import 'package:my_people/view/screens/chat_screen/chat_screen.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PersonScreen extends StatefulWidget {
@@ -144,7 +144,7 @@ class _PersonScreenState extends State<PersonScreen> {
                           //   height: barHeight,
                           // ),
                           SvgPicture.asset(
-                            'assets/line.svg',
+                            'assets/arrows/line.svg',
                             height: 50,
                           ),
                           IconButton.filled(
@@ -160,7 +160,7 @@ class _PersonScreenState extends State<PersonScreen> {
                             padding: const EdgeInsets.only(
                                 top: 8, left: 8, bottom: 4),
                             child: SvgPicture.asset(
-                              'assets/arrow1.svg',
+                              'assets/arrows/arrow1.svg',
                               height: 100,
                               colorFilter: const ColorFilter.mode(
                                   Colors.grey, BlendMode.srcIn),
@@ -191,7 +191,7 @@ class _PersonScreenState extends State<PersonScreen> {
                                   //   height: barHeight,
                                   // ),
                                   SvgPicture.asset(
-                                    'assets/line.svg',
+                                    'assets/arrows/line.svg',
                                     height: 50,
                                   ),
                                   GestureDetector(
