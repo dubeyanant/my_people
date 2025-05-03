@@ -140,7 +140,7 @@ class PeopleGrid extends StatelessWidget {
                   );
                 }).toList(),
               ),
-              if (showTooltip) ...[
+              if (showTooltip && !pc.isSearchOpen.value) ...[
                 ProfileTooltip(),
                 AddMoreProfileTooltip(),
               ],

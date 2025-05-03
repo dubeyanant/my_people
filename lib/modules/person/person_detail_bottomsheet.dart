@@ -135,13 +135,12 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
                       bottom: -4,
                       right: -4,
                       child: CircleAvatar(
-                        radius: 16,
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
+                        radius: 12,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         child: Icon(
                           Icons.edit,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.onSecondary,
+                          size: 12,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ),
@@ -167,6 +166,14 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
               ),
               ElevatedButton(
                 onPressed: _submitForm,
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(
+                    Theme.of(context).colorScheme.primary,
+                  ),
+                  foregroundColor: WidgetStateProperty.all(
+                    Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
                 child: Text(
                   widget.personToEdit == null
                       ? AppStrings.addPerson
