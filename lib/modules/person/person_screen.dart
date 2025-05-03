@@ -9,7 +9,9 @@ import 'package:my_people/model/person.dart';
 import 'package:my_people/modules/home/widgets/animated_press_button.dart';
 import 'package:my_people/modules/person/add_info_bottomsheet.dart';
 import 'package:my_people/modules/chat/chat_screen.dart';
+import 'package:my_people/modules/person/widgets/add_more_details_tooltip.dart';
 import 'package:my_people/modules/person/widgets/add_new_detail_tool_tip.dart';
+import 'package:my_people/modules/person/widgets/info_tooltip.dart';
 import 'package:my_people/modules/person/widgets/simple_header_clipper.dart';
 import 'package:my_people/utility/constants.dart';
 
@@ -200,19 +202,27 @@ class _PersonScreenState extends State<PersonScreen> {
     return person.info.isEmpty
         ? AddNewDetailToolTip(person: person)
         : Expanded(
-            child: ListView.builder(
-              itemCount: person.info.length,
-              padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-              itemBuilder: (context, index) {
-                if ((searchQuery.isEmpty ||
-                        person.info[index]
-                            .toLowerCase()
-                            .contains(searchQuery)) &&
-                    person.info[index].isNotEmpty) {
-                  return _buildInfoItem(context, person, index);
-                }
-                return const SizedBox.shrink();
-              },
+            child: Stack(
+              children: [
+                ListView.builder(
+                  itemCount: person.info.length,
+                  padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+                  itemBuilder: (context, index) {
+                    if ((searchQuery.isEmpty ||
+                            person.info[index]
+                                .toLowerCase()
+                                .contains(searchQuery)) &&
+                        person.info[index].isNotEmpty) {
+                      return _buildInfoItem(context, person, index);
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+                if (person.info.length == 1 && !pc.isSearchOpen.value) ...[
+                  InfoTooltip(),
+                  AddMoreDetailsTooltip(),
+                ],
+              ],
             ),
           );
   }
@@ -312,12 +322,25 @@ class _PersonScreenState extends State<PersonScreen> {
       children: [
         if (person.info.length >= 3) _buildChatButton(person),
         const SizedBox(height: 16),
-        AnimatedPressButton(
-          onPressed: () => showAddInfoBottomSheet(context, person.uuid),
-          child: const Icon(
-            Icons.add,
-            size: 28,
-            color: Colors.white,
+        Tooltip(
+          message: AppStrings.addMoreTooltip,
+          verticalOffset: -50,
+          preferBelow: false,
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(6),
+          ),
+          textStyle: TextStyle(
+            color: Colors.grey[800],
+            fontSize: 12,
+          ),
+          child: AnimatedPressButton(
+            onPressed: () => showAddInfoBottomSheet(context, person.uuid),
+            child: const Icon(
+              Icons.add,
+              size: 28,
+              color: Colors.white,
+            ),
           ),
         ),
       ],

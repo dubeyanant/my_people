@@ -17,6 +17,9 @@ class AppStrings {
   static const String profile = 'Profile';
   static const String generating = '< Generating Profile Summary >\n● ○ ○ ○ ○';
   static const String title = 'Title';
+  static const String addMoreTooltip2 =
+      'Add more details to\nunlock Chat with Persona';
+  static const String infoTooltip = 'Hold to edit or delete';
 
   // Add/Edit Person Bottom Sheet
   static const String addPerson = 'Add Person';
@@ -33,13 +36,6 @@ class AppStrings {
   static const String addInfoTextFieldError = 'Info cannot be empty';
   static const String addInfoButton = 'Add Info';
   static const String saveInfoButton = 'Save Info';
-
-  // Update Helper
-  static const String updateAvailable = 'Update Available';
-  static const String download = 'Download';
-  static const String postpone = 'Later';
-  static const String downloadingUpdate = 'Downloading Update';
-  static const String majorUpdateAvailable = 'Major Update Available';
 
   // Chat Screen
   static const String ask = 'Ask your question...';
