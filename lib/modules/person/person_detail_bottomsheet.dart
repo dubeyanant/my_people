@@ -108,6 +108,7 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
         child: Form(
           key: _formKey,
           child: Column(
+            spacing: 20,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
@@ -119,7 +120,34 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: _pickImage,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundImage: _selectedImage != null
+                          ? FileImage(_selectedImage!)
+                          : AssetImage(_defaultImage) as ImageProvider,
+                    ),
+                    Positioned(
+                      bottom: -4,
+                      right: -4,
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        child: Icon(
+                          Icons.edit,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               TextFormField(
                 autofocus: true,
                 controller: _nameController,
@@ -137,33 +165,6 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: _selectedImage != null
-                          ? FileImage(_selectedImage!)
-                          : AssetImage(_defaultImage) as ImageProvider,
-                    ),
-                    const Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        radius: 12,
-                        child: Icon(
-                          Icons.edit,
-                          size: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _submitForm,
                 child: Text(
