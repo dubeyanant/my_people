@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_svg/svg.dart';
+
 import 'package:my_people/model/person.dart';
 import 'package:my_people/modules/home/widgets/animated_press_button.dart';
 import 'package:my_people/modules/person/add_info_bottomsheet.dart';
@@ -17,14 +19,7 @@ class AddNewDetailToolTip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SvgPicture.asset(
-          'assets/arrows/arrow4.svg',
-          height: 50,
-          colorFilter: ColorFilter.mode(
-            Colors.black,
-            BlendMode.srcIn,
-          ),
-        ),
+        const SizedBox(height: 100),
         AnimatedPressButton(
           onPressed: () => showAddInfoBottomSheet(context, person.uuid),
           child: const Icon(

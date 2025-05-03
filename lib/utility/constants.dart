@@ -1,7 +1,7 @@
 class AppStrings {
   // General
   static const String appName = 'My People';
-  static const String searchBarHintText = 'Search...';
+  static const String searchBarHintText = 'Search Info';
 
   // Home Screen
   static const String homeScreenTagline = 'Create Your First Profile';
@@ -14,6 +14,7 @@ class AppStrings {
   static const String edit = 'Edit';
   static const String share = 'Share';
   static const String delete = 'Delete';
+  static const String profile = 'Profile';
 
   // Add/Edit Person Bottom Sheet
   static const String addPerson = 'Add Person';
