@@ -11,7 +11,7 @@ class ProfileTooltip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       top: MediaQuery.of(context).size.height * 0.2,
-      right: 40,
+      right: 32,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
