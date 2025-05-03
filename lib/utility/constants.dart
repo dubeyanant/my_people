@@ -9,12 +9,14 @@ class AppStrings {
   static const String addMoreTooltip = 'Add more people here!';
 
   // Person Screen
-  static const String personScreenTagline = 'Start Remembering Special Details';
+  static const String personScreenTagline = 'Start Adding Details';
   static const String chat = 'Chat With Persona';
   static const String edit = 'Edit';
   static const String share = 'Share';
   static const String delete = 'Delete';
   static const String profile = 'Profile';
+  static const String generating = '< Generating Profile Summary >\n● ○ ○ ○ ○';
+  static const String title = 'Title';
 
   // Add/Edit Person Bottom Sheet
   static const String addPerson = 'Add Person';
