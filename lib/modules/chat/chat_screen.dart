@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
+import 'package:my_people/modules/chat/widgets/chat_input_section.dart';
 import 'package:my_people/modules/chat/widgets/report_tooltip.dart';
+import 'package:my_people/modules/chat/widgets/thinking_indicator.dart';
 import 'package:my_people/services/gemini_ai_service.dart';
 import 'package:my_people/model/chat_message.dart';
 import 'package:my_people/modules/chat/widgets/message_bubble.dart';
@@ -27,7 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late final GeminiAIService _geminiAIService;
   bool _isTextFieldEmpty = true;
   bool _loading = false;
-  ChatMessage? _thinkingMessage;
+  bool _isAiThinking = false;
   bool _showScrollToBottomButton = false;
   bool _isFirstFocus = true;
 
@@ -142,6 +144,8 @@ class _ChatScreenState extends State<ChatScreen> {
         ));
         _controller.clear();
         _isTextFieldEmpty = true;
+        _loading = true;
+        _isAiThinking = true;
       });
 
       if (userMessage.toLowerCase().contains(AppStrings.prompt)) {
@@ -151,12 +155,13 @@ class _ChatScreenState extends State<ChatScreen> {
             sender: AppStrings.bot,
           ));
           _loading = false;
+          _isAiThinking = false;
         });
         _enableTextFieldAndFocus();
       } else {
         setState(() {
           _loading = true;
-          _addThinkingMessage();
+          _isAiThinking = true;
         });
 
         try {
@@ -171,7 +176,7 @@ class _ChatScreenState extends State<ChatScreen> {
           }
 
           setState(() {
-            _removeThinkingMessage();
+            _isAiThinking = false;
             _currentSession.messages.add(ChatMessage(
               text: finalResponseText,
               sender: AppStrings.bot,
@@ -183,29 +188,14 @@ class _ChatScreenState extends State<ChatScreen> {
           if (e.toString().contains('SocketException')) {
             _showError('Please check your internet connection and try again.');
           } else {
-            _showError('Error sending message to Gemini AI: $e');
+            _showError('Error sending message to Gemini AI.');
           }
           setState(() {
-            _removeThinkingMessage();
+            _isAiThinking = false;
           });
           _enableTextFieldAndFocus();
         }
       }
-    }
-  }
-
-  void _addThinkingMessage() {
-    _thinkingMessage = ChatMessage(
-      text: AppStrings.thinking,
-      sender: AppStrings.bot,
-    );
-    _currentSession.messages.add(_thinkingMessage!);
-  }
-
-  void _removeThinkingMessage() {
-    if (_thinkingMessage != null) {
-      _currentSession.messages.remove(_thinkingMessage);
-      _thinkingMessage = null;
     }
   }
 
@@ -233,7 +223,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<void> _reportMessage(int listViewIndex, ChatMessage message) async {
+  Future<void> _reportMessage(ChatMessage messageToReport) async {
     final bool? confirmReport = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -255,21 +245,21 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     if (confirmReport == true && mounted) {
-      final int actualIndex =
-          _currentSession.messages.length - 1 - listViewIndex;
+      final int messageIndex =
+          _currentSession.messages.indexOf(messageToReport);
 
-      if (actualIndex >= 0 && actualIndex < _currentSession.messages.length) {
-        AnalyticsHelper.trackReportAIMessage(message.text);
+      if (messageIndex != -1) {
+        AnalyticsHelper.trackReportAIMessage(messageToReport.text);
 
         setState(() {
-          _currentSession.messages[actualIndex] = ChatMessage(
+          _currentSession.messages[messageIndex] = ChatMessage(
             text: AppStrings.reportedMessageThankYou,
             sender: AppStrings.bot,
           );
         });
       } else {
         DebugPrint.log(
-          'Error reporting message: Invalid index $actualIndex',
+          'Error reporting message: Message not found in list.',
           color: DebugColor.red,
           tag: 'ChatScreen',
         );
@@ -292,20 +282,38 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Stack(
                   children: [
                     ListView.builder(
-                      itemCount: _currentSession.messages.length,
+                      itemCount: _currentSession.messages.length +
+                          (_isAiThinking ? 1 : 0),
                       controller: _scrollController,
                       reverse: true,
                       itemBuilder: (context, index) {
-                        final message = _currentSession.messages[
-                            _currentSession.messages.length - 1 - index];
+                        if (_isAiThinking && index == 0) {
+                          return const ThinkingIndicator();
+                        }
+
+                        final messageIndex = _isAiThinking ? index - 1 : index;
+                        final actualMessageIndex =
+                            _currentSession.messages.length - 1 - messageIndex;
+
+                        if (actualMessageIndex < 0 ||
+                            actualMessageIndex >=
+                                _currentSession.messages.length) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final message =
+                            _currentSession.messages[actualMessageIndex];
                         final bool isUserMessage =
                             message.sender == AppStrings.user;
+
                         return MessageBubble(
                           message: message,
                           isMe: isUserMessage,
-                          onReport: isUserMessage
+                          onReport: isUserMessage ||
+                                  message.text ==
+                                      AppStrings.reportedMessageThankYou
                               ? null
-                              : () => _reportMessage(index, message),
+                              : () => _reportMessage(message),
                         );
                       },
                     ),
@@ -316,7 +324,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ],
                 ),
               ),
-              _ChatInputSection(
+              ChatInputSection(
                 controller: _controller,
                 focusNode: _focusNode,
                 loading: _loading,
@@ -352,94 +360,4 @@ class ChatSession {
   final List<ChatMessage> messages;
 
   ChatSession(this.personUuid) : messages = [];
-}
-
-class _ChatInputSection extends StatelessWidget {
-  final TextEditingController controller;
-  final FocusNode focusNode;
-  final bool loading;
-  final bool isTextFieldEmpty;
-  final VoidCallback onSendMessage;
-
-  const _ChatInputSection({
-    required this.controller,
-    required this.focusNode,
-    required this.loading,
-    required this.isTextFieldEmpty,
-    required this.onSendMessage,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              maxLines: 3,
-              minLines: 1,
-              enabled: !loading,
-              onTap: () => focusNode.requestFocus(),
-              onTapOutside: (event) => FocusScope.of(context).unfocus(),
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.secondary,
-                    width: 0.5,
-                  ),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(36),
-                  ),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.secondary,
-                    width: 0.5,
-                  ),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(36),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.secondary,
-                    width: 1.5,
-                  ),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(36),
-                  ),
-                ),
-                fillColor: loading
-                    ? Colors.grey[200]
-                    : Theme.of(context).colorScheme.primaryContainer,
-                filled: true,
-                contentPadding: const EdgeInsets.all(16),
-                hintText: loading ? AppStrings.waiting : AppStrings.ask,
-                hintStyle: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            ),
-          ),
-          if (!isTextFieldEmpty)
-            Container(
-              padding: const EdgeInsets.only(left: 4),
-              margin: const EdgeInsets.only(left: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                borderRadius: BorderRadius.circular(36),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: onSendMessage,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
 }

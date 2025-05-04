@@ -119,7 +119,7 @@ class _AnimatedPressButtonState extends State<AnimatedPressButton>
                 ? []
                 : [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withAlpha(51),
                       spreadRadius: 1,
                       blurRadius: widget.elevation,
                       offset: Offset(0, widget.elevation / 2),
