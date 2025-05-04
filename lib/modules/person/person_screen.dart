@@ -28,8 +28,25 @@ class _PersonScreenState extends State<PersonScreen> {
   final TextEditingController searchController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
 
-  final double barHeight = 40;
+  // Create a local search state variable instead of using the shared one
+  final RxBool isSearchOpen = false.obs;
+
   final PeopleController pc = Get.put(PeopleController());
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    searchFocusNode.dispose();
+
+    // Add a post-frame callback to reset the search state after this widget is disposed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (pc.isSearchOpen.value) {
+        pc.isSearchOpen.value = false;
+      }
+    });
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +92,7 @@ class _PersonScreenState extends State<PersonScreen> {
         // AppBar
         _buildAppBar(person),
         // Search Field (when search is open)
-        if (pc.isSearchOpen.value) _buildSearchField(),
+        Obx(() => isSearchOpen.value ? _buildSearchField() : SizedBox.shrink()),
         // Profile image and name
         _buildProfileInfo(person, isFile),
       ],
@@ -104,23 +121,23 @@ class _PersonScreenState extends State<PersonScreen> {
               color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
-          IconButton(
-            icon: Icon(
-              pc.isSearchOpen.value ? Icons.cancel_outlined : Icons.search,
-              color: person.info.isNotEmpty
-                  ? Theme.of(context).colorScheme.onPrimary
-                  : Colors.transparent,
-            ),
-            onPressed: person.info.isNotEmpty ? _toggleSearch : null,
-          ),
+          Obx(() => IconButton(
+                icon: Icon(
+                  isSearchOpen.value ? Icons.cancel_outlined : Icons.search,
+                  color: person.info.isNotEmpty
+                      ? Theme.of(context).colorScheme.onPrimary
+                      : Colors.transparent,
+                ),
+                onPressed: person.info.isNotEmpty ? _toggleSearch : null,
+              )),
         ],
       ),
     );
   }
 
   void _toggleSearch() {
-    pc.isSearchOpen.value = !pc.isSearchOpen.value;
-    if (!pc.isSearchOpen.value) {
+    isSearchOpen.value = !isSearchOpen.value;
+    if (!isSearchOpen.value) {
       searchController.clear();
       searchFocusNode.unfocus();
       setState(() => searchQuery = '');
