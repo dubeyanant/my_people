@@ -60,12 +60,13 @@ class PeopleGrid extends StatelessWidget {
         final bool showTooltip = pc.filteredPeople.length == 1;
 
         return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Stack(
             children: [
               GridView.count(
                 // Making the aspect ratio more elongated (height-wise)
                 childAspectRatio: 2 / 3,
+                padding: const EdgeInsets.only(top: 16),
                 crossAxisCount: 2, // Number of columns in the grid
                 crossAxisSpacing: 16, // Space between columns
                 mainAxisSpacing: 24, // Space between rows
@@ -76,12 +77,8 @@ class PeopleGrid extends StatelessWidget {
                         showPopupMenu(context, person, details.globalPosition),
                     onTap: () {
                       Get.to(() => PersonScreen(person.uuid));
-                      Future.delayed(const Duration(milliseconds: 10), () {
-                        pc.isSearchOpen.value = false;
-                      });
                     },
                     child: Stack(
-                      fit: StackFit.expand,
                       children: [
                         // Profile image
                         ClipRRect(
@@ -140,7 +137,8 @@ class PeopleGrid extends StatelessWidget {
                   );
                 }).toList(),
               ),
-              if (showTooltip && !pc.isSearchOpen.value) ...[
+              // Only show tooltips if there's one person AND search isn't focused
+              if (showTooltip && !pc.isHomeScreenSearchFocused.value) ...[
                 ProfileTooltip(),
                 AddMoreProfileTooltip(),
               ],

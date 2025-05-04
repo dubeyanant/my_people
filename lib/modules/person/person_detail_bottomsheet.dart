@@ -152,6 +152,7 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: AppStrings.personDetailTextFieldLabel,
+                  hintStyle: TextStyle(color: Colors.grey),
                   hintText: AppStrings.personDetailTextFieldHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),

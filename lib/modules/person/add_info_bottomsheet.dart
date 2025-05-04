@@ -89,6 +89,7 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
                         labelText: widget.initialInfo == null
                             ? AppStrings.addInfoTextFieldLabel
                             : AppStrings.editInfoTextFieldLabel,
+                        hintStyle: TextStyle(color: Colors.grey),
                         hintText: AppStrings.addInfoTextFieldHint,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),

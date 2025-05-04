@@ -29,10 +29,20 @@ class _HomeScreenState extends State<HomeScreen> {
       Get.put(PeopleController());
     }
     _peopleController = Get.find<PeopleController>();
+    // Add listener to update focus state in controller
+    _searchFocusNode.addListener(_onFocusChange);
+  }
+
+  // Method to handle focus changes
+  void _onFocusChange() {
+    _peopleController.isHomeScreenSearchFocused.value =
+        _searchFocusNode.hasFocus;
   }
 
   @override
   void dispose() {
+    // Remove listener to prevent memory leaks
+    _searchFocusNode.removeListener(_onFocusChange);
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -41,72 +51,111 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: Obx(() => _buildBody()),
+      body: _buildBody(),
       floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: const Text(AppStrings.appName),
-      actions: [
+  Widget _buildBody() {
+    return Stack(
+      children: [
+        _buildGradientHeader(),
         Obx(() {
-          if (_peopleController.people.isEmpty) return const SizedBox();
-
-          return IconButton(
-            onPressed: _toggleSearch,
-            icon: Icon(
-              _peopleController.isSearchOpen.value
-                  ? Icons.cancel_outlined
-                  : Icons.search,
-            ),
+          final Widget child = _peopleController.people.isEmpty
+              ? const EmptyHome()
+              : const PeopleGrid();
+          return Padding(
+            padding: EdgeInsets.only(top: 136),
+            child: child,
           );
         }),
       ],
     );
   }
 
-  void _toggleSearch() {
-    _peopleController.isSearchOpen.value =
-        !_peopleController.isSearchOpen.value;
-    if (!_peopleController.isSearchOpen.value) {
-      _searchController.clear();
-      _peopleController.filterPeople('');
-      _searchFocusNode.unfocus();
-    }
-  }
+  Widget _buildGradientHeader() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final gradientHeight = screenHeight * 0.3;
 
-  Widget _buildBody() {
-    if (_peopleController.people.isEmpty) {
-      return const EmptyHome();
-    }
-
-    return Column(
+    return Stack(
       children: [
-        _buildSearchBar(),
-        const Expanded(child: PeopleGrid()),
+        // ShaderMask for smooth blending
+        ShaderMask(
+          shaderCallback: (Rect bounds) {
+            // Create a vertical gradient mask from opaque white to transparent white
+            return LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, Colors.white.withAlpha(0)],
+              stops: const [
+                0.85,
+                1.0
+              ], // Start fading near the bottom (85% mark)
+            ).createShader(bounds);
+          },
+          blendMode: BlendMode.dstIn, // Apply the mask
+          child: Container(
+            height: gradientHeight,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.blueAccent[400]!,
+                  Colors.blue.withAlpha(160),
+                  Colors.blue[200]!.withAlpha(40),
+                ],
+              ),
+            ),
+          ),
+        ),
+        // AppBar elements
+        Positioned(
+          top: 40,
+          left: 0,
+          right: 0,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Text(
+              AppStrings.appName,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+          ),
+        ),
+        // Always positioned Search Bar
+        Positioned(
+          top: 88,
+          left: 16,
+          right: 16,
+          child: _buildSearchBar(),
+        ),
       ],
     );
   }
 
   Widget _buildSearchBar() {
-    if (!_peopleController.isSearchOpen.value) {
-      return const SizedBox.shrink();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+    return Material(
+      color: Colors.transparent,
       child: TextField(
         focusNode: _searchFocusNode,
-        autofocus: true,
+        autofocus: false,
+        onTapOutside: (value) => _searchFocusNode.unfocus(),
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: AppStrings.searchBarHintText,
+          hintText: AppStrings.personSearchBarHintText,
+          hintStyle: TextStyle(color: Colors.grey),
           prefixIcon: const Icon(Icons.search),
+          filled: true,
+          fillColor: Theme.of(context).canvasColor.withAlpha(240),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
           ),
+          contentPadding: EdgeInsets.symmetric(vertical: 0),
         ),
         onChanged: _peopleController.filterPeople,
       ),

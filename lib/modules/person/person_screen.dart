@@ -158,7 +158,7 @@ class _PersonScreenState extends State<PersonScreen> {
         decoration: InputDecoration(
           hintStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
           prefixIconColor: Theme.of(context).colorScheme.onPrimary,
-          hintText: AppStrings.searchBarHintText,
+          hintText: AppStrings.searchInfoHintText,
           prefixIcon: Icon(Icons.search),
           border: OutlineInputBorder(
             borderSide: BorderSide.none,
@@ -202,7 +202,7 @@ class _PersonScreenState extends State<PersonScreen> {
             style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w600,
-              color: Colors.deepOrangeAccent,
+              color: Colors.grey[800],
               height: 1,
             ),
           ),
@@ -240,7 +240,7 @@ class _PersonScreenState extends State<PersonScreen> {
                     return const SizedBox.shrink();
                   },
                 ),
-                if (person.info.length == 1 && !pc.isSearchOpen.value) ...[
+                if (person.info.length == 1 && !isSearchOpen.value) ...[
                   InfoTooltip(),
                   AddMoreDetailsTooltip(),
                 ],

@@ -9,6 +9,7 @@ class PeopleController extends GetxController {
   RxList<Person> people = <Person>[].obs;
   RxList<Person> filteredPeople = <Person>[].obs;
   RxBool isSearchOpen = false.obs;
+  RxBool isHomeScreenSearchFocused = false.obs;
   DatabaseHelper dbHelper = DatabaseHelper.instance;
 
   @override
