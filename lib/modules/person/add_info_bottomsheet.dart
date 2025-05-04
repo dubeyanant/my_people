@@ -105,6 +105,14 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _submitInfo,
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(
+                          Theme.of(context).colorScheme.primary,
+                        ),
+                        foregroundColor: WidgetStateProperty.all(
+                          Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
                       child: Text(
                         widget.initialInfo == null
                             ? AppStrings.addInfoButton

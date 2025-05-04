@@ -46,6 +46,8 @@ class AppStrings {
   static const String thinking = 'Thinking...';
   static const String ok = 'OK';
   static const String wentWrong = 'Something went wrong';
+  static const String prompt = 'prompt';
+  static const String blockedResponse = 'Sorry, I can\'t help you with this.';
 
   // Report Feature
   static const String reportedMessageThankYou =

@@ -25,30 +25,9 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'My People',
       theme: ThemeData(
-        colorScheme: ColorScheme(
+        colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.light,
-          primary: Colors.blueAccent,
-          onPrimary: Colors.white,
-          secondary: Colors.blue,
-          onSecondary: Colors.white,
-          error: Colors.red,
-          onError: Colors.white,
-          surface: Colors.white,
-          onSurface: Colors.black,
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme(
-          brightness: Brightness.dark,
-          primary: Colors.blueAccent,
-          onPrimary: Colors.white,
-          secondary: Colors.blue,
-          onSecondary: Colors.white,
-          error: Colors.red,
-          onError: Colors.white,
-          surface: Colors.grey[900]!,
-          onSurface: Colors.white,
+          seedColor: Colors.blueAccent,
         ),
       ),
       // TODO: Add system theme in near future

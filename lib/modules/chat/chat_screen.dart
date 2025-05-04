@@ -142,30 +142,54 @@ class _ChatScreenState extends State<ChatScreen> {
         ));
         _controller.clear();
         _isTextFieldEmpty = true;
-        _loading = true;
-        _addThinkingMessage();
       });
 
-      try {
-        final aiResponse = await _geminiAIService.sendMessage(userMessage);
+      if (userMessage.toLowerCase().contains(AppStrings.prompt)) {
         setState(() {
-          _removeThinkingMessage();
           _currentSession.messages.add(ChatMessage(
-            text: aiResponse,
+            text: AppStrings.blockedResponse,
             sender: AppStrings.bot,
           ));
+          _loading = false;
         });
         _enableTextFieldAndFocus();
-      } catch (e) {
-        if (e.toString().contains('SocketException')) {
-          _showError('Please check your internet connection and try again.');
-        } else {
-          _showError('Error sending message to Gemini AI: $e');
-        }
+      } else {
         setState(() {
-          _removeThinkingMessage();
+          _loading = true;
+          _addThinkingMessage();
         });
-        _enableTextFieldAndFocus();
+
+        try {
+          final aiResponse = await _geminiAIService.sendMessage(userMessage);
+          if (!mounted) return;
+
+          String finalResponseText;
+          if (aiResponse.toLowerCase().contains(AppStrings.prompt)) {
+            finalResponseText = AppStrings.blockedResponse;
+          } else {
+            finalResponseText = aiResponse;
+          }
+
+          setState(() {
+            _removeThinkingMessage();
+            _currentSession.messages.add(ChatMessage(
+              text: finalResponseText,
+              sender: AppStrings.bot,
+            ));
+          });
+          _enableTextFieldAndFocus();
+        } catch (e) {
+          if (!mounted) return;
+          if (e.toString().contains('SocketException')) {
+            _showError('Please check your internet connection and try again.');
+          } else {
+            _showError('Error sending message to Gemini AI: $e');
+          }
+          setState(() {
+            _removeThinkingMessage();
+          });
+          _enableTextFieldAndFocus();
+        }
       }
     }
   }
