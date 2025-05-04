@@ -92,19 +92,24 @@ class _PersonScreenState extends State<PersonScreen> {
         children: [
           IconButton(
             onPressed: () => Get.back(),
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(
+              Icons.arrow_back,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
-          const Text(
+          Text(
             AppStrings.profile,
             style: TextStyle(
               fontSize: 18,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           IconButton(
             icon: Icon(
               pc.isSearchOpen.value ? Icons.cancel_outlined : Icons.search,
-              color: person.info.isNotEmpty ? Colors.white : Colors.transparent,
+              color: person.info.isNotEmpty
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : Colors.transparent,
             ),
             onPressed: person.info.isNotEmpty ? _toggleSearch : null,
           ),
@@ -131,11 +136,11 @@ class _PersonScreenState extends State<PersonScreen> {
         focusNode: searchFocusNode,
         autofocus: true,
         controller: searchController,
-        cursorColor: Colors.white,
-        style: const TextStyle(color: Colors.white),
-        decoration: const InputDecoration(
-          hintStyle: TextStyle(color: Colors.white),
-          prefixIconColor: Colors.white,
+        cursorColor: Theme.of(context).colorScheme.onPrimary,
+        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        decoration: InputDecoration(
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          prefixIconColor: Theme.of(context).colorScheme.onPrimary,
           hintText: AppStrings.searchBarHintText,
           prefixIcon: Icon(Icons.search),
           border: OutlineInputBorder(
@@ -161,7 +166,7 @@ class _PersonScreenState extends State<PersonScreen> {
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             backgroundImage: isFile
                 ? Image.file(
                     File(person.photo),
@@ -263,9 +268,9 @@ class _PersonScreenState extends State<PersonScreen> {
             // ),
             Text(
               person.info[index],
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ],
@@ -336,10 +341,10 @@ class _PersonScreenState extends State<PersonScreen> {
           ),
           child: AnimatedPressButton(
             onPressed: () => showAddInfoBottomSheet(context, person.uuid),
-            child: const Icon(
+            child: Icon(
               Icons.add,
               size: 28,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ),
@@ -364,21 +369,21 @@ class _PersonScreenState extends State<PersonScreen> {
             )
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               AppStrings.chat,
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
             SizedBox(width: 8),
             Icon(
               Icons.chat,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ],
         ),

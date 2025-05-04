@@ -22,10 +22,10 @@ class AddNewDetailToolTip extends StatelessWidget {
         const SizedBox(height: 100),
         AnimatedPressButton(
           onPressed: () => showAddInfoBottomSheet(context, person.uuid),
-          child: const Icon(
+          child: Icon(
             Icons.add,
             size: 28,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
         Padding(

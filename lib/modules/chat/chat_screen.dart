@@ -376,7 +376,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   mini: true,
                   backgroundColor: Theme.of(context).colorScheme.tertiary,
                   onPressed: _scrollToBottom,
-                  child: const Icon(Icons.arrow_downward, color: Colors.white),
+                  child: Icon(
+                    Icons.arrow_downward,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),

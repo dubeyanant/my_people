@@ -15,10 +15,10 @@ class EmptyHome extends StatelessWidget {
         children: [
           AnimatedPressButton(
             onPressed: () => showPersonDetailBottomSheet(context),
-            child: const Icon(
+            child: Icon(
               Icons.add,
               size: 28,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           AddProfileTooltip(),
