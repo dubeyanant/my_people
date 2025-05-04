@@ -316,78 +316,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                        focusNode: _focusNode,
-                        maxLines: 3,
-                        minLines: 1,
-                        enabled: !_loading,
-                        onTap: () => _focusNode.requestFocus(),
-                        onTapOutside: (event) =>
-                            FocusScope.of(context).unfocus(),
-                        decoration: InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.secondary,
-                              width: 0.5,
-                            ),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(36),
-                            ),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.secondary,
-                              width: 0.5,
-                            ),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(36),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.secondary,
-                              width: 1.5,
-                            ),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(36),
-                            ),
-                          ),
-                          fillColor: _loading
-                              ? Colors.grey[200]
-                              : Theme.of(context).colorScheme.primaryContainer,
-                          filled: true,
-                          contentPadding: const EdgeInsets.all(16),
-                          hintText:
-                              _loading ? AppStrings.waiting : AppStrings.ask,
-                          hintStyle: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (!_isTextFieldEmpty)
-                      Container(
-                        padding: const EdgeInsets.only(left: 4),
-                        margin: const EdgeInsets.only(left: 8),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(36),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.send),
-                          onPressed: _sendMessage,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
-                  ],
-                ),
+              _ChatInputSection(
+                controller: _controller,
+                focusNode: _focusNode,
+                loading: _loading,
+                isTextFieldEmpty: _isTextFieldEmpty,
+                onSendMessage: _sendMessage,
               ),
             ],
           ),
@@ -418,4 +352,94 @@ class ChatSession {
   final List<ChatMessage> messages;
 
   ChatSession(this.personUuid) : messages = [];
+}
+
+class _ChatInputSection extends StatelessWidget {
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final bool loading;
+  final bool isTextFieldEmpty;
+  final VoidCallback onSendMessage;
+
+  const _ChatInputSection({
+    required this.controller,
+    required this.focusNode,
+    required this.loading,
+    required this.isTextFieldEmpty,
+    required this.onSendMessage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              maxLines: 3,
+              minLines: 1,
+              enabled: !loading,
+              onTap: () => focusNode.requestFocus(),
+              onTapOutside: (event) => FocusScope.of(context).unfocus(),
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                    width: 0.5,
+                  ),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(36),
+                  ),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                    width: 0.5,
+                  ),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(36),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                    width: 1.5,
+                  ),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(36),
+                  ),
+                ),
+                fillColor: loading
+                    ? Colors.grey[200]
+                    : Theme.of(context).colorScheme.primaryContainer,
+                filled: true,
+                contentPadding: const EdgeInsets.all(16),
+                hintText: loading ? AppStrings.waiting : AppStrings.ask,
+                hintStyle: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+          ),
+          if (!isTextFieldEmpty)
+            Container(
+              padding: const EdgeInsets.only(left: 4),
+              margin: const EdgeInsets.only(left: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(36),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.send),
+                onPressed: onSendMessage,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
