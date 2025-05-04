@@ -222,29 +222,39 @@ class _PersonScreenState extends State<PersonScreen> {
 
   Widget _buildBody(Person person) {
     return person.info.isEmpty
-        ? AddNewDetailToolTip(person: person)
+        ? Expanded(child: AddNewDetailToolTip(person: person))
         : Expanded(
-            child: Stack(
-              children: [
-                ListView.builder(
-                  itemCount: person.info.length,
-                  padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                  itemBuilder: (context, index) {
-                    if ((searchQuery.isEmpty ||
-                            person.info[index]
-                                .toLowerCase()
-                                .contains(searchQuery)) &&
-                        person.info[index].isNotEmpty) {
-                      return _buildInfoItem(context, person, index);
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-                if (person.info.length == 1 && !isSearchOpen.value) ...[
-                  InfoTooltip(),
-                  AddMoreDetailsTooltip(),
-                ],
-              ],
+            child: ListView.builder(
+              itemCount: person.info.length,
+              padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+              itemBuilder: (context, index) {
+                bool shouldDisplay = (searchQuery.isEmpty ||
+                        person.info[index]
+                            .toLowerCase()
+                            .contains(searchQuery)) &&
+                    person.info[index].isNotEmpty;
+
+                if (shouldDisplay) {
+                  final infoItemWidget = _buildInfoItem(context, person, index);
+
+                  bool showTooltipsBelow =
+                      person.info.length == 1 && !isSearchOpen.value;
+
+                  if (showTooltipsBelow) {
+                    return Column(
+                      spacing: 16,
+                      children: [
+                        infoItemWidget,
+                        InfoTooltip(),
+                        AddMoreDetailsTooltip(),
+                      ],
+                    );
+                  } else {
+                    return infoItemWidget;
+                  }
+                }
+                return const SizedBox.shrink();
+              },
             ),
           );
   }

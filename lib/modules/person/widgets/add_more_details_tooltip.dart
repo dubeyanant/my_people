@@ -9,11 +9,10 @@ class AddMoreDetailsTooltip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 90,
-      right: 30,
+    return Container(
+      margin: EdgeInsets.only(right: 24, top: 56),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Stack(
             clipBehavior: Clip.none,
