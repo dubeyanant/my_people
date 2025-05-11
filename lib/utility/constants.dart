@@ -3,8 +3,9 @@ class AppStrings {
   static const String appName = 'My People';
 
   // Home Screen
-  static const String homeScreenTagline = 'Create Your First Profile';
-  static const String profileTooltip = 'Tap to enter,\nhold to edit or delete';
+  static const String homeScreenTagline = 'Add a profile of';
+  static const String profileTooltip =
+      'Tap to go in\nor, hold to edit or delete';
   static const String addMoreTooltip = 'Add more people here!';
   static const String personSearchBarHintText = 'Search People';
 

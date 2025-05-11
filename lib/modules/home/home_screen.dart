@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         // AppBar elements
         Positioned(
-          top: 40,
+          top: 50,
           left: 0,
           right: 0,
           child: Padding(
