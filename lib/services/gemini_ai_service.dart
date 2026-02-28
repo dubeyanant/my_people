@@ -10,7 +10,7 @@ class GeminiAIService {
 
   GeminiAIService()
       : _model = GenerativeModel(
-          model: 'gemini-2.0-flash',
+          model: 'gemini-3-flash-preview',
           apiKey: _apiKey!,
           safetySettings: safetySettings,
           generationConfig: generationConfig,

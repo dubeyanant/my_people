@@ -1,6 +1,6 @@
 name: my_people
 publish_to: none
-version: 4.1.0+7
+version: 4.2.0+8
 description: An app for noting details about people.
 
 dev_dependencies:
