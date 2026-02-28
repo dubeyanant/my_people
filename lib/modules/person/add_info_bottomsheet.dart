@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:my_people/model/person_info.dart';
 import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/utility/constants.dart';
 
 class AddInfoBottomSheet extends ConsumerStatefulWidget {
   final String personId;
-  final String? initialInfo;
+  final PersonInfo? initialInfo;
   final int? infoIndex;
 
   const AddInfoBottomSheet({
@@ -24,27 +25,53 @@ class AddInfoBottomSheet extends ConsumerStatefulWidget {
 class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _infoController = TextEditingController();
+  DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
     if (widget.initialInfo != null) {
-      _infoController.text = widget.initialInfo!;
+      _infoController.text = widget.initialInfo!.text;
+      _selectedDate = widget.initialInfo!.date;
     }
   }
 
   void _submitInfo() {
     if (_formKey.currentState?.validate() ?? false) {
-      final String info = _infoController.text.trim();
+      final String infoText = _infoController.text.trim();
+      final dateToSave = _selectedDate ?? DateTime.now();
+
+      final newInfo = PersonInfo(
+        text: capitalize(infoText),
+        date: dateToSave,
+      );
+
       if (widget.initialInfo != null && widget.infoIndex != null) {
-        ref.read(peopleProvider.notifier).updatePersonInfo(
-            widget.personId, capitalize(info), widget.infoIndex!);
+        ref
+            .read(peopleProvider.notifier)
+            .updatePersonInfo(widget.personId, newInfo, widget.infoIndex!);
       } else {
         ref
             .read(peopleProvider.notifier)
-            .addInfoToPerson(widget.personId, capitalize(info));
+            .addInfoToPerson(widget.personId, newInfo);
       }
       Navigator.pop(context);
+    }
+  }
+
+  Future<void> _pickDate(BuildContext context) async {
+    final initialDate = _selectedDate ?? DateTime.now();
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
     }
   }
 
@@ -103,6 +130,30 @@ class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
                         return null;
                       },
                     ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _selectedDate == null
+                              ? AppStrings.selectDateLabel
+                              : '${_selectedDate!.month}/${_selectedDate!.day}/${_selectedDate!.year}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => _pickDate(context),
+                          child: Text(
+                            AppStrings.pickDateButton,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _submitInfo,
@@ -134,7 +185,7 @@ class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
 void showAddInfoBottomSheet(
   BuildContext context,
   String personId, {
-  String? initialInfo,
+  PersonInfo? initialInfo,
   int? infoIndex,
 }) {
   showModalBottomSheet(

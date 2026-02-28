@@ -218,10 +218,10 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
               padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
               itemBuilder: (context, index) {
                 bool shouldDisplay = (searchQuery.isEmpty ||
-                        person.info[index]
+                        person.info[index].text
                             .toLowerCase()
                             .contains(searchQuery)) &&
-                    person.info[index].isNotEmpty;
+                    person.info[index].text.isNotEmpty;
 
                 if (shouldDisplay) {
                   final infoItemWidget = _buildInfoItem(context, person, index);
@@ -248,50 +248,71 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
   }
 
   Widget _buildInfoItem(BuildContext context, Person person, int index) {
+    final info = person.info[index];
+    final dateObj = info.date;
+    final dateStr = dateObj != null
+        ? '${_getMonthName(dateObj.month)} ${dateObj.day}, ${dateObj.year}'
+        : null;
+
     return GestureDetector(
       onLongPressStart: (details) {
         _showPopupMenu(context, person, index, details.globalPosition);
       },
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Color(0xff9DCEB7),
-              Color(0xff339989),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(8),
+          color: const Color(0xFFD9BB9B),
+          borderRadius: BorderRadius.circular(12),
         ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
+        padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         width: double.maxFinite,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text(
-            //   AppStrings.title,
-            //   style: const TextStyle(
-            //     fontSize: 16,
-            //     fontWeight: FontWeight.w600,
-            //     color: Colors.white,
-            //   ),
-            // ),
+            if (dateStr != null) ...[
+              Text(
+                dateStr,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 4),
+            ],
             Text(
-              person.info[index],
-              style: TextStyle(
+              info.text,
+              style: const TextStyle(
                 fontSize: 16,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _getMonthName(int month) {
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    if (month >= 1 && month <= 12) {
+      return monthNames[month - 1];
+    }
+    return '';
   }
 
   Future<void> _showPopupMenu(BuildContext context, Person person,
@@ -334,7 +355,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
 
   Widget? _buildFloatingActionButtons(Person person) {
     if (person.info.isEmpty ||
-        (person.info.length == 1 && person.info[0].isEmpty)) {
+        (person.info.length == 1 && person.info[0].text.isEmpty)) {
       return null;
     }
 

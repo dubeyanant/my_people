@@ -62,7 +62,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final initialPrompt = '''
   This is the information about the person I'm talking about:
   Name: ${widget.person.name}
-  Info: ${widget.person.info.join(', ')}
+  Info: ${widget.person.info.map((e) => e.text).join(', ')}
 
   Strictly use this info while answering any of the next prompts. Do not hallucinate or generate information that is not present in this info. If you understood, say "Hi, how may I help you?"
   ''';

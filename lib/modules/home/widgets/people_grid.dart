@@ -63,7 +63,7 @@ class PeopleGrid extends ConsumerWidget {
         children: [
           GridView.count(
             // Making the aspect ratio more elongated (height-wise)
-            childAspectRatio: 2 / 3,
+            childAspectRatio: 4 / 5,
             padding: const EdgeInsets.only(top: 16),
             crossAxisCount: 2, // Number of columns in the grid
             crossAxisSpacing: 16, // Space between columns
@@ -81,61 +81,50 @@ class PeopleGrid extends ConsumerWidget {
                     ),
                   );
                 },
-                child: Stack(
-                  children: [
-                    // Profile image
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: isFile
-                          ? Image.file(
-                              File(person.photo),
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            )
-                          : Image.asset(
-                              person.photo,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
-                    ),
-                    // Gradient overlay for the name at the bottom
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(16),
-                            bottomRight: Radius.circular(16),
-                          ),
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withAlpha(204),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 8,
-                        ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(20),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: isFile
+                            ? Image.file(
+                                File(person.photo),
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                person.photo,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        color: Colors.white,
                         child: Text(
                           person.name,
                           style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black87,
+                            fontSize: 18,
+                            height: 1.2,
                           ),
-                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }).toList(),

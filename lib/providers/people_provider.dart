@@ -1,4 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import 'package:my_people/model/person_info.dart';
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/helpers/database_helper.dart';
 import 'package:my_people/model/person.dart';
@@ -79,9 +81,9 @@ class People extends _$People {
     _fetchPeople();
   }
 
-  Future<void> addInfoToPerson(String uuid, String info) async {
+  Future<void> addInfoToPerson(String uuid, PersonInfo info) async {
     final person = state.firstWhere((p) => p.uuid == uuid);
-    final updatedInfo = List<String>.from(person.info)..insert(0, info);
+    final updatedInfo = List<PersonInfo>.from(person.info)..insert(0, info);
 
     final updatedPerson = Person(
       uuid: person.uuid,
@@ -92,7 +94,7 @@ class People extends _$People {
 
     await _dbHelper.updatePerson(updatedPerson);
     DebugPrint.log(
-      'Info Added to ${person.name}: $info',
+      'Info Added to ${person.name}: ${info.text}',
       color: DebugColor.magenta,
       tag: 'PeopleProvider',
     );
@@ -100,10 +102,11 @@ class People extends _$People {
     _fetchPeople();
   }
 
-  Future<void> updatePersonInfo(String uuid, String newInfo, int index) async {
+  Future<void> updatePersonInfo(
+      String uuid, PersonInfo newInfo, int index) async {
     final person = state.firstWhere((p) => p.uuid == uuid);
     if (index != -1 && index < person.info.length) {
-      final updatedInfo = List<String>.from(person.info)..[index] = newInfo;
+      final updatedInfo = List<PersonInfo>.from(person.info)..[index] = newInfo;
 
       final updatedPerson = Person(
         uuid: person.uuid,
@@ -114,7 +117,7 @@ class People extends _$People {
 
       await _dbHelper.updatePerson(updatedPerson);
       DebugPrint.log(
-        'Person Info Updated: ${person.name}\nNew Info: $newInfo',
+        'Person Info Updated: ${person.name}\nNew Info: ${newInfo.text}',
         color: DebugColor.magenta,
         tag: 'PeopleProvider',
       );
@@ -126,7 +129,7 @@ class People extends _$People {
   Future<void> deletePersonInfo(String uuid, int infoItemIndex) async {
     final person = state.firstWhere((p) => p.uuid == uuid);
     if (infoItemIndex != -1 && infoItemIndex < person.info.length) {
-      final updatedInfo = List<String>.from(person.info)
+      final updatedInfo = List<PersonInfo>.from(person.info)
         ..removeAt(infoItemIndex);
 
       final updatedPerson = Person(

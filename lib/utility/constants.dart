@@ -38,6 +38,8 @@ class AppStrings {
   static const String addInfoTextFieldError = 'Info cannot be empty';
   static const String addInfoButton = 'Add Info';
   static const String saveInfoButton = 'Save Info';
+  static const String selectDateLabel = 'Select Date';
+  static const String pickDateButton = 'Pick Date';
 
   // Chat Screen
   static const String ask = 'Ask your question...';

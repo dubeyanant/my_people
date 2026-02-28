@@ -30,7 +30,6 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.blueAccent,
         ),
       ),
-      // TODO: Add system theme in near future
       themeMode: ThemeMode.light,
       home: const HomeScreen(),
     );
