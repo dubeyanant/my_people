@@ -60,7 +60,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ? const EmptyHome()
               : const PeopleGrid();
           return Padding(
-            padding: const EdgeInsets.only(top: 136),
+            padding: const EdgeInsets.only(top: 140),
             child: child,
           );
         }),
@@ -77,18 +77,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // ShaderMask for smooth blending
         ShaderMask(
           shaderCallback: (Rect bounds) {
-            // Create a vertical gradient mask from opaque white to transparent white
             return LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [Colors.white, Colors.white.withAlpha(0)],
-              stops: const [
-                0.85,
-                1.0
-              ], // Start fading near the bottom (85% mark)
+              stops: const [0.8, 1.0],
             ).createShader(bounds);
           },
-          blendMode: BlendMode.dstIn, // Apply the mask
+          blendMode: BlendMode.dstIn,
           child: Container(
             height: gradientHeight,
             decoration: BoxDecoration(
@@ -96,8 +92,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blueAccent[400]!,
-                  Colors.blue.withAlpha(160),
+                  Colors.blueAccent[700]!,
+                  Colors.blue.withAlpha(180),
                   Colors.blue[200]!.withAlpha(40),
                 ],
               ),
@@ -114,7 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Text(
               AppStrings.appName,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
@@ -123,7 +119,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         // Always positioned Search Bar
         Positioned(
-          top: 88,
+          top: 92,
           left: 16,
           right: 16,
           child: _buildSearchBar(),
@@ -133,24 +129,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildSearchBar() {
-    return Material(
-      color: Colors.transparent,
+    return Container(
+      height: 44,
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(200),
+        borderRadius: BorderRadius.circular(22),
+      ),
       child: TextField(
         focusNode: _searchFocusNode,
         autofocus: false,
         onTapOutside: (value) => _searchFocusNode.unfocus(),
         controller: _searchController,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          hintStyle: TextStyle(color: Colors.black54),
           hintText: AppStrings.personSearchBarHintText,
-          hintStyle: TextStyle(color: Colors.grey),
-          prefixIcon: const Icon(Icons.search),
-          filled: true,
-          fillColor: Theme.of(context).canvasColor.withAlpha(240),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.black54,
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: 0),
+          border: OutlineInputBorder(borderSide: BorderSide.none),
         ),
         onChanged: (value) =>
             ref.read(homeSearchQueryProvider.notifier).updateQuery(value),

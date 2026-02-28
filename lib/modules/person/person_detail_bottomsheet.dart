@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:my_people/modules/person/widgets/hold_to_delete_button.dart';
 import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
@@ -169,22 +170,50 @@ class _PersonDetailBottomSheetState
                   return null;
                 },
               ),
-              ElevatedButton(
-                onPressed: _submitForm,
-                style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.all(
-                    Theme.of(context).colorScheme.primary,
+              if (widget.personToEdit == null)
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                    child: const Text(AppStrings.addPerson),
                   ),
-                  foregroundColor: WidgetStateProperty.all(
-                    Theme.of(context).colorScheme.onPrimary,
-                  ),
+                )
+              else
+                Row(
+                  spacing: 16,
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: _submitForm,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onPrimary,
+                          ),
+                          child: const Text(AppStrings.savePerson),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: HoldToDeleteButton(
+                        onDeleted: () {
+                          ref
+                              .read(peopleProvider.notifier)
+                              .deletePerson(widget.personToEdit!);
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  widget.personToEdit == null
-                      ? AppStrings.addPerson
-                      : AppStrings.savePerson,
-                ),
-              ),
             ],
           ),
         ),

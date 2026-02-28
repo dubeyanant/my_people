@@ -7,7 +7,8 @@ class AppStrings {
   static const String profileTooltip =
       'Tap to go in or,\nhold to edit & delete';
   static const String addMoreTooltip = 'Add more profiles here!';
-  static const String personSearchBarHintText = 'Search People';
+  static const String personSearchBarHintText = 'Search people...';
+  static const String noteSearchBarHintText = 'Search notes...';
 
   // Person Screen
   static const String personScreenTagline = 'Start Adding Details';

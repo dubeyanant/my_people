@@ -8,11 +8,11 @@ import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/modules/home/widgets/animated_press_button.dart';
 import 'package:my_people/modules/person/add_info_bottomsheet.dart';
+import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
 import 'package:my_people/modules/chat/chat_screen.dart';
 import 'package:my_people/modules/person/widgets/add_more_details_tooltip.dart';
 import 'package:my_people/modules/person/widgets/add_new_detail_tool_tip.dart';
 import 'package:my_people/modules/person/widgets/info_tooltip.dart';
-import 'package:my_people/modules/person/widgets/simple_header_clipper.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PersonScreen extends ConsumerStatefulWidget {
@@ -27,8 +27,6 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
   String searchQuery = '';
   final TextEditingController searchController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
-
-  bool isSearchOpen = false;
 
   @override
   void dispose() {
@@ -56,23 +54,32 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
 
   Widget _buildHeader(Person person) {
     final isFile = File(person.photo).existsSync();
-
+    final screenHeight = MediaQuery.of(context).size.height;
+    final gradientHeight = screenHeight * 0.3;
     return Stack(
       clipBehavior: Clip.none,
       children: [
         // Background gradient container
-        ClipPath(
-          clipper: SimpleHeaderClipper(),
+        ShaderMask(
+          shaderCallback: (Rect bounds) {
+            return LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, Colors.white.withAlpha(0)],
+              stops: const [0.8, 1.0],
+            ).createShader(bounds);
+          },
+          blendMode: BlendMode.dstIn,
           child: Container(
-            height: 220,
+            height: gradientHeight,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.blueAccent[700]!,
-                  Colors.blue,
-                  Colors.blue[200]!,
+                  Colors.blue.withAlpha(180),
+                  Colors.blue[200]!.withAlpha(40),
                 ],
               ),
             ),
@@ -88,7 +95,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
 
   Widget _buildAppBar(Person person) {
     return Positioned(
-      top: 36,
+      top: 48,
       left: 0,
       right: 0,
       child: SizedBox(
@@ -99,21 +106,48 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
           children: [
             IconButton(
               onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back,
-                color: Theme.of(context).colorScheme.onPrimary,
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
               ),
             ),
-            // Search Field (when search is open)
-            isSearchOpen ? _buildSearchField() : const SizedBox.shrink(),
-            IconButton(
-              icon: Icon(
-                isSearchOpen ? Icons.cancel_outlined : Icons.search,
-                color: person.info.isNotEmpty
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Colors.transparent,
+            Expanded(
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(200),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: TextField(
+                  focusNode: searchFocusNode,
+                  controller: searchController,
+                  cursorColor: Colors.black87,
+                  style: const TextStyle(color: Colors.black87, fontSize: 16),
+                  maxLines: 1,
+                  decoration: const InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    hintStyle: TextStyle(color: Colors.black54),
+                    hintText: AppStrings.noteSearchBarHintText,
+                    prefixIcon: Icon(Icons.search, color: Colors.black54),
+                    border: OutlineInputBorder(borderSide: BorderSide.none),
+                  ),
+                  onChanged: (value) =>
+                      setState(() => searchQuery = value.toLowerCase()),
+                ),
               ),
-              onPressed: person.info.isNotEmpty ? _toggleSearch : null,
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                if (context.mounted) {
+                  showPersonDetailBottomSheet(context, personToEdit: person);
+                }
+              },
             ),
           ],
         ),
@@ -121,71 +155,27 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
     );
   }
 
-  void _toggleSearch() {
-    setState(() {
-      isSearchOpen = !isSearchOpen;
-      if (!isSearchOpen) {
-        searchController.clear();
-        searchFocusNode.unfocus();
-        searchQuery = '';
-      }
-    });
-  }
-
-  Widget _buildSearchField() {
-    return TextField(
-      focusNode: searchFocusNode,
-      autofocus: true,
-      controller: searchController,
-      cursorColor: Theme.of(context).colorScheme.onPrimary,
-      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-      maxLines: 1,
-      decoration: InputDecoration(
-        constraints: BoxConstraints(maxWidth: 240),
-        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-        prefixIconColor: Theme.of(context).colorScheme.onPrimary,
-        hintText: AppStrings.searchInfoHintText,
-        prefixIcon: Icon(Icons.search),
-        border: OutlineInputBorder(borderSide: BorderSide.none),
-      ),
-      onChanged: (value) => setState(() => searchQuery = value.toLowerCase()),
-    );
-  }
-
   Widget _buildProfileInfo(Person person, bool isFile) {
     return Positioned(
-      top: 220 -
-          SimpleHeaderClipper.curveHeight -
-          SimpleHeaderClipper.curveDepth,
-      left: 0,
-      right: 0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      top: 116,
+      left: 16,
+      child: Row(
+        spacing: 16,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Theme.of(context).colorScheme.onPrimary,
-                width: 2,
-              ),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: CircleAvatar(
-              radius: 40,
-              backgroundImage: isFile
-                  ? Image.file(
-                      File(person.photo),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ).image
-                  : Image.asset(
-                      person.photo,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ).image,
-            ),
+          CircleAvatar(
+            radius: 40,
+            backgroundImage: isFile
+                ? Image.file(
+                    File(person.photo),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ).image
+                : Image.asset(
+                    person.photo,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ).image,
           ),
-          const SizedBox(height: 12),
           Text(
             person.name,
             style: TextStyle(
@@ -195,15 +185,6 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
               height: 1,
             ),
           ),
-          // Text(
-          //   AppStrings.generating,
-          //   textAlign: TextAlign.center,
-          //   style: TextStyle(
-          //     color: Colors.grey,
-          //     fontSize: 12,
-          //     height: 1.4,
-          //   ),
-          // ),
         ],
       ),
     );
@@ -226,7 +207,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
                 if (shouldDisplay) {
                   final infoItemWidget = _buildInfoItem(context, person, index);
                   bool showTooltipsBelow =
-                      person.info.length == 1 && !isSearchOpen;
+                      person.info.length == 1 && searchQuery.isEmpty;
 
                   if (showTooltipsBelow) {
                     return Column(

@@ -4,13 +4,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:my_people/providers/people_provider.dart';
-import 'package:my_people/model/person.dart';
-import 'package:my_people/modules/home/widgets/tooltip_arrows/add_more_profile_tooltip.dart';
-import 'package:my_people/modules/home/widgets/tooltip_arrows/profile_tooltip.dart';
-import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
 import 'package:my_people/modules/person/person_screen.dart';
-import 'package:my_people/utility/constants.dart';
+import 'package:my_people/providers/people_provider.dart';
+import 'package:my_people/modules/home/widgets/tooltip_arrows/add_more_profile_tooltip.dart';
 
 class PeopleGrid extends ConsumerWidget {
   const PeopleGrid({super.key});
@@ -19,40 +15,6 @@ class PeopleGrid extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filteredPeople = ref.watch(filteredPeopleProvider);
     final isSearchFocused = ref.watch(isHomeScreenSearchFocusedProvider);
-
-    // Method to show a popup menu for editing or deleting a person
-    void showPopupMenu(
-        BuildContext context, Person person, Offset offset) async {
-      final result = await showMenu<String>(
-        context: context,
-        position: RelativeRect.fromLTRB(
-          offset.dx,
-          offset.dy,
-          offset.dx + 1,
-          offset.dy + 1,
-        ),
-        items: [
-          const PopupMenuItem<String>(
-            value: AppStrings.edit,
-            child: Text(AppStrings.edit),
-          ),
-          const PopupMenuItem<String>(
-            value: AppStrings.delete,
-            child: Text(AppStrings.delete),
-          ),
-        ],
-      );
-
-      // Handle the selected action from the popup menu
-      if (result == AppStrings.delete) {
-        ref.read(peopleProvider.notifier).deletePerson(person);
-      } else if (result == AppStrings.edit) {
-        // Navigate to PersonBioScreen to edit the selected person
-        if (context.mounted) {
-          showPersonDetailBottomSheet(context, personToEdit: person);
-        }
-      }
-    }
 
     // Check if there's exactly one person in the list
     final bool showTooltip = filteredPeople.length == 1;
@@ -71,8 +33,6 @@ class PeopleGrid extends ConsumerWidget {
             children: filteredPeople.map((person) {
               final isFile = File(person.photo).existsSync();
               return GestureDetector(
-                onLongPressStart: (details) =>
-                    showPopupMenu(context, person, details.globalPosition),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -131,7 +91,6 @@ class PeopleGrid extends ConsumerWidget {
           ),
           // Only show tooltips if there's one person AND search isn't focused
           if (showTooltip && !isSearchFocused) ...[
-            ProfileTooltip(),
             AddMoreProfileTooltip(),
           ],
         ],
