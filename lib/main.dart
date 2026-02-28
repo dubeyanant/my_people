@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/modules/home/home_screen.dart';
@@ -14,7 +14,7 @@ void main() async {
   await Firebase.initializeApp();
   SharedPrefs.init();
   AnalyticsHelper.appLaunched();
-  runApp(MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
       title: 'My People',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

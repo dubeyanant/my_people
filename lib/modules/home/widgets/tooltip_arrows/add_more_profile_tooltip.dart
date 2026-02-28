@@ -10,7 +10,7 @@ class AddMoreProfileTooltip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 90,
+      bottom: 100,
       right: 0,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

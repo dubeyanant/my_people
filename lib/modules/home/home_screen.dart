@@ -1,42 +1,37 @@
 import 'package:flutter/material.dart';
 
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:my_people/controller/people_controller.dart';
+import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/modules/home/widgets/animated_press_button.dart';
 import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
 import 'package:my_people/modules/home/widgets/empty_home.dart';
 import 'package:my_people/modules/home/widgets/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  late final PeopleController _peopleController;
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    // If PeopleController is not initialized yet
-    if (!Get.isRegistered<PeopleController>()) {
-      Get.put(PeopleController());
-    }
-    _peopleController = Get.find<PeopleController>();
     // Add listener to update focus state in controller
     _searchFocusNode.addListener(_onFocusChange);
   }
 
   // Method to handle focus changes
   void _onFocusChange() {
-    _peopleController.isHomeScreenSearchFocused.value =
-        _searchFocusNode.hasFocus;
+    ref
+        .read(isHomeScreenSearchFocusedProvider.notifier)
+        .updateFocus(_searchFocusNode.hasFocus);
   }
 
   @override
@@ -60,12 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(
       children: [
         _buildGradientHeader(),
-        Obx(() {
-          final Widget child = _peopleController.people.isEmpty
+        Consumer(builder: (context, ref, _) {
+          final Widget child = ref.watch(peopleProvider).isEmpty
               ? const EmptyHome()
               : const PeopleGrid();
           return Padding(
-            padding: EdgeInsets.only(top: 136),
+            padding: const EdgeInsets.only(top: 136),
             child: child,
           );
         }),
@@ -157,14 +152,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           contentPadding: EdgeInsets.symmetric(vertical: 0),
         ),
-        onChanged: _peopleController.filterPeople,
+        onChanged: (value) =>
+            ref.read(homeSearchQueryProvider.notifier).updateQuery(value),
       ),
     );
   }
 
   Widget _buildFloatingActionButton() {
-    return Obx(() {
-      if (_peopleController.people.isEmpty) {
+    return Consumer(builder: (context, ref, _) {
+      if (ref.watch(peopleProvider).isEmpty) {
         return const SizedBox.shrink();
       }
 

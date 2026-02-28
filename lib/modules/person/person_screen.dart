@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:my_people/controller/people_controller.dart';
+import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/modules/home/widgets/animated_press_button.dart';
 import 'package:my_people/modules/person/add_info_bottomsheet.dart';
@@ -15,54 +15,43 @@ import 'package:my_people/modules/person/widgets/info_tooltip.dart';
 import 'package:my_people/modules/person/widgets/simple_header_clipper.dart';
 import 'package:my_people/utility/constants.dart';
 
-class PersonScreen extends StatefulWidget {
+class PersonScreen extends ConsumerStatefulWidget {
   final String id;
   const PersonScreen(this.id, {super.key});
 
   @override
-  State<PersonScreen> createState() => _PersonScreenState();
+  ConsumerState<PersonScreen> createState() => _PersonScreenState();
 }
 
-class _PersonScreenState extends State<PersonScreen> {
+class _PersonScreenState extends ConsumerState<PersonScreen> {
   String searchQuery = '';
   final TextEditingController searchController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
 
-  // Create a local search state variable instead of using the shared one
-  final RxBool isSearchOpen = false.obs;
-
-  final PeopleController pc = Get.put(PeopleController());
+  bool isSearchOpen = false;
 
   @override
   void dispose() {
     searchController.dispose();
     searchFocusNode.dispose();
-
-    // Add a post-frame callback to reset the search state after this widget is disposed
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (pc.isSearchOpen.value) {
-        pc.isSearchOpen.value = false;
-      }
-    });
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final person =
-          pc.people.firstWhere((element) => element.uuid == widget.id);
-      return Scaffold(
-        body: Column(
-          children: [
-            _buildHeader(person),
-            _buildBody(person),
-          ],
-        ),
-        floatingActionButton: _buildFloatingActionButtons(person),
-      );
-    });
+    final people = ref.watch(peopleProvider);
+    final person = people.firstWhere((element) => element.uuid == widget.id,
+        orElse: () => Person(name: 'Unknown', photo: '', info: []));
+
+    return Scaffold(
+      body: Column(
+        children: [
+          _buildHeader(person),
+          _buildBody(person),
+        ],
+      ),
+      floatingActionButton: _buildFloatingActionButtons(person),
+    );
   }
 
   Widget _buildHeader(Person person) {
@@ -75,7 +64,7 @@ class _PersonScreenState extends State<PersonScreen> {
         ClipPath(
           clipper: SimpleHeaderClipper(),
           child: Container(
-            height: 260,
+            height: 220,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -91,8 +80,6 @@ class _PersonScreenState extends State<PersonScreen> {
         ),
         // AppBar
         _buildAppBar(person),
-        // Search Field (when search is open)
-        Obx(() => isSearchOpen.value ? _buildSearchField() : SizedBox.shrink()),
         // Profile image and name
         _buildProfileInfo(person, isFile),
       ],
@@ -101,79 +88,73 @@ class _PersonScreenState extends State<PersonScreen> {
 
   Widget _buildAppBar(Person person) {
     return Positioned(
-      top: 40,
+      top: 36,
       left: 0,
       right: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Theme.of(context).colorScheme.onPrimary,
+      child: SizedBox(
+        height: 54,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(
+                Icons.arrow_back,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
-          ),
-          Text(
-            AppStrings.profile,
-            style: TextStyle(
-              fontSize: 18,
-              color: Theme.of(context).colorScheme.onPrimary,
+            // Search Field (when search is open)
+            isSearchOpen ? _buildSearchField() : const SizedBox.shrink(),
+            IconButton(
+              icon: Icon(
+                isSearchOpen ? Icons.cancel_outlined : Icons.search,
+                color: person.info.isNotEmpty
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Colors.transparent,
+              ),
+              onPressed: person.info.isNotEmpty ? _toggleSearch : null,
             ),
-          ),
-          Obx(() => IconButton(
-                icon: Icon(
-                  isSearchOpen.value ? Icons.cancel_outlined : Icons.search,
-                  color: person.info.isNotEmpty
-                      ? Theme.of(context).colorScheme.onPrimary
-                      : Colors.transparent,
-                ),
-                onPressed: person.info.isNotEmpty ? _toggleSearch : null,
-              )),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   void _toggleSearch() {
-    isSearchOpen.value = !isSearchOpen.value;
-    if (!isSearchOpen.value) {
-      searchController.clear();
-      searchFocusNode.unfocus();
-      setState(() => searchQuery = '');
-    }
+    setState(() {
+      isSearchOpen = !isSearchOpen;
+      if (!isSearchOpen) {
+        searchController.clear();
+        searchFocusNode.unfocus();
+        searchQuery = '';
+      }
+    });
   }
 
   Widget _buildSearchField() {
-    return Positioned(
-      top: 76,
-      left: 4,
-      right: 4,
-      child: TextField(
-        focusNode: searchFocusNode,
-        autofocus: true,
-        controller: searchController,
-        cursorColor: Theme.of(context).colorScheme.onPrimary,
-        style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-        decoration: InputDecoration(
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-          prefixIconColor: Theme.of(context).colorScheme.onPrimary,
-          hintText: AppStrings.searchInfoHintText,
-          prefixIcon: Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-          ),
-        ),
-        onChanged: (value) => setState(() {
-          searchQuery = value.toLowerCase();
-        }),
+    return TextField(
+      focusNode: searchFocusNode,
+      autofocus: true,
+      controller: searchController,
+      cursorColor: Theme.of(context).colorScheme.onPrimary,
+      style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+      maxLines: 1,
+      decoration: InputDecoration(
+        constraints: BoxConstraints(maxWidth: 240),
+        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        prefixIconColor: Theme.of(context).colorScheme.onPrimary,
+        hintText: AppStrings.searchInfoHintText,
+        prefixIcon: Icon(Icons.search),
+        border: OutlineInputBorder(borderSide: BorderSide.none),
       ),
+      onChanged: (value) => setState(() => searchQuery = value.toLowerCase()),
     );
   }
 
   Widget _buildProfileInfo(Person person, bool isFile) {
     return Positioned(
-      top: 260 -
+      top: 220 -
           SimpleHeaderClipper.curveHeight -
           SimpleHeaderClipper.curveDepth,
       left: 0,
@@ -181,20 +162,28 @@ class _PersonScreenState extends State<PersonScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            backgroundImage: isFile
-                ? Image.file(
-                    File(person.photo),
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ).image
-                : Image.asset(
-                    person.photo,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ).image,
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Theme.of(context).colorScheme.onPrimary,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: CircleAvatar(
+              radius: 40,
+              backgroundImage: isFile
+                  ? Image.file(
+                      File(person.photo),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ).image
+                  : Image.asset(
+                      person.photo,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ).image,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -202,7 +191,7 @@ class _PersonScreenState extends State<PersonScreen> {
             style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
+              color: Theme.of(context).colorScheme.primary,
               height: 1,
             ),
           ),
@@ -236,9 +225,8 @@ class _PersonScreenState extends State<PersonScreen> {
 
                 if (shouldDisplay) {
                   final infoItemWidget = _buildInfoItem(context, person, index);
-
                   bool showTooltipsBelow =
-                      person.info.length == 1 && !isSearchOpen.value;
+                      person.info.length == 1 && !isSearchOpen;
 
                   if (showTooltipsBelow) {
                     return Column(
@@ -329,7 +317,9 @@ class _PersonScreenState extends State<PersonScreen> {
     );
 
     if (result == AppStrings.delete) {
-      pc.deletePersonInfo(person.uuid, infoItemIndex);
+      ref
+          .read(peopleProvider.notifier)
+          .deletePersonInfo(person.uuid, infoItemIndex);
     } else if (result == AppStrings.edit) {
       if (context.mounted) {
         showAddInfoBottomSheet(
@@ -354,25 +344,12 @@ class _PersonScreenState extends State<PersonScreen> {
       children: [
         if (person.info.length >= 3) _buildChatButton(person),
         const SizedBox(height: 16),
-        Tooltip(
-          message: AppStrings.addMoreTooltip,
-          verticalOffset: -50,
-          preferBelow: false,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(6),
-          ),
-          textStyle: TextStyle(
-            color: Colors.grey[800],
-            fontSize: 12,
-          ),
-          child: AnimatedPressButton(
-            onPressed: () => showAddInfoBottomSheet(context, person.uuid),
-            child: Icon(
-              Icons.add,
-              size: 28,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
+        AnimatedPressButton(
+          onPressed: () => showAddInfoBottomSheet(context, person.uuid),
+          child: Icon(
+            Icons.add,
+            size: 28,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
       ],
@@ -381,7 +358,8 @@ class _PersonScreenState extends State<PersonScreen> {
 
   Widget _buildChatButton(Person person) {
     return GestureDetector(
-      onTap: () => Get.to(() => ChatScreen(person)),
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ChatScreen(person))),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -413,6 +391,29 @@ class _PersonScreenState extends State<PersonScreen> {
               color: Theme.of(context).colorScheme.onPrimary,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class TimelineIndicator extends StatelessWidget {
+  const TimelineIndicator({
+    super.key,
+    required this.isFilled,
+  });
+
+  final bool isFilled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isFilled ? Theme.of(context).colorScheme.primary : null,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
     );

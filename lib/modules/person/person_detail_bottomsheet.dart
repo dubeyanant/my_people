@@ -3,28 +3,28 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:my_people/controller/people_controller.dart';
+import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/utility/constants.dart';
 
-class PersonDetailBottomSheet extends StatefulWidget {
+class PersonDetailBottomSheet extends ConsumerStatefulWidget {
   final Person? personToEdit;
 
   const PersonDetailBottomSheet({super.key, this.personToEdit});
 
   @override
-  State<PersonDetailBottomSheet> createState() =>
+  ConsumerState<PersonDetailBottomSheet> createState() =>
       _PersonDetailBottomSheetState();
 }
 
-class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
+class _PersonDetailBottomSheetState
+    extends ConsumerState<PersonDetailBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final PeopleController pc = Get.put(PeopleController());
 
   File? _selectedImage;
   late String _defaultImage;
@@ -86,13 +86,17 @@ class _PersonDetailBottomSheetState extends State<PersonDetailBottomSheet> {
 
       if (widget.personToEdit != null) {
         // Update existing person
-        pc.updatePerson(widget.personToEdit!, name, imagePath);
+        ref
+            .read(peopleProvider.notifier)
+            .updatePerson(widget.personToEdit!, name, imagePath);
       } else {
         // Add new person
-        pc.addPerson(Person(name: name.trim(), photo: imagePath, info: []));
+        ref
+            .read(peopleProvider.notifier)
+            .addPerson(Person(name: name.trim(), photo: imagePath, info: []));
       }
 
-      Get.back();
+      Navigator.pop(context);
     }
   }
 

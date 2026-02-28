@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:my_people/controller/people_controller.dart';
+import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/utility/constants.dart';
 
-class AddInfoBottomSheet extends StatefulWidget {
+class AddInfoBottomSheet extends ConsumerStatefulWidget {
   final String personId;
   final String? initialInfo;
   final int? infoIndex;
@@ -18,13 +18,12 @@ class AddInfoBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<AddInfoBottomSheet> createState() => _AddInfoBottomSheetState();
+  ConsumerState<AddInfoBottomSheet> createState() => _AddInfoBottomSheetState();
 }
 
-class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
+class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _infoController = TextEditingController();
-  final PeopleController pc = Get.put(PeopleController());
 
   @override
   void initState() {
@@ -38,12 +37,14 @@ class _AddInfoBottomSheetState extends State<AddInfoBottomSheet> {
     if (_formKey.currentState?.validate() ?? false) {
       final String info = _infoController.text.trim();
       if (widget.initialInfo != null && widget.infoIndex != null) {
-        pc.updatePersonInfo(
+        ref.read(peopleProvider.notifier).updatePersonInfo(
             widget.personId, capitalize(info), widget.infoIndex!);
       } else {
-        pc.addInfoToPerson(widget.personId, capitalize(info));
+        ref
+            .read(peopleProvider.notifier)
+            .addInfoToPerson(widget.personId, capitalize(info));
       }
-      Get.back();
+      Navigator.pop(context);
     }
   }
 
