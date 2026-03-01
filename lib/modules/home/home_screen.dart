@@ -10,6 +10,10 @@ import 'package:my_people/modules/home/widgets/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/app_theme.dart';
 
+import 'package:my_people/modules/settings/settings_screen.dart';
+import 'package:my_people/helpers/biometric_helper.dart';
+import 'package:my_people/utility/shared_preferences.dart';
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,12 +24,23 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  bool _isAuthenticated = false;
 
   @override
   void initState() {
     super.initState();
     // Add listener to update focus state in controller
     _searchFocusNode.addListener(_onFocusChange);
+    _checkBiometrics();
+  }
+
+  Future<void> _checkBiometrics() async {
+    bool success = await BiometricHelper.checkAuthIfEnabled();
+    if (mounted) {
+      setState(() {
+        _isAuthenticated = success;
+      });
+    }
   }
 
   // Method to handle focus changes
@@ -46,6 +61,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_isAuthenticated && SharedPrefs.getBiometricEnabled()) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.lock, size: 64),
+              const SizedBox(height: 16),
+              const Text('App Locked', style: TextStyle(fontSize: 24)),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _checkBiometrics,
+                child: const Text('Unlock'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: _buildBody(),
       floatingActionButton: _buildFloatingActionButton(),
@@ -123,7 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.onPrimaryFixedVariant,
               ),
             ),
           ),
@@ -185,7 +220,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           icon: Icons.settings_rounded,
           degrees: 0,
           onSelected: () {
-            // Future settings integration
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SettingsScreen(),
+              ),
+            );
           },
         ),
         RadialMenuOption(

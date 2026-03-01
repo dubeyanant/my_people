@@ -42,6 +42,12 @@ class DatabaseHelper {
     return _database;
   }
 
+  Future<void> close() async {
+    final db = await database;
+    await db?.close();
+    _database = null;
+  }
+
   // Initialize database
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();

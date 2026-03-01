@@ -430,7 +430,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
     return RadialMenuButton(
       options: [
         RadialMenuOption(
-          label: 'Create',
+          label: 'Add',
           icon: Icons.add_rounded,
           degrees: 90,
           onSelected: () => showAddInfoBottomSheet(context, person.uuid),

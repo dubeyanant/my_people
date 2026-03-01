@@ -41,6 +41,23 @@ class AppTheme {
     }
   }
 
+  static ThemeData getTheme(String themeString) {
+    switch (themeString) {
+      case 'morning':
+        return _morningTheme;
+      case 'noon':
+      case 'afternoon':
+        return _afternoonTheme;
+      case 'evening':
+        return _eveningTheme;
+      case 'night':
+        return _nightTheme;
+      case 'dynamic':
+      default:
+        return getThemeForCurrentTime();
+    }
+  }
+
   static final ThemeData _morningTheme = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: const Color(0xFFF5F7FA),

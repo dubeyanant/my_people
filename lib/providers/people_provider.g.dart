@@ -40,7 +40,7 @@ final class PeopleProvider extends $NotifierProvider<People, List<Person>> {
   }
 }
 
-String _$peopleHash() => r'824890b35f1e79c7ba22fb81d634caf5fa305927';
+String _$peopleHash() => r'e4f93e8115cebcddaba1aea135d2fb2894e83845';
 
 abstract class _$People extends $Notifier<List<Person>> {
   List<Person> build();
@@ -189,4 +189,4 @@ final class FilteredPeopleProvider
   }
 }
 
-String _$filteredPeopleHash() => r'7773f16ea82a6242beb7979b38e1977e944d1011';
+String _$filteredPeopleHash() => r'4a095ca7096ad0de5305c436e00ece4e5a36dfc7';

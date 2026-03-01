@@ -33,4 +33,22 @@ class SharedPrefs {
     final String? dateString = _preferences!.getString("lastUpdateCheckDate");
     return dateString != null ? DateTime.parse(dateString) : null;
   }
+
+  // Theme state
+  static Future<bool> setThemeState(String theme) {
+    return _preferences!.setString("themeState", theme);
+  }
+
+  static String getThemeState() {
+    return _preferences!.getString("themeState") ?? "dynamic";
+  }
+
+  // Biometric state
+  static Future<bool> setBiometricEnabled(bool enabled) {
+    return _preferences!.setBool("biometricEnabled", enabled);
+  }
+
+  static bool getBiometricEnabled() {
+    return _preferences!.getBool("biometricEnabled") ?? false;
+  }
 }

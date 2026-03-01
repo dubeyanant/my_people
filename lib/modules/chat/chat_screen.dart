@@ -320,7 +320,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     if (_currentSession.messages
                             .any((m) => m.sender != AppStrings.user) &&
-                        _currentSession.messages.length < 5)
+                        _currentSession.messages.length <= 1)
                       ReportTooltip(),
                   ],
                 ),
