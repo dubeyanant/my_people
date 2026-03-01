@@ -3,7 +3,7 @@ class AppStrings {
   static const String appName = 'My People';
 
   // Home Screen
-  static const String homeScreenTagline = 'Create a profile of';
+  static const String homeScreenTagline = 'Hold to create a profile of';
   static const String profileTooltip =
       'Tap to go in or,\nhold to edit & delete';
   static const String addMoreTooltip = 'Add more profiles here!';
@@ -11,7 +11,8 @@ class AppStrings {
   static const String noteSearchBarHintText = 'Search notes...';
 
   // Person Screen
-  static const String personScreenTagline = 'Start Adding Details';
+  static const String personScreenTagline =
+      'Swipe up to add info\nabout the person';
   static const String chat = 'Chat With Persona';
   static const String edit = 'Edit';
   static const String share = 'Share';
@@ -53,8 +54,14 @@ class AppStrings {
   static const String wentWrong = 'Something went wrong';
   static const String prompt = 'prompt';
   static const String blockedResponse = 'Sorry, I can\'t help you with this.';
+  static const String errorSendingMessage = 'Error sending message to AI.';
+  static const String checkInternetConnection =
+      'Please check your internet connection and try again.';
 
   // Report Feature
+  static const String toReport = 'Hold the message to report';
+  static const String couldntReport =
+      'Could not report the message due to an internal error.';
   static const String reportedMessageThankYou =
       'Thank you for reporting this message.';
   static const String reportMessageTitle = 'Report Message?';

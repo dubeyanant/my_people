@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:my_people/modules/person/widgets/profile_details_panel.dart';
+import 'package:my_people/modules/person/widgets/timeline_indicator.dart';
 import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/widgets/radial_menu_button.dart';
 import 'package:my_people/modules/person/add_info_bottomsheet.dart';
-import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
 import 'package:my_people/modules/chat/chat_screen.dart';
-import 'package:my_people/modules/person/widgets/add_more_details_tooltip.dart';
-import 'package:my_people/modules/person/widgets/add_new_detail_tool_tip.dart';
-import 'package:my_people/modules/person/widgets/info_tooltip.dart';
+import 'package:my_people/modules/person/person_profile_setup_screen.dart';
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/app_theme.dart';
 
@@ -164,58 +163,74 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
   }
 
   Widget _buildProfileInfo(Person person, bool isFile) {
-    return Positioned(
-      top: 116,
-      left: 0,
-      right: 0,
-      child: Column(
-        spacing: 16,
-        children: [
-          CircleAvatar(
-            radius: 60,
-            backgroundImage: isFile
-                ? Image.file(
-                    File(person.photo),
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ).image
-                : Image.asset(
-                    person.photo,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ).image,
-          ),
-          Text(
-            person.name,
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.primary,
-              height: 1,
+    return Padding(
+      padding: const EdgeInsets.only(top: 116),
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          spacing: 16,
+          children: [
+            CircleAvatar(
+              radius: 60,
+              backgroundImage: isFile
+                  ? Image.file(
+                      File(person.photo),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ).image
+                  : Image.asset(
+                      person.photo,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ).image,
             ),
-          ),
-        ],
+            Text(
+              person.name,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.primary,
+                height: 1,
+              ),
+            ),
+            ProfileDetailsPanel(person: person),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildBody(Person person) {
     return person.info.isEmpty
-        ? Expanded(child: AddNewDetailToolTip(person: person))
+        ? Expanded(
+            child: Padding(
+            padding: const EdgeInsets.only(top: 140),
+            child: Text(
+              AppStrings.personScreenTagline,
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ))
         : Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
                     AppStrings.infoTimeline,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 17,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
+                const SizedBox(height: 8),
                 Expanded(
                   child: ListView.builder(
                     itemCount: person.info.length,
@@ -228,23 +243,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
                           person.info[index].text.isNotEmpty;
 
                       if (shouldDisplay) {
-                        final infoItemWidget =
-                            _buildTimelineItem(context, person, index);
-                        bool showTooltipsBelow =
-                            person.info.length == 1 && searchQuery.isEmpty;
-
-                        if (showTooltipsBelow) {
-                          return Column(
-                            children: [
-                              infoItemWidget,
-                              const SizedBox(height: 16),
-                              InfoTooltip(),
-                              AddMoreDetailsTooltip(),
-                            ],
-                          );
-                        } else {
-                          return infoItemWidget;
-                        }
+                        return _buildTimelineItem(context, person, index);
                       }
                       return const SizedBox.shrink();
                     },
@@ -320,9 +319,27 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
 
   Widget _buildInfoContent(BuildContext context, info) {
     final dateObj = info.date;
-    final dateStr = dateObj != null
-        ? '${_getMonthName(dateObj.month)} ${dateObj.day}, ${dateObj.year}'
-        : null;
+
+    String? dateStr;
+
+    if (dateObj != null) {
+      final now = DateTime.now();
+
+      // Remove time portion for accurate date-only comparison
+      final today = DateTime(now.year, now.month, now.day);
+      final messageDate = DateTime(dateObj.year, dateObj.month, dateObj.day);
+
+      final difference = today.difference(messageDate).inDays;
+
+      if (difference == 0) {
+        dateStr = "Today";
+      } else if (difference == 1) {
+        dateStr = "Yesterday";
+      } else {
+        dateStr =
+            '${_getMonthName(dateObj.month)} ${dateObj.day}, ${dateObj.year}';
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -419,9 +436,16 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
           onSelected: () => showAddInfoBottomSheet(context, person.uuid),
         ),
         RadialMenuOption(
+          label: 'Share',
+          icon: Icons.share,
+          degrees: 135,
+          onSelected: () {},
+        ),
+        RadialMenuOption(
           label: 'Chat',
           icon: Icons.chat_rounded,
           degrees: 0,
+          enabled: person.info.length > 3,
           onSelected: () {
             Navigator.push(
               context,
@@ -435,7 +459,12 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
           degrees: 45,
           onSelected: () {
             if (context.mounted) {
-              showPersonDetailBottomSheet(context, personToEdit: person);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        PersonProfileSetupScreen(person: person)),
+              );
             }
           },
         ),
@@ -448,29 +477,6 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
           },
         ),
       ],
-    );
-  }
-}
-
-class TimelineIndicator extends StatelessWidget {
-  const TimelineIndicator({
-    super.key,
-    required this.isFilled,
-  });
-
-  final bool isFilled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: isFilled ? Theme.of(context).colorScheme.primary : null,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ),
     );
   }
 }

@@ -63,6 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
   This is the information about the person I'm talking about:
   Name: ${widget.person.name}
   Info: ${widget.person.info.map((e) => e.text).join(', ')}
+  Extra Info: ${widget.person.birthday}, ${widget.person.dietaryRestrictions}, ${widget.person.interests}, ${widget.person.introvertExtrovert}, ${widget.person.occupation}, ${widget.person.relationshipType}, ${widget.person.relationshipStatus}, 
 
   Strictly use this info while answering any of the next prompts. Do not hallucinate or generate information that is not present in this info. If you understood, say "Hi, how may I help you?"
   ''';
@@ -186,9 +187,9 @@ class _ChatScreenState extends State<ChatScreen> {
         } catch (e) {
           if (!mounted) return;
           if (e.toString().contains('SocketException')) {
-            _showError('Please check your internet connection and try again.');
+            _showError(AppStrings.checkInternetConnection);
           } else {
-            _showError('Error sending message to Gemini AI.');
+            _showError(AppStrings.errorSendingMessage);
           }
           setState(() {
             _isAiThinking = false;
@@ -263,7 +264,7 @@ class _ChatScreenState extends State<ChatScreen> {
           color: DebugColor.red,
           tag: 'ChatScreen',
         );
-        _showError('Could not report the message due to an internal error.');
+        _showError(AppStrings.couldntReport);
       }
     }
   }

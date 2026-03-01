@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/svg.dart';
+import 'package:my_people/utility/constants.dart';
 
 class ReportTooltip extends StatelessWidget {
   const ReportTooltip({super.key});
@@ -17,7 +18,7 @@ class ReportTooltip extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hold the message to report',
+                AppStrings.toReport,
                 style: TextStyle(
                   fontSize: 14,
                   color: Theme.of(context).colorScheme.onSurface.withAlpha(180),

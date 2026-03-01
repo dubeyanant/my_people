@@ -10,7 +10,7 @@ import 'package:my_people/model/person.dart';
 
 class DatabaseHelper {
   static const _databaseName = "myDatabase.db";
-  static const _databaseVersion = 1;
+  static const _databaseVersion = 2;
 
   static const table = 'persons';
 
@@ -18,6 +18,16 @@ class DatabaseHelper {
   static const columnName = 'name';
   static const columnPhoto = 'photo';
   static const columnInfo = 'info';
+  static const columnBirthday = 'birthday';
+  static const columnRelationshipType = 'relationshipType';
+  static const columnSocialInstagram = 'socialInstagram';
+  static const columnSocialTwitter = 'socialTwitter';
+  static const columnSocialLinkedIn = 'socialLinkedIn';
+  static const columnOccupation = 'occupation';
+  static const columnInterests = 'interests';
+  static const columnDietaryRestrictions = 'dietaryRestrictions';
+  static const columnIntrovertExtrovert = 'introvertExtrovert';
+  static const columnRelationshipStatus = 'relationshipStatus';
 
   // Make this a singleton class
   DatabaseHelper._privateConstructor();
@@ -37,7 +47,7 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
     return await openDatabase(path,
-        version: _databaseVersion, onCreate: _onCreate);
+        version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
 
   // SQL code to create the database table
@@ -47,9 +57,42 @@ class DatabaseHelper {
         $columnUuid TEXT PRIMARY KEY,
         $columnName TEXT NOT NULL,
         $columnPhoto TEXT NOT NULL,
-        $columnInfo TEXT
+        $columnInfo TEXT,
+        $columnBirthday TEXT,
+        $columnRelationshipType TEXT,
+        $columnSocialInstagram TEXT,
+        $columnSocialTwitter TEXT,
+        $columnSocialLinkedIn TEXT,
+        $columnOccupation TEXT,
+        $columnInterests TEXT,
+        $columnDietaryRestrictions TEXT,
+        $columnIntrovertExtrovert TEXT,
+        $columnRelationshipStatus TEXT
       )
       ''');
+  }
+
+  // SQL code to upgrade the database table
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE $table ADD COLUMN $columnBirthday TEXT');
+      await db.execute(
+          'ALTER TABLE $table ADD COLUMN $columnRelationshipType TEXT');
+      await db
+          .execute('ALTER TABLE $table ADD COLUMN $columnSocialInstagram TEXT');
+      await db
+          .execute('ALTER TABLE $table ADD COLUMN $columnSocialTwitter TEXT');
+      await db
+          .execute('ALTER TABLE $table ADD COLUMN $columnSocialLinkedIn TEXT');
+      await db.execute('ALTER TABLE $table ADD COLUMN $columnOccupation TEXT');
+      await db.execute('ALTER TABLE $table ADD COLUMN $columnInterests TEXT');
+      await db.execute(
+          'ALTER TABLE $table ADD COLUMN $columnDietaryRestrictions TEXT');
+      await db.execute(
+          'ALTER TABLE $table ADD COLUMN $columnIntrovertExtrovert TEXT');
+      await db.execute(
+          'ALTER TABLE $table ADD COLUMN $columnRelationshipStatus TEXT');
+    }
   }
 
   // Insert a Person object into the database

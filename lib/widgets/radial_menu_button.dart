@@ -10,12 +10,14 @@ class RadialMenuOption {
   final IconData icon;
   final double degrees; // 90 = straight up, 0 = right, 180 = left
   final VoidCallback onSelected;
+  final bool enabled;
 
   const RadialMenuOption({
     required this.label,
     required this.icon,
     required this.degrees,
     required this.onSelected,
+    this.enabled = true,
   });
 }
 
@@ -155,6 +157,8 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
     double minDiff = double.infinity;
     int nearestIdx = -1;
     for (int i = 0; i < widget.options.length; i++) {
+      if (!widget.options[i].enabled) continue; // Skip disabled options
+
       final optDeg = widget.options[i].degrees;
       // circular difference
       double angleDiff = (deg - optDeg).abs();
@@ -182,7 +186,7 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
 
   void _handlePointerUp(PointerUpEvent event) {
     _longPressTimer?.cancel();
-    if (_highlightedIndex != -1) {
+    if (_highlightedIndex != -1 && widget.options[_highlightedIndex].enabled) {
       HapticFeedback.mediumImpact();
       widget.options[_highlightedIndex].onSelected();
     }
@@ -236,6 +240,7 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
   Widget _buildOptionNode(int index) {
     final option = widget.options[index];
     final isHighlighted = index == _highlightedIndex;
+    final isEnabled = option.enabled;
 
     // Stagger animation based on index
     final startVal = (index * 0.1).clamp(0.0, 1.0);
@@ -282,10 +287,12 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withAlpha(50),
+                  color: isEnabled
+                      ? Theme.of(context).colorScheme.primary.withAlpha(50)
+                      : Theme.of(context).colorScheme.surface.withAlpha(50),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.white.withAlpha(102),
+                    color: Colors.white.withAlpha(isEnabled ? 102 : 30),
                     width: 1.5,
                   ),
                   boxShadow: [
@@ -300,7 +307,12 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
                   option.icon,
                   color: isHighlighted
                       ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
+                      : (isEnabled
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withAlpha(100)),
                   size: 20,
                 ),
               ),
@@ -312,7 +324,9 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
             style: TextStyle(
               fontSize: 12,
               fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: isEnabled
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSurface.withAlpha(100),
             ),
           ),
         ],

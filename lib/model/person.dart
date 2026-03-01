@@ -10,12 +10,67 @@ class Person {
   String photo;
   List<PersonInfo> info = [];
 
+  // New optional fields
+  DateTime? birthday;
+  List<String>? relationshipType;
+  String? socialInstagram;
+  String? socialTwitter;
+  String? socialLinkedIn;
+  String? occupation;
+  List<String>? interests;
+  List<String>? dietaryRestrictions;
+  String? introvertExtrovert;
+  String? relationshipStatus;
+
   Person({
     required this.name,
     required this.photo,
     required this.info,
+    this.birthday,
+    this.relationshipType,
+    this.socialInstagram,
+    this.socialTwitter,
+    this.socialLinkedIn,
+    this.occupation,
+    this.interests,
+    this.dietaryRestrictions,
+    this.introvertExtrovert,
+    this.relationshipStatus,
     String? uuid,
   }) : uuid = uuid ?? const Uuid().v4(); // Generate a UUID if not provided
+
+  Person copyWith({
+    String? name,
+    String? photo,
+    List<PersonInfo>? info,
+    DateTime? birthday,
+    List<String>? relationshipType,
+    String? socialInstagram,
+    String? socialTwitter,
+    String? socialLinkedIn,
+    String? occupation,
+    List<String>? interests,
+    List<String>? dietaryRestrictions,
+    String? introvertExtrovert,
+    String? relationshipStatus,
+  }) {
+    return Person(
+      uuid: uuid,
+      name: name ?? this.name,
+      photo: photo ?? this.photo,
+      info: info ?? this.info,
+      birthday: birthday ?? this.birthday,
+      relationshipType: relationshipType ?? this.relationshipType,
+      socialInstagram: socialInstagram ?? this.socialInstagram,
+      socialTwitter: socialTwitter ?? this.socialTwitter,
+      socialLinkedIn: socialLinkedIn ?? this.socialLinkedIn,
+      occupation: occupation ?? this.occupation,
+      interests: interests ?? this.interests,
+      dietaryRestrictions: dietaryRestrictions ?? this.dietaryRestrictions,
+      introvertExtrovert: introvertExtrovert ?? this.introvertExtrovert,
+      relationshipStatus: relationshipStatus ?? this.relationshipStatus,
+    );
+  }
 
   // Convert a Person into a Map object for database operations
   Map<String, dynamic> toMap() {
@@ -25,6 +80,18 @@ class Person {
       'name': name,
       'photo': photo,
       'info': jsonEncode(infoList), // Convert info list to JSON string
+      'birthday': birthday?.toIso8601String(),
+      'relationshipType':
+          relationshipType != null ? jsonEncode(relationshipType) : null,
+      'socialInstagram': socialInstagram,
+      'socialTwitter': socialTwitter,
+      'socialLinkedIn': socialLinkedIn,
+      'occupation': occupation,
+      'interests': interests != null ? jsonEncode(interests) : null,
+      'dietaryRestrictions':
+          dietaryRestrictions != null ? jsonEncode(dietaryRestrictions) : null,
+      'introvertExtrovert': introvertExtrovert,
+      'relationshipStatus': relationshipStatus,
     };
   }
 
@@ -55,6 +122,23 @@ class Person {
       name: map['name'],
       photo: map['photo'],
       info: parsedInfo, // Decode JSON string to list
+      birthday:
+          map['birthday'] != null ? DateTime.tryParse(map['birthday']) : null,
+      relationshipType: map['relationshipType'] != null
+          ? List<String>.from(jsonDecode(map['relationshipType']))
+          : null,
+      socialInstagram: map['socialInstagram'],
+      socialTwitter: map['socialTwitter'],
+      socialLinkedIn: map['socialLinkedIn'],
+      occupation: map['occupation'],
+      interests: map['interests'] != null
+          ? List<String>.from(jsonDecode(map['interests']))
+          : null,
+      dietaryRestrictions: map['dietaryRestrictions'] != null
+          ? List<String>.from(jsonDecode(map['dietaryRestrictions']))
+          : null,
+      introvertExtrovert: map['introvertExtrovert'],
+      relationshipStatus: map['relationshipStatus'],
     );
   }
 

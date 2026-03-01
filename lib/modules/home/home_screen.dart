@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:my_people/modules/home/widgets/tooltip_arrows/add_profile_tooltip.dart';
 import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/widgets/radial_menu_button.dart';
 import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
-import 'package:my_people/modules/home/widgets/empty_home.dart';
 import 'package:my_people/modules/home/widgets/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/app_theme.dart';
@@ -59,7 +59,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _buildGradientHeader(),
         Consumer(builder: (context, ref, _) {
           final Widget child = ref.watch(peopleProvider).isEmpty
-              ? const EmptyHome()
+              ? Center(
+                  child: Padding(
+                  padding: const EdgeInsets.only(bottom: 100),
+                  child: AddProfileTooltip(),
+                ))
               : const PeopleGrid();
           return Padding(
             padding: const EdgeInsets.only(top: 140),
@@ -125,12 +129,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         // Always positioned Search Bar
-        Positioned(
-          top: 92,
-          left: 16,
-          right: 16,
-          child: _buildSearchBar(),
-        ),
+        ref.watch(peopleProvider).isEmpty
+            ? const SizedBox.shrink()
+            : Positioned(
+                top: 92,
+                left: 16,
+                right: 16,
+                child: _buildSearchBar(),
+              ),
       ],
     );
   }
@@ -166,37 +172,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildFloatingActionButton() {
-    return Consumer(builder: (context, ref, _) {
-      if (ref.watch(peopleProvider).isEmpty) {
-        return const SizedBox.shrink();
-      }
-
-      return RadialMenuButton(
-        options: [
-          RadialMenuOption(
-            label: 'Create',
-            icon: Icons.add_rounded,
-            degrees: 90,
-            onSelected: () => showPersonDetailBottomSheet(context),
-          ),
-          RadialMenuOption(
-            label: 'Settings',
-            icon: Icons.settings_rounded,
-            degrees: 0,
-            onSelected: () {
-              // Future settings integration
-            },
-          ),
-          RadialMenuOption(
-            label: 'Search',
-            icon: Icons.search_rounded,
-            degrees: 180,
-            onSelected: () {
-              _searchFocusNode.requestFocus();
-            },
-          ),
-        ],
-      );
-    });
+    return RadialMenuButton(
+      options: [
+        RadialMenuOption(
+          label: 'Create',
+          icon: Icons.add_rounded,
+          degrees: 90,
+          onSelected: () => showPersonDetailBottomSheet(context),
+        ),
+        RadialMenuOption(
+          label: 'Settings',
+          icon: Icons.settings_rounded,
+          degrees: 0,
+          onSelected: () {
+            // Future settings integration
+          },
+        ),
+        RadialMenuOption(
+          label: 'Search',
+          icon: Icons.search_rounded,
+          degrees: 180,
+          onSelected: () {
+            _searchFocusNode.requestFocus();
+          },
+        ),
+      ],
+    );
   }
 }

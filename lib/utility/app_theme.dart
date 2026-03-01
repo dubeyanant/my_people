@@ -30,11 +30,11 @@ class AppTheme {
     final now = DateTime.now();
     final hour = now.hour;
 
-    if (hour >= 6 && hour < 12) {
+    if (hour >= 5 && hour < 13) {
       return _morningTheme;
-    } else if (hour >= 12 && hour < 16) {
+    } else if (hour >= 13 && hour < 18) {
       return _afternoonTheme;
-    } else if (hour >= 16 && hour < 20) {
+    } else if (hour >= 18 && hour < 21) {
       return _eveningTheme;
     } else {
       return _nightTheme;

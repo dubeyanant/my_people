@@ -52,11 +52,9 @@ class People extends _$People {
     final index = state.indexWhere((person) => person.uuid == oldPerson.uuid);
     if (index != -1) {
       // Create a copy of the person to update
-      final updatedPerson = Person(
-        uuid: oldPerson.uuid,
+      final updatedPerson = oldPerson.copyWith(
         name: newName,
         photo: newPhoto,
-        info: List.from(oldPerson.info),
       );
 
       DebugPrint.log(
@@ -68,6 +66,17 @@ class People extends _$People {
       AnalyticsHelper.trackFeatureUsage('update_person');
       _fetchPeople();
     }
+  }
+
+  Future<void> updatePersonDetails(Person updatedPerson) async {
+    await _dbHelper.updatePerson(updatedPerson);
+    DebugPrint.log(
+      'Person Details Updated: ${updatedPerson.name}',
+      color: DebugColor.green,
+      tag: 'PeopleProvider',
+    );
+    AnalyticsHelper.trackFeatureUsage('update_person_details');
+    _fetchPeople();
   }
 
   Future<void> deletePerson(Person person) async {
@@ -85,10 +94,7 @@ class People extends _$People {
     final person = state.firstWhere((p) => p.uuid == uuid);
     final updatedInfo = List<PersonInfo>.from(person.info)..insert(0, info);
 
-    final updatedPerson = Person(
-      uuid: person.uuid,
-      name: person.name,
-      photo: person.photo,
+    final updatedPerson = person.copyWith(
       info: updatedInfo,
     );
 
@@ -108,10 +114,7 @@ class People extends _$People {
     if (index != -1 && index < person.info.length) {
       final updatedInfo = List<PersonInfo>.from(person.info)..[index] = newInfo;
 
-      final updatedPerson = Person(
-        uuid: person.uuid,
-        name: person.name,
-        photo: person.photo,
+      final updatedPerson = person.copyWith(
         info: updatedInfo,
       );
 
@@ -132,10 +135,7 @@ class People extends _$People {
       final updatedInfo = List<PersonInfo>.from(person.info)
         ..removeAt(infoItemIndex);
 
-      final updatedPerson = Person(
-        uuid: person.uuid,
-        name: person.name,
-        photo: person.photo,
+      final updatedPerson = person.copyWith(
         info: updatedInfo,
       );
 

@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter_svg/svg.dart';
-
 import 'package:my_people/utility/constants.dart';
 
 class AddProfileTooltip extends StatefulWidget {
@@ -16,8 +14,8 @@ class AddProfileTooltip extends StatefulWidget {
 class _AddProfileTooltipState extends State<AddProfileTooltip> {
   final List<String> _animatedTexts = [
     "an acquaintance",
-    "someone important"
-        "a friend",
+    "someone important",
+    "a friend",
     "your aunt",
     "a colleague",
     "your crush",
@@ -106,17 +104,6 @@ class _AddProfileTooltipState extends State<AddProfileTooltip> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 16, left: 8, bottom: 8),
-          child: SvgPicture.asset(
-            'assets/arrows/arrow2.svg',
-            height: 120,
-            colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.onSurface.withAlpha(100),
-              BlendMode.srcIn,
-            ),
-          ),
-        ),
         Text(
           AppStrings.homeScreenTagline,
           style: TextStyle(

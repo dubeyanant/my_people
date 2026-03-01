@@ -10,6 +10,7 @@ import 'package:my_people/modules/person/widgets/hold_to_delete_button.dart';
 import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
+import 'package:my_people/modules/person/person_profile_setup_screen.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PersonDetailBottomSheet extends ConsumerStatefulWidget {
@@ -90,14 +91,21 @@ class _PersonDetailBottomSheetState
         ref
             .read(peopleProvider.notifier)
             .updatePerson(widget.personToEdit!, name, imagePath);
+        Navigator.pop(context);
       } else {
         // Add new person
-        ref
-            .read(peopleProvider.notifier)
-            .addPerson(Person(name: name.trim(), photo: imagePath, info: []));
-      }
+        final newPerson = Person(name: name.trim(), photo: imagePath, info: []);
+        ref.read(peopleProvider.notifier).addPerson(newPerson);
+        Navigator.pop(context); // Close bottom sheet
 
-      Navigator.pop(context);
+        // Navigate to the profile setup screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PersonProfileSetupScreen(person: newPerson),
+          ),
+        );
+      }
     }
   }
 
