@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:my_people/providers/people_provider.dart';
-import 'package:my_people/modules/home/widgets/animated_press_button.dart';
+import 'package:my_people/widgets/radial_menu_button.dart';
 import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
 import 'package:my_people/modules/home/widgets/empty_home.dart';
 import 'package:my_people/modules/home/widgets/people_grid.dart';
@@ -49,6 +49,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       body: _buildBody(),
       floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -170,14 +171,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return const SizedBox.shrink();
       }
 
-      return AnimatedPressButton(
-        onPressed: () => showPersonDetailBottomSheet(context),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Icon(
-          Icons.add,
-          size: 28,
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
+      return RadialMenuButton(
+        options: [
+          RadialMenuOption(
+            label: 'Create',
+            icon: Icons.add_rounded,
+            degrees: 90,
+            onSelected: () => showPersonDetailBottomSheet(context),
+          ),
+          RadialMenuOption(
+            label: 'Settings',
+            icon: Icons.settings_rounded,
+            degrees: 0,
+            onSelected: () {
+              // Future settings integration
+            },
+          ),
+          RadialMenuOption(
+            label: 'Search',
+            icon: Icons.search_rounded,
+            degrees: 180,
+            onSelected: () {
+              _searchFocusNode.requestFocus();
+            },
+          ),
+        ],
       );
     });
   }

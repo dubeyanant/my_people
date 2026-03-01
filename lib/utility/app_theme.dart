@@ -86,23 +86,22 @@ class AppTheme {
   );
 
   static final ThemeData _eveningTheme = ThemeData(
-    useMaterial3: true,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: const Color(0xFF1A1035),
+    scaffoldBackgroundColor: const Color(0xFF1A102B),
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF6B3FA0),
+      seedColor: Color(0xFFFF9966),
       brightness: Brightness.dark,
-      primary: const Color(0xFF9B59B6),
-      secondary: const Color(0xFFE8736C),
-      surface: const Color(0xFF231640),
-      onSurface: const Color(0xFFEDE0F5),
+      primary: Color(0xFFFF9966),
+      secondary: Color(0xFFB388FF),
+      surface: Color(0xFF24173A),
+      onSurface: Color(0xFFF3EFFF),
     ),
-    cardColor: const Color(0xFF231640),
+    cardColor: const Color(0xFF24173A),
     extensions: const <ThemeExtension<dynamic>>[
       HeaderGradientTheme(
         colors: [
-          Color(0xFF6B3FA0),
-          Color(0xFFE8736C),
+          Color(0xFFFF9966),
+          Color(0xFF6E48AA),
         ],
       ),
     ],
@@ -110,21 +109,21 @@ class AppTheme {
 
   static final ThemeData _nightTheme = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: const Color(0xFF0F172A),
+    scaffoldBackgroundColor: const Color(0xFF121212),
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF141E30),
+      seedColor: const Color(0xFF7A5CFF),
       brightness: Brightness.dark,
-      primary: const Color(0xFF243B55),
-      secondary: const Color(0xFF243B55),
-      surface: const Color(0xFF1E293B),
-      onSurface: const Color(0xFFE2E8F0), // Light gray text
+      primary: const Color(0xFFB388FF),
+      secondary: const Color(0xFFFF8DA1),
+      surface: const Color(0xFF1C1238),
+      onSurface: const Color(0xFFEDE6FF),
     ),
-    cardColor: const Color(0xFF1E293B),
+    cardColor: const Color(0xFF1C1238),
     extensions: const <ThemeExtension<dynamic>>[
       HeaderGradientTheme(
         colors: [
-          Color(0xFF141E30),
-          Color(0xFF243B55),
+          Color(0xFF2C1B47),
+          Color(0xFF121212),
         ],
       ),
     ],

@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:my_people/modules/person/person_screen.dart';
 import 'package:my_people/providers/people_provider.dart';
-import 'package:my_people/modules/home/widgets/tooltip_arrows/add_more_profile_tooltip.dart';
 
 class PeopleGrid extends ConsumerWidget {
   const PeopleGrid({super.key});
@@ -14,10 +13,6 @@ class PeopleGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filteredPeople = ref.watch(filteredPeopleProvider);
-    final isSearchFocused = ref.watch(isHomeScreenSearchFocusedProvider);
-
-    // Check if there's exactly one person in the list
-    final bool showTooltip = filteredPeople.length == 1;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -89,10 +84,6 @@ class PeopleGrid extends ConsumerWidget {
               );
             }).toList(),
           ),
-          // Only show tooltips if there's one person AND search isn't focused
-          if (showTooltip && !isSearchFocused) ...[
-            AddMoreProfileTooltip(),
-          ],
         ],
       ),
     );

@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/model/person.dart';
-import 'package:my_people/modules/home/widgets/animated_press_button.dart';
+import 'package:my_people/widgets/radial_menu_button.dart';
 import 'package:my_people/modules/person/add_info_bottomsheet.dart';
 import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
 import 'package:my_people/modules/chat/chat_screen.dart';
@@ -50,6 +50,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
         ],
       ),
       floatingActionButton: _buildFloatingActionButtons(person),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -104,7 +105,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
     return Positioned(
       top: 48,
       left: 0,
-      right: 0,
+      right: 16,
       child: SizedBox(
         height: 54,
         child: Row(
@@ -127,6 +128,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
                 ),
                 child: TextField(
                   focusNode: searchFocusNode,
+                  onTapOutside: (value) => searchFocusNode.unfocus(),
                   controller: searchController,
                   cursorColor: Theme.of(context).colorScheme.onSurface,
                   style: TextStyle(
@@ -154,18 +156,6 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
                       setState(() => searchQuery = value.toLowerCase()),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: Icon(
-                Icons.edit,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-              onPressed: () {
-                if (context.mounted) {
-                  showPersonDetailBottomSheet(context, personToEdit: person);
-                }
-              },
             ),
           ],
         ),
@@ -420,67 +410,44 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
   }
 
   Widget? _buildFloatingActionButtons(Person person) {
-    if (person.info.isEmpty ||
-        (person.info.length == 1 && person.info[0].text.isEmpty)) {
-      return null;
-    }
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        if (person.info.length >= 3) _buildChatButton(person),
-        const SizedBox(height: 16),
-        AnimatedPressButton(
-          onPressed: () => showAddInfoBottomSheet(context, person.uuid),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child: Icon(
-            Icons.add,
-            size: 28,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
+    return RadialMenuButton(
+      options: [
+        RadialMenuOption(
+          label: 'Create',
+          icon: Icons.add_rounded,
+          degrees: 90,
+          onSelected: () => showAddInfoBottomSheet(context, person.uuid),
+        ),
+        RadialMenuOption(
+          label: 'Chat',
+          icon: Icons.chat_rounded,
+          degrees: 0,
+          onSelected: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChatScreen(person)),
+            );
+          },
+        ),
+        RadialMenuOption(
+          label: 'Edit',
+          icon: Icons.edit_rounded,
+          degrees: 45,
+          onSelected: () {
+            if (context.mounted) {
+              showPersonDetailBottomSheet(context, personToEdit: person);
+            }
+          },
+        ),
+        RadialMenuOption(
+          label: 'Search',
+          icon: Icons.search_rounded,
+          degrees: 180,
+          onSelected: () {
+            searchFocusNode.requestFocus();
+          },
         ),
       ],
-    );
-  }
-
-  Widget _buildChatButton(Person person) {
-    return GestureDetector(
-      onTap: () => Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ChatScreen(person))),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).shadowColor.withAlpha(60),
-              blurRadius: 6.0,
-              spreadRadius: 0.0,
-              offset: const Offset(0, 4),
-            )
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              AppStrings.chat,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(width: 8),
-            Icon(
-              Icons.chat,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

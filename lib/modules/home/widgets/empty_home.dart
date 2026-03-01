@@ -15,6 +15,7 @@ class EmptyHome extends StatelessWidget {
         children: [
           AnimatedPressButton(
             onPressed: () => showPersonDetailBottomSheet(context),
+            backgroundColor: Theme.of(context).colorScheme.primary,
             child: Icon(
               Icons.add,
               size: 28,
