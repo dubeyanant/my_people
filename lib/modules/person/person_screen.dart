@@ -176,12 +176,13 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
   Widget _buildProfileInfo(Person person, bool isFile) {
     return Positioned(
       top: 116,
-      left: 16,
-      child: Row(
+      left: 0,
+      right: 0,
+      child: Column(
         spacing: 16,
         children: [
           CircleAvatar(
-            radius: 40,
+            radius: 60,
             backgroundImage: isFile
                 ? Image.file(
                     File(person.photo),
@@ -212,84 +213,150 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
     return person.info.isEmpty
         ? Expanded(child: AddNewDetailToolTip(person: person))
         : Expanded(
-            child: ListView.builder(
-              itemCount: person.info.length,
-              padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-              itemBuilder: (context, index) {
-                bool shouldDisplay = (searchQuery.isEmpty ||
-                        person.info[index].text
-                            .toLowerCase()
-                            .contains(searchQuery)) &&
-                    person.info[index].text.isNotEmpty;
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    AppStrings.infoTimeline,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: person.info.length,
+                    padding: const EdgeInsets.only(bottom: 16),
+                    itemBuilder: (context, index) {
+                      bool shouldDisplay = (searchQuery.isEmpty ||
+                              person.info[index].text
+                                  .toLowerCase()
+                                  .contains(searchQuery)) &&
+                          person.info[index].text.isNotEmpty;
 
-                if (shouldDisplay) {
-                  final infoItemWidget = _buildInfoItem(context, person, index);
-                  bool showTooltipsBelow =
-                      person.info.length == 1 && searchQuery.isEmpty;
+                      if (shouldDisplay) {
+                        final infoItemWidget =
+                            _buildTimelineItem(context, person, index);
+                        bool showTooltipsBelow =
+                            person.info.length == 1 && searchQuery.isEmpty;
 
-                  if (showTooltipsBelow) {
-                    return Column(
-                      spacing: 16,
-                      children: [
-                        infoItemWidget,
-                        InfoTooltip(),
-                        AddMoreDetailsTooltip(),
-                      ],
-                    );
-                  } else {
-                    return infoItemWidget;
-                  }
-                }
-                return const SizedBox.shrink();
-              },
+                        if (showTooltipsBelow) {
+                          return Column(
+                            children: [
+                              infoItemWidget,
+                              const SizedBox(height: 16),
+                              InfoTooltip(),
+                              AddMoreDetailsTooltip(),
+                            ],
+                          );
+                        } else {
+                          return infoItemWidget;
+                        }
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ),
+              ],
             ),
           );
   }
 
-  Widget _buildInfoItem(BuildContext context, Person person, int index) {
-    final info = person.info[index];
+  Widget _buildTimelineItem(BuildContext context, Person person, int index) {
+    final bool isFirst = index == 0;
+    final bool isLast = index == person.info.length - 1;
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Timeline column
+          SizedBox(
+            width: 48,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                // Line above dot
+                Expanded(
+                  child: Center(
+                    child: Container(
+                      width: 2,
+                      color: isFirst
+                          ? Colors.transparent
+                          : Theme.of(context).colorScheme.primary.withAlpha(80),
+                    ),
+                  ),
+                ),
+                // Dot
+                TimelineIndicator(isFilled: true),
+                // Line below dot
+                Expanded(
+                  child: Center(
+                    child: Container(
+                      width: 2,
+                      color: isLast
+                          ? Colors.transparent
+                          : Theme.of(context).colorScheme.primary.withAlpha(80),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Card
+          Expanded(
+            child: GestureDetector(
+              onLongPressStart: (details) {
+                _showPopupMenu(context, person, index, details.globalPosition);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.fromLTRB(0, 6, 16, 6),
+                child: _buildInfoContent(context, person.info[index]),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoContent(BuildContext context, info) {
     final dateObj = info.date;
     final dateStr = dateObj != null
         ? '${_getMonthName(dateObj.month)} ${dateObj.day}, ${dateObj.year}'
         : null;
 
-    return GestureDetector(
-      onLongPressStart: (details) {
-        _showPopupMenu(context, person, index, details.globalPosition);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-        width: double.maxFinite,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (dateStr != null) ...[
-              Text(
-                dateStr,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
-                ),
-              ),
-              const SizedBox(height: 4),
-            ],
-            Text(
-              info.text,
-              style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.w500,
-                height: 1.4,
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (dateStr != null) ...[
+          Text(
+            dateStr,
+            style: TextStyle(
+              fontSize: 13,
+              color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
             ),
-          ],
+          ),
+          const SizedBox(height: 4),
+        ],
+        Text(
+          info.text,
+          style: TextStyle(
+            fontSize: 16,
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w500,
+            height: 1.4,
+          ),
         ),
-      ),
+      ],
     );
   }
 
