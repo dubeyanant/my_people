@@ -62,7 +62,7 @@ class ChatInputSection extends StatelessWidget {
                   ),
                 ),
                 fillColor: loading
-                    ? Colors.grey[200]
+                    ? Theme.of(context).colorScheme.surfaceContainerHighest
                     : Theme.of(context).colorScheme.primaryContainer,
                 filled: true,
                 contentPadding: const EdgeInsets.all(16),

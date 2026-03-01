@@ -23,7 +23,8 @@ class AddMoreDetailsTooltip extends StatelessWidget {
                 child: Text(
                   AppStrings.addMoreTooltip2,
                   style: TextStyle(
-                    color: Colors.grey[600],
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withAlpha(180),
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
@@ -33,7 +34,7 @@ class AddMoreDetailsTooltip extends StatelessWidget {
                 'assets/arrows/circle1.svg',
                 height: 80,
                 colorFilter: ColorFilter.mode(
-                  Colors.grey[400] ?? Colors.grey,
+                  Theme.of(context).colorScheme.onSurface.withAlpha(100),
                   BlendMode.srcIn,
                 ),
               ),

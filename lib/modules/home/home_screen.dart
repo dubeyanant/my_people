@@ -8,6 +8,7 @@ import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
 import 'package:my_people/modules/home/widgets/empty_home.dart';
 import 'package:my_people/modules/home/widgets/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
+import 'package:my_people/utility/app_theme.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -71,6 +72,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildGradientHeader() {
     final screenHeight = MediaQuery.of(context).size.height;
     final gradientHeight = screenHeight * 0.3;
+    final headerGradient =
+        Theme.of(context).extension<HeaderGradientTheme>()?.colors ??
+            [Colors.blueAccent, Colors.blue];
 
     return Stack(
       children: [
@@ -92,9 +96,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blueAccent[700]!,
-                  Colors.blue.withAlpha(180),
-                  Colors.blue[200]!.withAlpha(40),
+                  headerGradient[0],
+                  headerGradient.length > 1
+                      ? headerGradient[1]
+                      : headerGradient[0],
+                  Theme.of(context).scaffoldBackgroundColor,
                 ],
               ),
             ),
@@ -132,7 +138,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       height: 44,
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(200),
+        color: Theme.of(context).colorScheme.surface.withAlpha(200),
         borderRadius: BorderRadius.circular(22),
       ),
       child: TextField(
@@ -140,15 +146,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         autofocus: false,
         onTapOutside: (value) => _searchFocusNode.unfocus(),
         controller: _searchController,
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-          hintStyle: TextStyle(color: Colors.black54),
+        decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withAlpha(150)),
           hintText: AppStrings.personSearchBarHintText,
           prefixIcon: Icon(
             Icons.search,
-            color: Colors.black54,
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
           ),
-          border: OutlineInputBorder(borderSide: BorderSide.none),
+          border: const OutlineInputBorder(borderSide: BorderSide.none),
         ),
         onChanged: (value) =>
             ref.read(homeSearchQueryProvider.notifier).updateQuery(value),
@@ -164,6 +172,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       return AnimatedPressButton(
         onPressed: () => showPersonDetailBottomSheet(context),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         child: Icon(
           Icons.add,
           size: 28,

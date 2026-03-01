@@ -17,4 +17,7 @@ class PersonInfo {
       date: map['date'] != null ? DateTime.tryParse(map['date']) : null,
     );
   }
+
+  @override
+  String toString() => "{text: $text, date: $date}";
 }

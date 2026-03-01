@@ -44,7 +44,9 @@ class MessageBubble extends StatelessWidget {
                   color: isMe
                       ? Theme.of(context).colorScheme.secondary
                       : isReportedMessage
-                          ? Colors.grey[300]
+                          ? Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest
                           : Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: isMe
                       ? const BorderRadius.only(
@@ -64,7 +66,7 @@ class MessageBubble extends StatelessWidget {
                     color: isMe
                         ? Theme.of(context).colorScheme.onSecondary
                         : isReportedMessage
-                            ? Colors.black54
+                            ? Theme.of(context).colorScheme.onSurfaceVariant
                             : Theme.of(context).colorScheme.onPrimaryContainer,
                     fontStyle:
                         isReportedMessage ? FontStyle.italic : FontStyle.normal,

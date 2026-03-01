@@ -43,7 +43,7 @@ class PeopleGrid extends ConsumerWidget {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
@@ -70,12 +70,12 @@ class PeopleGrid extends ConsumerWidget {
                       ),
                       Container(
                         padding: const EdgeInsets.all(12),
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         child: Text(
                           person.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w400,
-                            color: Colors.black87,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 18,
                             height: 1.2,
                           ),

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/modules/home/home_screen.dart';
 import 'package:my_people/utility/shared_preferences.dart';
+import 'package:my_people/utility/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,13 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My People',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.light,
-          seedColor: Colors.blueAccent,
-        ),
-      ),
-      themeMode: ThemeMode.light,
+      theme: AppTheme.getThemeForCurrentTime(),
       home: const HomeScreen(),
     );
   }

@@ -18,7 +18,7 @@ class InfoTooltip extends StatelessWidget {
               'assets/arrows/arrow4.svg',
               height: 100,
               colorFilter: ColorFilter.mode(
-                Colors.grey[400] ?? Colors.grey,
+                Theme.of(context).colorScheme.onSurface.withAlpha(100),
                 BlendMode.srcIn,
               ),
             ),
@@ -27,7 +27,7 @@ class InfoTooltip extends StatelessWidget {
               AppStrings.infoTooltip,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.right,

@@ -104,6 +104,7 @@ class _PersonDetailBottomSheetState
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Theme.of(context).colorScheme.surface,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(24),
         topRight: Radius.circular(24),
@@ -120,9 +121,10 @@ class _PersonDetailBottomSheetState
                 widget.personToEdit == null
                     ? AppStrings.addPerson
                     : AppStrings.editPerson,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               GestureDetector(
@@ -157,7 +159,10 @@ class _PersonDetailBottomSheetState
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: AppStrings.personDetailTextFieldLabel,
-                  hintStyle: TextStyle(color: Colors.grey),
+                  hintStyle: TextStyle(
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withAlpha(150),
+                  ),
                   hintText: AppStrings.personDetailTextFieldHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),

@@ -22,7 +22,7 @@ class AddMoreProfileTooltip extends StatelessWidget {
                 AppStrings.addMoreTooltip,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.right,
@@ -34,7 +34,7 @@ class AddMoreProfileTooltip extends StatelessWidget {
                   'assets/arrows/arrow1.svg',
                   height: 80,
                   colorFilter: ColorFilter.mode(
-                    Colors.grey[400] ?? Colors.grey,
+                    Theme.of(context).colorScheme.onSurface.withAlpha(100),
                     BlendMode.srcIn,
                   ),
                 ),

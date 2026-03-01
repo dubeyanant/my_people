@@ -112,7 +112,7 @@ class _AddProfileTooltipState extends State<AddProfileTooltip> {
             'assets/arrows/arrow2.svg',
             height: 120,
             colorFilter: ColorFilter.mode(
-              Colors.grey[400] ?? Colors.grey,
+              Theme.of(context).colorScheme.onSurface.withAlpha(100),
               BlendMode.srcIn,
             ),
           ),
@@ -121,7 +121,7 @@ class _AddProfileTooltipState extends State<AddProfileTooltip> {
           AppStrings.homeScreenTagline,
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey[600],
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -129,7 +129,7 @@ class _AddProfileTooltipState extends State<AddProfileTooltip> {
           _displayedText.isEmpty ? "" : _displayedText,
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey[600],
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
             fontWeight: FontWeight.w500,
           ),
           textAlign: TextAlign.center,

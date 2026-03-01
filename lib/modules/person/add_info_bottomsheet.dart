@@ -93,6 +93,7 @@ class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Material(
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
@@ -117,7 +118,12 @@ class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
                         labelText: widget.initialInfo == null
                             ? AppStrings.addInfoTextFieldLabel
                             : AppStrings.editInfoTextFieldLabel,
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withAlpha(150),
+                        ),
                         hintText: AppStrings.addInfoTextFieldHint,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),

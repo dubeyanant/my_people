@@ -20,7 +20,7 @@ class ReportTooltip extends StatelessWidget {
                 'Hold the message to report',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.left,
@@ -29,7 +29,7 @@ class ReportTooltip extends StatelessWidget {
                 'assets/arrows/underline1.svg',
                 height: 30,
                 colorFilter: ColorFilter.mode(
-                  Colors.grey[400] ?? Colors.grey,
+                  Theme.of(context).colorScheme.onSurface.withAlpha(100),
                   BlendMode.srcIn,
                 ),
               ),

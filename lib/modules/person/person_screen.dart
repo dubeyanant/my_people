@@ -14,6 +14,7 @@ import 'package:my_people/modules/person/widgets/add_more_details_tooltip.dart';
 import 'package:my_people/modules/person/widgets/add_new_detail_tool_tip.dart';
 import 'package:my_people/modules/person/widgets/info_tooltip.dart';
 import 'package:my_people/utility/constants.dart';
+import 'package:my_people/utility/app_theme.dart';
 
 class PersonScreen extends ConsumerStatefulWidget {
   final String id;
@@ -56,6 +57,10 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
     final isFile = File(person.photo).existsSync();
     final screenHeight = MediaQuery.of(context).size.height;
     final gradientHeight = screenHeight * 0.3;
+    final headerGradient =
+        Theme.of(context).extension<HeaderGradientTheme>()?.colors ??
+            [Colors.blueAccent, Colors.blue];
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -77,9 +82,11 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blueAccent[700]!,
-                  Colors.blue.withAlpha(180),
-                  Colors.blue[200]!.withAlpha(40),
+                  headerGradient[0],
+                  headerGradient.length > 1
+                      ? headerGradient[1]
+                      : headerGradient[0],
+                  Theme.of(context).scaffoldBackgroundColor,
                 ],
               ),
             ),
@@ -106,31 +113,42 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
           children: [
             IconButton(
               onPressed: () => Navigator.pop(context),
-              icon: const Icon(
+              icon: Icon(
                 Icons.arrow_back_ios_new,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
             Expanded(
               child: Container(
                 height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(200),
+                  color: Theme.of(context).colorScheme.surface.withAlpha(200),
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: TextField(
                   focusNode: searchFocusNode,
                   controller: searchController,
-                  cursorColor: Colors.black87,
-                  style: const TextStyle(color: Colors.black87, fontSize: 16),
+                  cursorColor: Theme.of(context).colorScheme.onSurface,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 16),
                   maxLines: 1,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                    hintStyle: TextStyle(color: Colors.black54),
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    hintStyle: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withAlpha(150)),
                     hintText: AppStrings.noteSearchBarHintText,
-                    prefixIcon: Icon(Icons.search, color: Colors.black54),
-                    border: OutlineInputBorder(borderSide: BorderSide.none),
+                    prefixIcon: Icon(Icons.search,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withAlpha(150)),
+                    border:
+                        const OutlineInputBorder(borderSide: BorderSide.none),
                   ),
                   onChanged: (value) =>
                       setState(() => searchQuery = value.toLowerCase()),
@@ -139,9 +157,9 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
             ),
             const SizedBox(width: 8),
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.edit,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
               onPressed: () {
                 if (context.mounted) {
@@ -241,7 +259,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFD9BB9B),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(16),
@@ -253,18 +271,18 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
             if (dateStr != null) ...[
               Text(
                 dateStr,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
-                  color: Colors.black87,
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
                 ),
               ),
               const SizedBox(height: 4),
             ],
             Text(
               info.text,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
-                color: Colors.black,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w500,
                 height: 1.4,
               ),
@@ -348,6 +366,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
         const SizedBox(height: 16),
         AnimatedPressButton(
           onPressed: () => showAddInfoBottomSheet(context, person.uuid),
+          backgroundColor: Theme.of(context).colorScheme.primary,
           child: Icon(
             Icons.add,
             size: 28,
@@ -365,11 +384,11 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.blueAccent,
+          color: Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(60),
+              color: Theme.of(context).shadowColor.withAlpha(60),
               blurRadius: 6.0,
               spreadRadius: 0.0,
               offset: const Offset(0, 4),
