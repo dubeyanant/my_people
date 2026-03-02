@@ -437,6 +437,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
         ),
         RadialMenuOption(
           label: 'Share',
+          enabled: false,
           icon: Icons.share,
           degrees: 135,
           onSelected: () {},

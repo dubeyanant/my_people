@@ -65,7 +65,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Info: ${widget.person.info.map((e) => e.text).join(', ')}
   Extra Info: ${widget.person.birthday}, ${widget.person.dietaryRestrictions}, ${widget.person.interests}, ${widget.person.introvertExtrovert}, ${widget.person.occupation}, ${widget.person.relationshipType}, ${widget.person.relationshipStatus}, 
 
-  Strictly use this info while answering any of the next prompts. Do not hallucinate or generate information that is not present in this info. If you understood, say "Hi, how may I help you?"
+  Strictly use this info while answering in effective and concise manner in any of the next prompts. Do not hallucinate or generate information that is not present in this info. If you understood, say "Hi, how may I help you?"
   ''';
 
     setState(() {

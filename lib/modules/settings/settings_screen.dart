@@ -103,6 +103,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  Future<void> _sendBugReport() async {
+    try {
+      final Uri emailLaunchUri = Uri(
+        scheme: 'mailto',
+        path: 'contact@anantdubey.com',
+        query: 'subject=Bug Report - My People App',
+      );
+      await launchUrl(emailLaunchUri);
+    } catch (e) {
+      DebugPrint.log(e.toString());
+    }
+  }
+
   Future<void> _openPrivacyPolicy() async {
     try {
       final Uri url = Uri.parse('https://www.anantdubey.com/privacy-policy');
@@ -131,6 +144,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               'https://play.google.com/store/apps/details?id=com.infiniteants.mypeople'),
         ),
       );
+    } catch (e) {
+      DebugPrint.log(e.toString());
+    }
+  }
+
+  Future<void> _donation() async {
+    try {
+      final Uri url = Uri.parse('https://www.buymeacoffee.com/aanant');
+      await launchUrl(url);
     } catch (e) {
       DebugPrint.log(e.toString());
     }
@@ -202,16 +224,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
           // Links
           ListTile(
-            leading: const Icon(Icons.email),
-            title: const Text('Feature Request'),
-            onTap: _sendFeatureRequest,
-          ),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip),
-            title: const Text('Privacy Policy'),
-            onTap: _openPrivacyPolicy,
-          ),
-          ListTile(
             leading: const Icon(Icons.star),
             title: const Text('Rate App'),
             onTap: _rateApp,
@@ -221,14 +233,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: const Text('Share App'),
             onTap: _shareApp,
           ),
+          ListTile(
+            leading: const Icon(Icons.email),
+            title: const Text('Feature Request'),
+            onTap: _sendFeatureRequest,
+          ),
+          ListTile(
+            leading: const Icon(Icons.bug_report),
+            title: const Text('Bug Report'),
+            onTap: _sendBugReport,
+          ),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip),
+            title: const Text('Privacy Policy'),
+            onTap: _openPrivacyPolicy,
+          ),
+
           const Divider(),
+
+          ListTile(
+            leading: const Icon(Icons.coffee),
+            title: const Text('Buy Me A Coffee'),
+            subtitle: const Text(
+                'Support future updates and keep this project alive'),
+            onTap: _donation,
+          ),
 
           // Personal Note
           const ListTile(
             leading: Icon(Icons.note),
             title: Text('Developer\'s Note'),
             subtitle: Text(
-                "My People started as a personal need. I wanted one place to remember the little things about the people who matter to me.\n\nNo tracking. No ads. No cloud. Everything stays on your device, period.\n\nI didn't cut corners on privacy because I use this app myself and I wouldn't want it any other way.\n\nIf you have ideas, feedback, or just want to say hi, I'd love to hear from you.\n\nBuilt with ❤️ by Anant Dubey."),
+                "My People started as a personal need. I wanted a single place to remember even little things about the people who matter to me.\n\nNo tracking. No ads. No cloud. Everything stays on your device, period.\n\nI didn't cut corners on privacy because I use this app myself and I wouldn't want it any other way.\n\nIf you have ideas, feedback, or just want to say hi, I'd love to hear from you.\n\nBuilt with ❤️ by Anant Dubey."),
           ),
 
           // Version

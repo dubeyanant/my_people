@@ -46,11 +46,9 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
   bool _isSwiping = false;
   int _highlightedIndex = -1;
 
-  // Glass specs
-  final double _baseBlur = 12.0;
-  final double _baseOpacity = 0.15;
-  double _currentBlur = 12.0;
-  double _currentOpacity = 0.15;
+  // Scroll hide/show tracking
+  double _lastScrollOffset = 0.0;
+  bool _isVisible = true;
 
   @override
   void initState() {
@@ -80,16 +78,20 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
   void _onScroll() {
     if (_scrollController == null || !_scrollController!.hasClients) return;
     final offset = _scrollController!.offset;
-    setState(() {
-      // If we scroll past top, increase blur and lower opacity
-      if (offset > 10) {
-        _currentBlur = 18.0;
-        _currentOpacity = 0.08;
-      } else {
-        _currentBlur = _baseBlur;
-        _currentOpacity = _baseOpacity;
+
+    // Ignore bounces at the top
+    if (offset < 0) return;
+
+    if (offset > _lastScrollOffset && offset > 20) {
+      if (_isVisible) {
+        setState(() => _isVisible = false);
       }
-    });
+    } else if (offset < _lastScrollOffset) {
+      if (!_isVisible) {
+        setState(() => _isVisible = true);
+      }
+    }
+    _lastScrollOffset = offset;
   }
 
   @override
@@ -210,29 +212,34 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 300,
-      height: 150,
-      child: Stack(
-        alignment: Alignment.center,
-        clipBehavior: Clip.none,
-        children: [
-          // Menu Options
-          for (int i = 0; i < widget.options.length; i++) _buildOptionNode(i),
+    return AnimatedSlide(
+      offset: _isVisible ? Offset.zero : const Offset(0, 1.5),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutSine,
+      child: SizedBox(
+        width: 300,
+        height: 180,
+        child: Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            // Menu Options
+            for (int i = 0; i < widget.options.length; i++) _buildOptionNode(i),
 
-          // Main Button
-          Listener(
-            onPointerDown: _handlePointerDown,
-            onPointerMove: _handlePointerMove,
-            onPointerUp: _handlePointerUp,
-            onPointerCancel: _handlePointerCancel,
-            child: GestureDetector(
-              onTap: () {}, // absorbs taps
-              onPanStart: (_) {}, // absorbs drags
-              child: _buildMainButton(),
+            // Main Button
+            Listener(
+              onPointerDown: _handlePointerDown,
+              onPointerMove: _handlePointerMove,
+              onPointerUp: _handlePointerUp,
+              onPointerCancel: _handlePointerCancel,
+              child: GestureDetector(
+                onTap: () {}, // absorbs taps
+                onPanStart: (_) {}, // absorbs drags
+                child: _buildMainButton(),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -352,14 +359,11 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
       ),
       child: ClipOval(
         child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: _currentBlur,
-            sigmaY: _currentBlur,
-          ),
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: _currentOpacity),
+              color: Colors.white.withValues(alpha: 0.15),
               shape: BoxShape.circle,
               border: Border.all(
                 color: Colors.white.withAlpha(76),
