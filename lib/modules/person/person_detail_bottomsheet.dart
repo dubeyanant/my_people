@@ -32,14 +32,14 @@ class _PersonDetailBottomSheetState
   late String _defaultImage;
 
   final List<String> _defaultImages = [
-    'assets/profile_pictures/default1.png',
-    'assets/profile_pictures/default2.png',
-    'assets/profile_pictures/default3.png',
-    'assets/profile_pictures/default4.png',
-    'assets/profile_pictures/default5.png',
-    'assets/profile_pictures/default6.png',
-    'assets/profile_pictures/default7.png',
-    'assets/profile_pictures/default8.png',
+    'assets/profile_pictures/default1.webp',
+    'assets/profile_pictures/default2.webp',
+    'assets/profile_pictures/default3.webp',
+    'assets/profile_pictures/default4.webp',
+    'assets/profile_pictures/default5.webp',
+    'assets/profile_pictures/default6.webp',
+    'assets/profile_pictures/default7.webp',
+    'assets/profile_pictures/default8.webp',
   ];
 
   @override
