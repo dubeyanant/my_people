@@ -11,6 +11,7 @@ import 'package:my_people/model/person.dart';
 import 'package:my_people/widgets/radial_menu_button.dart';
 import 'package:my_people/modules/person/add_info_bottomsheet.dart';
 import 'package:my_people/modules/chat/chat_screen.dart';
+import 'package:my_people/helpers/profile_sharing_helper.dart';
 import 'package:my_people/modules/person/person_profile_setup_screen.dart';
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/app_theme.dart';
@@ -436,16 +437,9 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
           onSelected: () => showAddInfoBottomSheet(context, person.uuid),
         ),
         RadialMenuOption(
-          label: 'Share',
-          enabled: false,
-          icon: Icons.share,
-          degrees: 135,
-          onSelected: () {},
-        ),
-        RadialMenuOption(
           label: 'Chat',
           icon: Icons.chat_rounded,
-          degrees: 0,
+          degrees: 45,
           enabled: person.info.length > 3,
           onSelected: () {
             Navigator.push(
@@ -457,7 +451,7 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
         RadialMenuOption(
           label: 'Edit',
           icon: Icons.edit_rounded,
-          degrees: 45,
+          degrees: 0,
           onSelected: () {
             if (context.mounted) {
               Navigator.push(
@@ -476,6 +470,19 @@ class _PersonScreenState extends ConsumerState<PersonScreen> {
           onSelected: () {
             searchFocusNode.requestFocus();
           },
+        ),
+        RadialMenuOption(
+          label: 'Share',
+          icon: Icons.share,
+          degrees: 135,
+          onSelected: () => ProfileSharingHelper.shareProfile(person),
+        ),
+        RadialMenuOption(
+          label: 'Event',
+          icon: Icons.event,
+          degrees: 225,
+          enabled: false,
+          onSelected: () {},
         ),
       ],
     );

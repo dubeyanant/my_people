@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:intl/intl.dart';
 
 import 'package:my_people/utility/debug_print.dart';
 import 'package:my_people/utility/app_theme.dart';
@@ -11,6 +12,8 @@ import 'package:my_people/utility/shared_preferences.dart';
 import 'package:my_people/providers/theme_provider.dart';
 import 'package:my_people/helpers/backup_helper.dart';
 import 'package:my_people/helpers/biometric_helper.dart';
+import 'package:my_people/helpers/profile_sharing_helper.dart';
+import 'package:my_people/providers/people_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -83,10 +86,73 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(success
-              ? 'Backup imported successfully. Please restart the app.'
+              ? 'Backup imported successfully'
               : 'Failed to import backup'),
         ),
       );
+      if (success) {
+        ref.invalidate(peopleProvider);
+      }
+    }
+  }
+
+  Future<void> _handleImportProfile() async {
+    try {
+      final preview = await ProfileSharingHelper.getProfilePreview();
+      if (preview == null) return; // User canceled
+
+      final String name = preview['name'];
+      final DateTime date = preview['date'];
+      final String filePath = preview['filePath'];
+      final dateStr = DateFormat.yMMMd().add_jm().format(date);
+
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Import Profile'),
+          content: Text(
+              'Do you want to import the profile for "$name"?\nThis profile was created on $dateStr.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final scaffoldMsg = ScaffoldMessenger.of(context);
+                Navigator.pop(context);
+                try {
+                  await ProfileSharingHelper.importProfile(filePath);
+                  if (mounted) {
+                    scaffoldMsg.showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Profile "$name" imported successfully')),
+                    );
+                    ref.invalidate(peopleProvider);
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    scaffoldMsg.showSnackBar(
+                      SnackBar(
+                          content:
+                              Text(e.toString().replaceAll('Exception: ', ''))),
+                    );
+                  }
+                }
+              },
+              child: const Text('Import'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
+        );
+      }
     }
   }
 
@@ -95,20 +161,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final Uri emailLaunchUri = Uri(
         scheme: 'mailto',
         path: 'contact@anantdubey.com',
-        query: 'subject=Feature Request - My People App',
-      );
-      await launchUrl(emailLaunchUri);
-    } catch (e) {
-      DebugPrint.log(e.toString());
-    }
-  }
-
-  Future<void> _sendBugReport() async {
-    try {
-      final Uri emailLaunchUri = Uri(
-        scheme: 'mailto',
-        path: 'contact@anantdubey.com',
-        query: 'subject=Bug Report - My People App',
+        query: 'subject=From My People App',
       );
       await launchUrl(emailLaunchUri);
     } catch (e) {
@@ -151,7 +204,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _donation() async {
     try {
-      final Uri url = Uri.parse('https://www.buymeacoffee.com/aanant');
+      final Uri url = Uri.parse('https://razorpay.me/@anantdubey');
       await launchUrl(url);
     } catch (e) {
       DebugPrint.log(e.toString());
@@ -211,6 +264,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             subtitle: const Text('Restore data from .myppl file'),
             onTap: _handleRestore,
           ),
+          ListTile(
+            leading: const Icon(Icons.person),
+            title: const Text('Import Profile'),
+            subtitle: const Text('Import a shared .prf.myppl profile'),
+            onTap: _handleImportProfile,
+          ),
           const Divider(),
 
           // Biometrics
@@ -234,16 +293,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onTap: _shareApp,
           ),
           ListTile(
-            leading: const Icon(Icons.email),
-            title: const Text('Feature Request'),
-            onTap: _sendFeatureRequest,
-          ),
-          ListTile(
-            leading: const Icon(Icons.bug_report),
-            title: const Text('Bug Report'),
-            onTap: _sendBugReport,
-          ),
-          ListTile(
             leading: const Icon(Icons.privacy_tip),
             title: const Text('Privacy Policy'),
             onTap: _openPrivacyPolicy,
@@ -258,7 +307,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 'Support future updates and keep this project alive'),
             onTap: _donation,
           ),
-
+          ListTile(
+            leading: const Icon(Icons.email),
+            title: const Text('Contact Me'),
+            subtitle: const Text('Request a feature or report a bug'),
+            onTap: _sendFeatureRequest,
+          ),
           // Personal Note
           const ListTile(
             leading: Icon(Icons.note),

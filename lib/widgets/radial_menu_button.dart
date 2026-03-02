@@ -218,7 +218,7 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
       curve: Curves.easeOutSine,
       child: SizedBox(
         width: 300,
-        height: 180,
+        height: 200,
         child: Stack(
           alignment: Alignment.center,
           clipBehavior: Clip.none,
@@ -263,7 +263,7 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
 
         // Convert degrees to radians for positioning (remember -y is UP)
         final rad = option.degrees * math.pi / 180;
-        final radius = 110.0 * curve.value; // distance from center
+        final radius = 110 * curve.value; // distance from center
         final dx = radius * math.cos(rad);
         final dy = -radius * math.sin(rad);
 

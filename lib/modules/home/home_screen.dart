@@ -9,7 +9,6 @@ import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
 import 'package:my_people/modules/home/widgets/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/app_theme.dart';
-
 import 'package:my_people/modules/settings/settings_screen.dart';
 import 'package:my_people/helpers/biometric_helper.dart';
 import 'package:my_people/utility/shared_preferences.dart';
@@ -235,6 +234,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onSelected: () {
             _searchFocusNode.requestFocus();
           },
+        ),
+        RadialMenuOption(
+          label: 'Chat',
+          icon: Icons.chat_rounded,
+          degrees: 45,
+          enabled: false,
+          onSelected: () {},
         ),
       ],
     );
