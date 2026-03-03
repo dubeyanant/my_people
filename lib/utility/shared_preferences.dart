@@ -51,4 +51,22 @@ class SharedPrefs {
   static bool getBiometricEnabled() {
     return _preferences!.getBool("biometricEnabled") ?? false;
   }
+
+  // Radial menu swipe tip
+  static int getRadialLongPressCount() {
+    return _preferences!.getInt("radialLongPressCount") ?? 0;
+  }
+
+  static Future<bool> incrementRadialLongPressCount() {
+    final count = getRadialLongPressCount() + 1;
+    return _preferences!.setInt("radialLongPressCount", count);
+  }
+
+  static bool getSwipeTipShown() {
+    return _preferences!.getBool("swipeTipShown") ?? false;
+  }
+
+  static Future<bool> setSwipeTipShown(bool shown) {
+    return _preferences!.setBool("swipeTipShown", shown);
+  }
 }

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:my_people/helpers/analytics_helper.dart';
+import 'package:my_people/utility/shared_preferences.dart';
 
 class RadialMenuOption {
   final String label;
@@ -36,12 +37,15 @@ class RadialMenuButton extends StatefulWidget {
 }
 
 class _RadialMenuButtonState extends State<RadialMenuButton>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
+  late AnimationController _chargeController;
   ScrollController? _scrollController;
 
   bool _isMenuOpen = false;
   Timer? _longPressTimer;
+  Timer? _hapticTimer;
+  int _hapticTickCount = 0;
 
   // Gesture tracking
   Offset? _pressOrigin;
@@ -58,6 +62,10 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 250),
+    );
+    _chargeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
     );
   }
 
@@ -99,9 +107,32 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
   @override
   void dispose() {
     _longPressTimer?.cancel();
+    _hapticTimer?.cancel();
     _animationController.dispose();
+    _chargeController.dispose();
     _scrollController?.removeListener(_onScroll);
     super.dispose();
+  }
+
+  void _startHapticEscalation() {
+    _hapticTickCount = 0;
+    _hapticTimer?.cancel();
+    _hapticTimer = Timer.periodic(const Duration(milliseconds: 80), (timer) {
+      _hapticTickCount++;
+      if (_hapticTickCount <= 3) {
+        HapticFeedback.lightImpact();
+      } else if (_hapticTickCount <= 6) {
+        HapticFeedback.mediumImpact();
+      } else {
+        HapticFeedback.heavyImpact();
+      }
+    });
+  }
+
+  void _stopHapticEscalation() {
+    _hapticTimer?.cancel();
+    _hapticTimer = null;
+    _hapticTickCount = 0;
   }
 
   void _handlePointerDown(PointerDownEvent event) {
@@ -109,14 +140,27 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
     _isSwiping = false;
     _highlightedIndex = -1;
 
+    // Start the charge ring animation immediately
+    _chargeController.forward(from: 0.0);
+
+    // Start escalating haptic feedback
+    _startHapticEscalation();
+
     _longPressTimer?.cancel();
     _longPressTimer = Timer(const Duration(milliseconds: 150), () {
       if (!_isSwiping) {
+        // Menu is opening — stop haptic escalation and give a definitive click
+        _stopHapticEscalation();
         HapticFeedback.lightImpact();
         setState(() {
           _isMenuOpen = true;
           _animationController.forward(from: 0.0);
         });
+        // Fade out the charge ring once menu opens
+        _chargeController.reverse();
+
+        // Track long-press count for swipe pro-tip
+        _trackLongPressForTip();
       }
     });
   }
@@ -131,6 +175,10 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
       _longPressTimer?.cancel();
       if (!_isSwiping) {
         _isSwiping = true;
+        // Cancel charge animation and haptics on swipe
+        _chargeController.stop();
+        _chargeController.value = 0.0;
+        _stopHapticEscalation();
         HapticFeedback.lightImpact();
       }
     }
@@ -188,8 +236,12 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
     }
   }
 
+  bool _shouldShowTip = false;
+
   void _handlePointerUp(PointerUpEvent event) {
     _longPressTimer?.cancel();
+    _stopHapticEscalation();
+
     if (_highlightedIndex != -1 && widget.options[_highlightedIndex].enabled) {
       HapticFeedback.mediumImpact();
       AnalyticsHelper.trackFeatureUsage(
@@ -201,17 +253,109 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
 
   void _handlePointerCancel(PointerCancelEvent event) {
     _longPressTimer?.cancel();
+    _stopHapticEscalation();
     _closeMenu();
+  }
+
+  void _trackLongPressForTip() {
+    if (SharedPrefs.getSwipeTipShown()) return;
+    SharedPrefs.incrementRadialLongPressCount();
+    if (SharedPrefs.getRadialLongPressCount() >= 3) {
+      _shouldShowTip = true;
+    }
+  }
+
+  void _showSwipeTip() {
+    SharedPrefs.setSwipeTipShown(true);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.primary.withAlpha(60),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.primary.withAlpha(30),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.swipe_rounded,
+                size: 40,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Pro Tip',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Swipe directly towards an option\nto skip the menu!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(
+                  'Got it!',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _closeMenu() {
     _animationController.reverse();
+    // Snap the charge ring back quickly
+    if (_chargeController.isAnimating || _chargeController.value > 0) {
+      _chargeController.animateTo(0.0,
+          duration: const Duration(milliseconds: 150), curve: Curves.easeIn);
+    }
     setState(() {
       _isMenuOpen = false;
       _isSwiping = false;
       _pressOrigin = null;
       _highlightedIndex = -1;
     });
+
+    // Show swipe pro-tip after the menu close animation finishes
+    if (_shouldShowTip) {
+      _shouldShowTip = false;
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted) _showSwipeTip();
+      });
+    }
   }
 
   @override
@@ -346,43 +490,61 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
   }
 
   Widget _buildMainButton() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: Colors.transparent, // background handled by container inside
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(26),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ClipOval(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white.withAlpha(76),
-                width: 1.0,
-              ),
+    return SizedBox(
+      width: 80,
+      height: 80,
+      child: AnimatedBuilder(
+        animation: _chargeController,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: _ChargeRingPainter(
+              progress: _chargeController.value,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            child: Center(
-              child: AnimatedRotation(
-                turns: _isMenuOpen ? 0.125 : 0.0, // Slight spin
-                duration: const Duration(milliseconds: 250),
-                child: Icon(
-                  Icons
-                      .grid_view_rounded, // "small dot cluster or a soft grid icon"
-                  color: Theme.of(context).colorScheme.onSurface.withAlpha(179),
-                  size: 28,
+            child: Center(child: child),
+          );
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(26),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipOval(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withAlpha(76),
+                    width: 1.0,
+                  ),
+                ),
+                child: Center(
+                  child: AnimatedRotation(
+                    turns: _isMenuOpen ? 0.125 : 0.0, // Slight spin
+                    duration: const Duration(milliseconds: 250),
+                    child: Icon(
+                      Icons.grid_view_rounded,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withAlpha(179),
+                      size: 28,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -391,4 +553,71 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
       ),
     );
   }
+}
+
+/// Paints an expanding circular ring around the button during the charge-up phase.
+class _ChargeRingPainter extends CustomPainter {
+  final double progress; // 0.0 → 1.0
+  final Color color;
+
+  _ChargeRingPainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0) return;
+
+    final center = Offset(size.width / 2, size.height / 2);
+
+    // The ring expands from slightly outside the 64px button (radius 32)
+    // to the edge of our 80px bounding box (radius 40).
+    final baseRadius = 34.0;
+    final maxExpand = 8.0;
+    final radius = baseRadius + (maxExpand * progress);
+
+    // Stroke width grows slightly as it charges
+    final strokeWidth = 2.0 + (1.5 * progress);
+
+    // Opacity ramps up then holds, using a gentle ease curve
+    final opacity = (progress * 1.2).clamp(0.0, 0.8);
+
+    final paint = Paint()
+      ..color = color.withValues(alpha: opacity)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    // Draw a sweep arc proportional to progress (full circle at 1.0)
+    final sweepAngle = 2 * math.pi * progress;
+    // Start from top (-π/2)
+    const startAngle = -math.pi / 2;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle,
+      sweepAngle,
+      false,
+      paint,
+    );
+
+    // Add a subtle glow effect behind the arc
+    if (progress > 0.2) {
+      final glowPaint = Paint()
+        ..color = color.withValues(alpha: opacity * 0.25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth + 4.0
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.0);
+
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        sweepAngle,
+        false,
+        glowPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ChargeRingPainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
 }

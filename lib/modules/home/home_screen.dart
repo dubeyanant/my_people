@@ -83,7 +83,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       body: _buildBody(),
-      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButton: _buildFloatingActionButton(ref),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
@@ -206,7 +206,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildFloatingActionButton() {
+  Widget _buildFloatingActionButton(WidgetRef ref) {
     return RadialMenuButton(
       options: [
         RadialMenuOption(
@@ -223,34 +223,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
-        RadialMenuOption(
-          label: 'Settings',
-          icon: Icons.settings_rounded,
-          degrees: 0,
-          onSelected: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SettingsScreen(),
-              ),
-            );
-          },
-        ),
-        RadialMenuOption(
-          label: 'Search',
-          icon: Icons.search_rounded,
-          degrees: 180,
-          onSelected: () {
-            _searchFocusNode.requestFocus();
-          },
-        ),
-        RadialMenuOption(
-          label: 'Chat',
-          icon: Icons.chat_rounded,
-          degrees: 45,
-          enabled: false,
-          onSelected: () {},
-        ),
+        if (ref.watch(peopleProvider).isNotEmpty)
+          RadialMenuOption(
+            label: 'Settings',
+            icon: Icons.settings_rounded,
+            degrees: 0,
+            onSelected: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
+        if (ref.watch(peopleProvider).isNotEmpty)
+          RadialMenuOption(
+            label: 'Search',
+            icon: Icons.search_rounded,
+            degrees: 180,
+            onSelected: () {
+              _searchFocusNode.requestFocus();
+            },
+          ),
       ],
     );
   }

@@ -12,7 +12,7 @@ class AppStrings {
 
   // Person Screen
   static const String personScreenTagline =
-      'Swipe up to add info\nabout the person';
+      'Swipe up directly to\nadd notes about the person';
   static const String chat = 'Chat With Persona';
   static const String edit = 'Edit';
   static const String share = 'Share';
