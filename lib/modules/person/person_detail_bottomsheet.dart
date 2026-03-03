@@ -1,19 +1,27 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
-import 'package:my_people/providers/people_provider.dart';
-import 'package:my_people/helpers/analytics_helper.dart';
+import 'package:my_people/helpers/image_picker_helper.dart';
 import 'package:my_people/model/person.dart';
-import 'package:my_people/modules/person/person_profile_setup_screen.dart';
+import 'package:my_people/modules/person/widgets/profile_photo_avatar.dart';
+import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/utility/constants.dart';
 
+/// Bottom sheet used to create a new [Person] with a name and photo.
+///
+/// After the person is added to the provider, [onPersonAdded] is called with
+/// the newly created person so the caller can decide what to do next (e.g.
+/// navigate to the profile-setup screen).
 class PersonDetailBottomSheet extends ConsumerStatefulWidget {
-  const PersonDetailBottomSheet({super.key});
+  const PersonDetailBottomSheet({
+    super.key,
+    required this.onPersonAdded,
+  });
+
+  /// Called after the new person has been added to [peopleProvider].
+  final void Function(Person newPerson) onPersonAdded;
 
   @override
   ConsumerState<PersonDetailBottomSheet> createState() =>
@@ -26,64 +34,33 @@ class _PersonDetailBottomSheetState
   final _nameController = TextEditingController();
 
   File? _selectedImage;
-  late String _defaultImage;
-
-  final List<String> _defaultImages = [
-    'assets/profile_pictures/default1.webp',
-    'assets/profile_pictures/default2.webp',
-    'assets/profile_pictures/default3.webp',
-    'assets/profile_pictures/default4.webp',
-    'assets/profile_pictures/default5.webp',
-    'assets/profile_pictures/default6.webp',
-    'assets/profile_pictures/default7.webp',
-    'assets/profile_pictures/default8.webp',
-  ];
+  late final String _defaultImage;
 
   @override
   void initState() {
     super.initState();
-    // Initialize default image randomly from _defaultImages list
-    _defaultImage = _defaultImages[Random().nextInt(_defaultImages.length)];
+    _defaultImage = ImagePickerHelper.randomDefaultImage();
   }
 
-  // Method to check if a string starts with 'assets/'
-  bool startsWithAssets(String input) {
-    RegExp regex = RegExp(r'^assets/');
-    return regex.hasMatch(input);
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
-  // Method to pick an image from gallery
-  Future<void> _pickImage() async {
-    AnalyticsHelper.trackFeatureUsage('pick_image');
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _selectedImage = File(pickedFile.path);
-      }
-    });
-  }
-
-  // Method to submit the form data
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      final String name = _nameController.text;
-      final String imagePath =
+      final imagePath =
           _selectedImage != null ? _selectedImage!.path : _defaultImage;
-
-      // Add new person
-      final newPerson = Person(name: name.trim(), photo: imagePath, info: []);
-      ref.read(peopleProvider.notifier).addPerson(newPerson);
-      Navigator.pop(context); // Close bottom sheet
-
-      // Navigate to the profile setup screen
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PersonProfileSetupScreen(person: newPerson),
-        ),
+      final newPerson = Person(
+        name: _nameController.text.trim(),
+        photo: imagePath,
+        info: [],
       );
+
+      ref.read(peopleProvider.notifier).addPerson(newPerson);
+      Navigator.pop(context); // close this bottom sheet
+      widget.onPersonAdded(newPerson);
     }
   }
 
@@ -111,32 +88,16 @@ class _PersonDetailBottomSheetState
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: _selectedImage != null
-                          ? FileImage(_selectedImage!)
-                          : AssetImage(_defaultImage) as ImageProvider,
-                    ),
-                    Positioned(
-                      bottom: -4,
-                      right: -4,
-                      child: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        child: Icon(
-                          Icons.edit,
-                          size: 12,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
+              ProfilePhotoAvatar(
+                selectedImage: _selectedImage,
+                fallbackAsset: _defaultImage,
+                onTap: () => ImagePickerHelper.showImageSourceBottomSheet(
+                  context: context,
+                  onImagePicked: (file) {
+                    if (file != null) setState(() => _selectedImage = file);
+                  },
                 ),
+                radius: 40,
               ),
               TextFormField(
                 autofocus: true,
@@ -170,7 +131,7 @@ class _PersonDetailBottomSheetState
                   ),
                   child: const Text(AppStrings.addPerson),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -179,8 +140,15 @@ class _PersonDetailBottomSheetState
   }
 }
 
-// Function to show PersonBioScreen as a bottom sheet
-void showPersonDetailBottomSheet(BuildContext context) {
+/// Shows [PersonDetailBottomSheet] as a modal bottom sheet.
+///
+/// [onPersonAdded] is forwarded to the sheet and called once the new person
+/// has been persisted.  Callers should use this callback to navigate to the
+/// profile-setup screen (or perform any other post-creation action).
+void showPersonDetailBottomSheet(
+  BuildContext context, {
+  required void Function(Person newPerson) onPersonAdded,
+}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -190,7 +158,7 @@ void showPersonDetailBottomSheet(BuildContext context) {
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: PersonDetailBottomSheet(),
+          child: PersonDetailBottomSheet(onPersonAdded: onPersonAdded),
         ),
       );
     },

@@ -70,3 +70,58 @@ class AppStrings {
   static const String reportAction = 'Report';
   static const String cancelAction = 'Cancel';
 }
+
+/// Static option lists used in person profile creation / editing forms.
+abstract final class ProfileFormConstants {
+  static const List<String> relationshipOptions = [
+    'Friend',
+    'Close Friend',
+    'Family',
+    'Colleague',
+    'Client',
+    'Bae',
+    'Neighbour',
+    'Other',
+  ];
+
+  static const List<String> presetInterests = [
+    'Travel',
+    'Music',
+    'Gaming',
+    'Sports',
+    'Reading',
+    'Cooking',
+    'Fitness',
+    'Art',
+    'Movies',
+    'Tech',
+    'Fashion',
+    'Nature',
+  ];
+
+  static const List<String> dietaryOptions = [
+    'Vegetarian',
+    'Vegan',
+    'Gluten-Free',
+    'Halal',
+    'Kosher',
+    'Nut Allergy',
+    'Lactose Intolerant',
+    'No Restrictions',
+    'Other',
+  ];
+
+  static const List<String> introvertExtrovertOptions = [
+    'Introvert',
+    'Ambivert',
+    'Extrovert',
+  ];
+
+  static const List<String> relationshipStatusOptions = [
+    'Single',
+    'In a Relationship',
+    'Married',
+    'Divorced',
+    'Widowed',
+  ];
+}

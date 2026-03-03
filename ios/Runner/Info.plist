@@ -11,6 +11,10 @@
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
+	<key>NSCameraUsageDescription</key>
+	<string>Required to take photos</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Required to select photos</string>
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>my_people</string>

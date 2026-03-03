@@ -6,6 +6,7 @@ import 'package:my_people/modules/home/widgets/tooltip_arrows/add_profile_toolti
 import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/widgets/radial_menu_button.dart';
 import 'package:my_people/modules/person/person_detail_bottomsheet.dart';
+import 'package:my_people/modules/person/person_profile_setup_screen.dart';
 import 'package:my_people/modules/home/widgets/people_grid.dart';
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/app_theme.dart';
@@ -212,7 +213,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           label: 'Create',
           icon: Icons.add_rounded,
           degrees: 90,
-          onSelected: () => showPersonDetailBottomSheet(context),
+          onSelected: () => showPersonDetailBottomSheet(
+            context,
+            onPersonAdded: (newPerson) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => PersonProfileSetupScreen(person: newPerson),
+              ),
+            ),
+          ),
         ),
         RadialMenuOption(
           label: 'Settings',

@@ -30,7 +30,7 @@ class People extends _$People {
     );
     for (var element in state) {
       DebugPrint.log(
-        'Name: ${element.name}\tUUID: ${element.uuid}\nInfo: ${element.info}',
+        'Name: ${element.name}\nUUID: ${element.uuid}\nInfo: ${element.info}\nEvent: ${element.events}',
         color: DebugColor.green,
         tag: 'PeopleProvider',
       );
