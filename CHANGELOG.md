@@ -1,3 +1,71 @@
+# [](https://github.com/dubeyanant/my_people/compare/v3.1.0...v) (2026-03-03)
+
+
+### Bug Fixes
+
+* block retrieving initial prompt ([d3df271](https://github.com/dubeyanant/my_people/commit/d3df271cf96a4bfe3afcebae6e250704ac90dfdb))
+* change home tooltip position ([fce398e](https://github.com/dubeyanant/my_people/commit/fce398e5f86e5cd8ce38d66d1013c055d38e6232))
+* close search on pop ([6b53750](https://github.com/dubeyanant/my_people/commit/6b5375077132513d681deb1101ec0be173c24751))
+* hide action button on scroll ([f2150c7](https://github.com/dubeyanant/my_people/commit/f2150c798ff4705e840aaae2a19c39dc7902abb7))
+* made UI changes in add person bottmsheet ([5d7be03](https://github.com/dubeyanant/my_people/commit/5d7be03ef7f7379796a6b17603d49b945803990e))
+* open search causes tooltip misalignment ([6181bc3](https://github.com/dubeyanant/my_people/commit/6181bc3f0b6eba151d9ea35475cf6deee3bfd896))
+* remove login workflow ([4472c8f](https://github.com/dubeyanant/my_people/commit/4472c8f62d29d7a4ef7da51affa2e4864536514d))
+* tooltip overlaps info ([bfff8d0](https://github.com/dubeyanant/my_people/commit/bfff8d074f5e6ab366b685dc895cbffeb58ac24d))
+
+
+### Features
+
+* add ai report feature ([a37c6ae](https://github.com/dubeyanant/my_people/commit/a37c6aebf7b4f0e42f31683d12eb1f784cb0d237))
+* add chat animation ([ae21a79](https://github.com/dubeyanant/my_people/commit/ae21a7936d75d7be82d5fff74d69c808bb308052))
+* add crop image ([1801f12](https://github.com/dubeyanant/my_people/commit/1801f121076cbcf5903e71d72f3dc097df7eac0e))
+* add date in info card ([b900c87](https://github.com/dubeyanant/my_people/commit/b900c8765764d2d2cf4468e69ab57e269eb94e91))
+* add detailed profile section ([b01a2ed](https://github.com/dubeyanant/my_people/commit/b01a2ed0ca1197790c4eb53cbe1789159041be8c))
+* add events feature ([b372395](https://github.com/dubeyanant/my_people/commit/b37239527de85abcc247680a6f8db0c118dee9cf))
+* add more tooltips on home screen ([d0995d9](https://github.com/dubeyanant/my_people/commit/d0995d934d27d3609311154f1aebdab8dc54fa3f))
+* add report tip ([d5d3963](https://github.com/dubeyanant/my_people/commit/d5d396373687c0b4d35e75aa5e3b1ea24bf885da))
+* add settings page ([592a9ba](https://github.com/dubeyanant/my_people/commit/592a9bada33a9b9c63773257976e15b3b82e5951))
+* add share profile feature ([ce29cbe](https://github.com/dubeyanant/my_people/commit/ce29cbe6ee7404429850b5cf236c071807931cf5))
+* add time based themes ([a85ee06](https://github.com/dubeyanant/my_people/commit/a85ee068e62a685707c703f153188245266c39fc))
+* add tooltips on profile screen ([88cd480](https://github.com/dubeyanant/my_people/commit/88cd4800945fa34cc64e34f0e364e3fb3f5a9d6f))
+* change person detail screen search and edit functions ([eccb6c7](https://github.com/dubeyanant/my_people/commit/eccb6c751d61a0b2a8c52a68497b6f10ea211d4d))
+* made profile tooltip more informative ([5b44b01](https://github.com/dubeyanant/my_people/commit/5b44b0189b5f9bc05873043aec0b1f64a0123282))
+* revamp actions panel ([27551ad](https://github.com/dubeyanant/my_people/commit/27551ad3c1c6d3ddc4861fd0df4de55b1b012a91))
+* update info ui to reflect timeline ([69d28e3](https://github.com/dubeyanant/my_people/commit/69d28e331dd4016288af303f92a2111ea684f553))
+* upgrade to latest flutter sdk 3.29.1 ([532e214](https://github.com/dubeyanant/my_people/commit/532e2148fe1d49af46e4f80c602b8ba5caa76a2a))
+# [](https://github.com/dubeyanant/my_people/compare/v3.1.0...v) (2026-03-03)
+
+
+### Bug Fixes
+
+* block retrieving initial prompt ([d3df271](https://github.com/dubeyanant/my_people/commit/d3df271cf96a4bfe3afcebae6e250704ac90dfdb))
+* change home tooltip position ([fce398e](https://github.com/dubeyanant/my_people/commit/fce398e5f86e5cd8ce38d66d1013c055d38e6232))
+* close search on pop ([6b53750](https://github.com/dubeyanant/my_people/commit/6b5375077132513d681deb1101ec0be173c24751))
+* hide action button on scroll ([f2150c7](https://github.com/dubeyanant/my_people/commit/f2150c798ff4705e840aaae2a19c39dc7902abb7))
+* made UI changes in add person bottmsheet ([5d7be03](https://github.com/dubeyanant/my_people/commit/5d7be03ef7f7379796a6b17603d49b945803990e))
+* open search causes tooltip misalignment ([6181bc3](https://github.com/dubeyanant/my_people/commit/6181bc3f0b6eba151d9ea35475cf6deee3bfd896))
+* remove login workflow ([4472c8f](https://github.com/dubeyanant/my_people/commit/4472c8f62d29d7a4ef7da51affa2e4864536514d))
+* tooltip overlaps info ([bfff8d0](https://github.com/dubeyanant/my_people/commit/bfff8d074f5e6ab366b685dc895cbffeb58ac24d))
+
+
+### Features
+
+* add ai report feature ([a37c6ae](https://github.com/dubeyanant/my_people/commit/a37c6aebf7b4f0e42f31683d12eb1f784cb0d237))
+* add chat animation ([ae21a79](https://github.com/dubeyanant/my_people/commit/ae21a7936d75d7be82d5fff74d69c808bb308052))
+* add crop image ([1801f12](https://github.com/dubeyanant/my_people/commit/1801f121076cbcf5903e71d72f3dc097df7eac0e))
+* add date in info card ([b900c87](https://github.com/dubeyanant/my_people/commit/b900c8765764d2d2cf4468e69ab57e269eb94e91))
+* add detailed profile section ([b01a2ed](https://github.com/dubeyanant/my_people/commit/b01a2ed0ca1197790c4eb53cbe1789159041be8c))
+* add events feature ([b372395](https://github.com/dubeyanant/my_people/commit/b37239527de85abcc247680a6f8db0c118dee9cf))
+* add more tooltips on home screen ([d0995d9](https://github.com/dubeyanant/my_people/commit/d0995d934d27d3609311154f1aebdab8dc54fa3f))
+* add report tip ([d5d3963](https://github.com/dubeyanant/my_people/commit/d5d396373687c0b4d35e75aa5e3b1ea24bf885da))
+* add settings page ([592a9ba](https://github.com/dubeyanant/my_people/commit/592a9bada33a9b9c63773257976e15b3b82e5951))
+* add share profile feature ([ce29cbe](https://github.com/dubeyanant/my_people/commit/ce29cbe6ee7404429850b5cf236c071807931cf5))
+* add time based themes ([a85ee06](https://github.com/dubeyanant/my_people/commit/a85ee068e62a685707c703f153188245266c39fc))
+* add tooltips on profile screen ([88cd480](https://github.com/dubeyanant/my_people/commit/88cd4800945fa34cc64e34f0e364e3fb3f5a9d6f))
+* change person detail screen search and edit functions ([eccb6c7](https://github.com/dubeyanant/my_people/commit/eccb6c751d61a0b2a8c52a68497b6f10ea211d4d))
+* made profile tooltip more informative ([5b44b01](https://github.com/dubeyanant/my_people/commit/5b44b0189b5f9bc05873043aec0b1f64a0123282))
+* revamp actions panel ([27551ad](https://github.com/dubeyanant/my_people/commit/27551ad3c1c6d3ddc4861fd0df4de55b1b012a91))
+* update info ui to reflect timeline ([69d28e3](https://github.com/dubeyanant/my_people/commit/69d28e331dd4016288af303f92a2111ea684f553))
+* upgrade to latest flutter sdk 3.29.1 ([532e214](https://github.com/dubeyanant/my_people/commit/532e2148fe1d49af46e4f80c602b8ba5caa76a2a))
 # [3.1.0](https://github.com/dubeyanant/my_people/compare/v3.0.0...v3.1.0) (2024-07-07)
 
 
