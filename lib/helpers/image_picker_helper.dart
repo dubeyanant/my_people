@@ -2,8 +2,10 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/utility/debug_print.dart';
 
@@ -14,25 +16,8 @@ import 'package:my_people/utility/debug_print.dart';
 /// this UI.  Under the hood it calls [pickAndCropImage] for the full
 /// pick → crop pipeline.
 abstract final class ImagePickerHelper {
-  // ---------------------------------------------------------------------------
-  // Default profile-picture assets
-  // ---------------------------------------------------------------------------
-
-  static const List<String> defaultImages = [
-    'assets/profile_pictures/default1.webp',
-    'assets/profile_pictures/default2.webp',
-    'assets/profile_pictures/default3.webp',
-    'assets/profile_pictures/default4.webp',
-    'assets/profile_pictures/default5.webp',
-    'assets/profile_pictures/default6.webp',
-    'assets/profile_pictures/default7.webp',
-    'assets/profile_pictures/default8.webp',
-  ];
-
-  /// Returns a random image path from [defaultImages].
-  static String randomDefaultImage() {
-    return defaultImages[Random().nextInt(defaultImages.length)];
-  }
+  static String randomDefaultImage() =>
+      'assets/profile_pictures/${Random().nextInt(14)}.webp';
 
   // ---------------------------------------------------------------------------
   // Asset-path check

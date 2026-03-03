@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:my_people/helpers/analytics_helper.dart';
+import 'package:my_people/model/chat_session.dart';
 import 'package:my_people/model/person.dart';
 import 'package:my_people/modules/chat/widgets/chat_input_section.dart';
 import 'package:my_people/modules/chat/widgets/report_tooltip.dart';
@@ -272,9 +273,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.chat),
-      ),
+      appBar: AppBar(title: const Text(AppStrings.chat)),
       body: Stack(
         children: [
           Column(
@@ -354,11 +353,4 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
-}
-
-class ChatSession {
-  final String personUuid;
-  final List<ChatMessage> messages;
-
-  ChatSession(this.personUuid) : messages = [];
 }
