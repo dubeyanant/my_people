@@ -4,6 +4,7 @@ import 'package:my_people/model/person_info.dart';
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/helpers/database_helper.dart';
 import 'package:my_people/model/person.dart';
+import 'package:my_people/model/event.dart';
 import 'package:my_people/utility/debug_print.dart';
 
 part 'people_provider.g.dart';
@@ -92,13 +93,8 @@ class People extends _$People {
 
   Future<void> addInfoToPerson(String uuid, PersonInfo info) async {
     final person = state.firstWhere((p) => p.uuid == uuid);
-    final updatedInfo = List<PersonInfo>.from(person.info)..insert(0, info);
 
-    final updatedPerson = person.copyWith(
-      info: updatedInfo,
-    );
-
-    await _dbHelper.updatePerson(updatedPerson);
+    await _dbHelper.insertInfo(info);
     DebugPrint.log(
       'Info Added to ${person.name}: ${info.text}',
       color: DebugColor.magenta,
@@ -111,43 +107,70 @@ class People extends _$People {
   Future<void> updatePersonInfo(
       String uuid, PersonInfo newInfo, int index) async {
     final person = state.firstWhere((p) => p.uuid == uuid);
-    if (index != -1 && index < person.info.length) {
-      final updatedInfo = List<PersonInfo>.from(person.info)..[index] = newInfo;
 
-      final updatedPerson = person.copyWith(
-        info: updatedInfo,
-      );
-
-      await _dbHelper.updatePerson(updatedPerson);
-      DebugPrint.log(
-        'Person Info Updated: ${person.name}\nNew Info: ${newInfo.text}',
-        color: DebugColor.magenta,
-        tag: 'PeopleProvider',
-      );
-      AnalyticsHelper.trackFeatureUsage('update_info');
-      _fetchPeople();
-    }
+    await _dbHelper.updateInfo(newInfo);
+    DebugPrint.log(
+      'Person Info Updated: ${person.name}\nNew Info: ${newInfo.text}',
+      color: DebugColor.magenta,
+      tag: 'PeopleProvider',
+    );
+    AnalyticsHelper.trackFeatureUsage('update_info');
+    _fetchPeople();
   }
 
   Future<void> deletePersonInfo(String uuid, int infoItemIndex) async {
     final person = state.firstWhere((p) => p.uuid == uuid);
     if (infoItemIndex != -1 && infoItemIndex < person.info.length) {
-      final updatedInfo = List<PersonInfo>.from(person.info)
-        ..removeAt(infoItemIndex);
+      final targetInfo = person.info[infoItemIndex];
 
-      final updatedPerson = person.copyWith(
-        info: updatedInfo,
-      );
-
-      await _dbHelper.updatePerson(updatedPerson);
+      await _dbHelper.deleteInfo(targetInfo.id);
       DebugPrint.log(
-        'Person Info Deleted: ${person.name}\nInfo Index: $infoItemIndex',
+        'Person Info Deleted: ${person.name}\nInfo ID: ${targetInfo.id}',
         color: DebugColor.magenta,
         tag: 'PeopleProvider',
       );
       AnalyticsHelper.trackFeatureUsage('delete_info');
       _fetchPeople();
     }
+  }
+
+  Future<void> addEventToPerson(String uuid, Event event) async {
+    final person = state.firstWhere((p) => p.uuid == uuid);
+
+    await _dbHelper.insertEvent(event);
+    DebugPrint.log(
+      'Event Added to ${person.name}: ${event.title}',
+      color: DebugColor.magenta,
+      tag: 'PeopleProvider',
+    );
+    AnalyticsHelper.trackFeatureUsage('add_event');
+    _fetchPeople();
+  }
+
+  Future<void> updatePersonEvent(String uuid, Event newEvent) async {
+    final person = state.firstWhere((p) => p.uuid == uuid);
+
+    await _dbHelper.updateEvent(newEvent);
+    DebugPrint.log(
+      'Person Event Updated: ${person.name}\nNew Event: ${newEvent.title}',
+      color: DebugColor.magenta,
+      tag: 'PeopleProvider',
+    );
+    AnalyticsHelper.trackFeatureUsage('update_event');
+    _fetchPeople();
+  }
+
+  Future<void> deletePersonEvent(String uuid, String eventId) async {
+    final person = state.firstWhere((p) => p.uuid == uuid);
+
+    await _dbHelper.deleteEvent(eventId);
+    DebugPrint.log(
+      'Person Event Deleted: ${person.name}\nEvent Id: $eventId',
+      color: DebugColor.magenta,
+      tag: 'PeopleProvider',
+    );
+    AnalyticsHelper.trackFeatureUsage('delete_event');
+    _fetchPeople();
   }
 }
 

@@ -24,7 +24,7 @@ class AppStrings {
       'Add more details to\nunlock Chat with Persona';
   static const String infoTooltip = 'Hold to edit or delete';
   static const String searchInfoHintText = 'Search Info';
-  static const String infoTimeline = 'Information Timeline';
+  static const String notes = 'Notes';
 
   // Add/Edit Person Bottom Sheet
   static const String addPerson = 'Add Person';

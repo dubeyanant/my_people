@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 import 'package:my_people/model/person_info.dart';
+import 'package:my_people/model/event.dart';
 
 class Person {
   final String uuid;
   String name;
   String photo;
   List<PersonInfo> info = [];
+  List<Event> events = [];
 
   // New optional fields
   DateTime? birthday;
@@ -26,6 +28,7 @@ class Person {
     required this.name,
     required this.photo,
     required this.info,
+    this.events = const [],
     this.birthday,
     this.relationshipType,
     this.socialInstagram,
@@ -43,6 +46,7 @@ class Person {
     String? name,
     String? photo,
     List<PersonInfo>? info,
+    List<Event>? events,
     DateTime? birthday,
     List<String>? relationshipType,
     String? socialInstagram,
@@ -59,6 +63,7 @@ class Person {
       name: name ?? this.name,
       photo: photo ?? this.photo,
       info: info ?? this.info,
+      events: events ?? this.events,
       birthday: birthday ?? this.birthday,
       relationshipType: relationshipType ?? this.relationshipType,
       socialInstagram: socialInstagram ?? this.socialInstagram,
@@ -103,9 +108,11 @@ class Person {
       for (var element in decodedList) {
         if (element is String) {
           // Backward compatibility for old String-only entries
-          parsedInfo.add(PersonInfo(text: element, date: null));
+          parsedInfo.add(
+              PersonInfo(personUuid: map['uuid'], text: element, date: null));
         } else if (element is Map<String, dynamic>) {
-          parsedInfo.add(PersonInfo.fromMap(element));
+          parsedInfo
+              .add(PersonInfo.fromMap(element, defaultPersonUuid: map['uuid']));
         }
       }
     }

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:my_people/modules/person/widgets/hold_to_delete_button.dart';
 import 'package:my_people/providers/people_provider.dart';
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/person.dart';
@@ -14,9 +13,7 @@ import 'package:my_people/modules/person/person_profile_setup_screen.dart';
 import 'package:my_people/utility/constants.dart';
 
 class PersonDetailBottomSheet extends ConsumerStatefulWidget {
-  final Person? personToEdit;
-
-  const PersonDetailBottomSheet({super.key, this.personToEdit});
+  const PersonDetailBottomSheet({super.key});
 
   @override
   ConsumerState<PersonDetailBottomSheet> createState() =>
@@ -47,17 +44,6 @@ class _PersonDetailBottomSheetState
     super.initState();
     // Initialize default image randomly from _defaultImages list
     _defaultImage = _defaultImages[Random().nextInt(_defaultImages.length)];
-
-    // Populate form fields if editing an existing person
-    if (widget.personToEdit != null) {
-      _nameController.text = widget.personToEdit!.name;
-      // Check if the person's photo is an asset or a file path
-      if (startsWithAssets(widget.personToEdit!.photo)) {
-        _defaultImage = widget.personToEdit!.photo;
-      } else {
-        _selectedImage = File(widget.personToEdit!.photo);
-      }
-    }
   }
 
   // Method to check if a string starts with 'assets/'
@@ -86,26 +72,18 @@ class _PersonDetailBottomSheetState
       final String imagePath =
           _selectedImage != null ? _selectedImage!.path : _defaultImage;
 
-      if (widget.personToEdit != null) {
-        // Update existing person
-        ref
-            .read(peopleProvider.notifier)
-            .updatePerson(widget.personToEdit!, name, imagePath);
-        Navigator.pop(context);
-      } else {
-        // Add new person
-        final newPerson = Person(name: name.trim(), photo: imagePath, info: []);
-        ref.read(peopleProvider.notifier).addPerson(newPerson);
-        Navigator.pop(context); // Close bottom sheet
+      // Add new person
+      final newPerson = Person(name: name.trim(), photo: imagePath, info: []);
+      ref.read(peopleProvider.notifier).addPerson(newPerson);
+      Navigator.pop(context); // Close bottom sheet
 
-        // Navigate to the profile setup screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PersonProfileSetupScreen(person: newPerson),
-          ),
-        );
-      }
+      // Navigate to the profile setup screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PersonProfileSetupScreen(person: newPerson),
+        ),
+      );
     }
   }
 
@@ -126,9 +104,7 @@ class _PersonDetailBottomSheetState
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                widget.personToEdit == null
-                    ? AppStrings.addPerson
-                    : AppStrings.editPerson,
+                AppStrings.addPerson,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -183,50 +159,18 @@ class _PersonDetailBottomSheetState
                   return null;
                 },
               ),
-              if (widget.personToEdit == null)
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    ),
-                    child: const Text(AppStrings.addPerson),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: _submitForm,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   ),
-                )
-              else
-                Row(
-                  spacing: 16,
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: _submitForm,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onPrimary,
-                          ),
-                          child: const Text(AppStrings.savePerson),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: HoldToDeleteButton(
-                        onDeleted: () {
-                          ref
-                              .read(peopleProvider.notifier)
-                              .deletePerson(widget.personToEdit!);
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                        },
-                      ),
-                    ),
-                  ],
+                  child: const Text(AppStrings.addPerson),
                 ),
+              )
             ],
           ),
         ),
@@ -236,7 +180,7 @@ class _PersonDetailBottomSheetState
 }
 
 // Function to show PersonBioScreen as a bottom sheet
-void showPersonDetailBottomSheet(BuildContext context, {Person? personToEdit}) {
+void showPersonDetailBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -246,7 +190,7 @@ void showPersonDetailBottomSheet(BuildContext context, {Person? personToEdit}) {
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: PersonDetailBottomSheet(personToEdit: personToEdit),
+          child: PersonDetailBottomSheet(),
         ),
       );
     },

@@ -42,6 +42,7 @@ class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
       final dateToSave = _selectedDate ?? DateTime.now();
 
       final newInfo = PersonInfo(
+        personUuid: widget.personId,
         text: capitalize(infoText),
         date: dateToSave,
       );
