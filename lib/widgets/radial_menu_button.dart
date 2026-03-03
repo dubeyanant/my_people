@@ -5,6 +5,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:my_people/helpers/analytics_helper.dart';
+
 class RadialMenuOption {
   final String label;
   final IconData icon;
@@ -190,6 +192,8 @@ class _RadialMenuButtonState extends State<RadialMenuButton>
     _longPressTimer?.cancel();
     if (_highlightedIndex != -1 && widget.options[_highlightedIndex].enabled) {
       HapticFeedback.mediumImpact();
+      AnalyticsHelper.trackFeatureUsage(
+          'radial_button_${widget.options[_highlightedIndex].label}');
       widget.options[_highlightedIndex].onSelected();
     }
     _closeMenu();

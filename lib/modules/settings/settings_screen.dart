@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:intl/intl.dart';
 
+import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/utility/debug_print.dart';
 import 'package:my_people/utility/app_theme.dart';
 import 'package:my_people/utility/shared_preferences.dart';
@@ -29,6 +30,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    AnalyticsHelper.trackFeatureUsage('settings_page');
     _isBiometricEnabled = SharedPrefs.getBiometricEnabled();
     _initPackageInfo();
   }
@@ -42,6 +44,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   void _handleThemeChange(String? newValue) {
     if (newValue != null) {
+      AnalyticsHelper.trackFeatureUsage('theme_change_$newValue');
       ref.read(themeStateProvider.notifier).setTheme(newValue);
     }
   }
@@ -61,6 +64,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final authenticated = await BiometricHelper.authenticate();
       if (!authenticated) return;
     }
+    AnalyticsHelper.trackFeatureUsage('biometric_$value');
 
     setState(() {
       _isBiometricEnabled = value;
@@ -70,6 +74,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _handleBackup() async {
     final success = await BackupHelper.createBackup();
+    AnalyticsHelper.trackFeatureUsage('create_backup_$success');
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -82,6 +87,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _handleRestore() async {
     final success = await BackupHelper.importBackup();
+    AnalyticsHelper.trackFeatureUsage('restore_backup_$success');
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -97,6 +103,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _handleImportProfile() async {
+    AnalyticsHelper.trackFeatureUsage('profile_import');
     try {
       final preview = await ProfileSharingHelper.getProfilePreview();
       if (preview == null) return; // User canceled
@@ -157,6 +164,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _sendFeatureRequest() async {
+    AnalyticsHelper.trackFeatureUsage('contact');
     try {
       final Uri emailLaunchUri = Uri(
         scheme: 'mailto',
@@ -179,6 +187,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _rateApp() async {
+    AnalyticsHelper.trackFeatureUsage('rate_app');
     try {
       final Uri url = Uri.parse(
           'https://play.google.com/store/apps/details?id=com.infiniteants.mypeople');
@@ -189,6 +198,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _shareApp() async {
+    AnalyticsHelper.trackFeatureUsage('share_app');
     try {
       await SharePlus.instance.share(
         ShareParams(
@@ -203,6 +213,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _donation() async {
+    AnalyticsHelper.trackFeatureUsage('donate');
     try {
       final Uri url = Uri.parse('https://razorpay.me/@anantdubey');
       await launchUrl(url);

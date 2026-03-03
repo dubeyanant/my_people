@@ -21,7 +21,7 @@ class ChatInputSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -63,7 +63,7 @@ class ChatInputSection extends StatelessWidget {
                 ),
                 fillColor: loading
                     ? Theme.of(context).colorScheme.surfaceContainerHighest
-                    : Theme.of(context).colorScheme.primaryContainer,
+                    : Theme.of(context).colorScheme.surfaceContainer,
                 filled: true,
                 contentPadding: const EdgeInsets.all(16),
                 hintText: loading ? AppStrings.waiting : AppStrings.ask,
@@ -74,23 +74,62 @@ class ChatInputSection extends StatelessWidget {
             ),
           ),
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 300),
             transitionBuilder: (Widget child, Animation<double> animation) {
-              return ScaleTransition(scale: animation, child: child);
+              final offsetAnimation = Tween<Offset>(
+                begin: const Offset(0.4, 0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              ));
+
+              final fadeAnimation = CurvedAnimation(
+                parent: animation,
+                curve: const Interval(0.0, 0.7, curve: Curves.easeIn),
+              );
+
+              return FadeTransition(
+                opacity: fadeAnimation,
+                child: SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                ),
+              );
             },
             child: !isTextFieldEmpty
-                ? Container(
+                ? Padding(
                     key: const ValueKey<bool>(true),
-                    padding: const EdgeInsets.only(left: 4),
-                    margin: const EdgeInsets.only(left: 8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(36),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send),
-                      onPressed: onSendMessage,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                    padding: const EdgeInsets.only(left: 8),
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.85, end: 1.0),
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.elasticOut,
+                      builder: (context, scale, child) => Transform.scale(
+                        scale: scale,
+                        child: child,
+                      ),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary,
+                          borderRadius: BorderRadius.circular(36),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .secondary
+                                  .withValues(alpha: 0.45),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.send_rounded),
+                          onPressed: onSendMessage,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
                     ),
                   )
                 : const SizedBox(key: ValueKey<bool>(false)),

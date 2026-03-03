@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
 import 'package:my_people/helpers/analytics_helper.dart';
-import 'package:my_people/model/chat_session.dart';
-import 'package:my_people/model/person.dart';
-import 'package:my_people/modules/chat/widgets/chat_input_section.dart';
-import 'package:my_people/modules/chat/widgets/report_tooltip.dart';
-import 'package:my_people/modules/chat/widgets/thinking_indicator.dart';
-import 'package:my_people/services/gemini_ai_service.dart';
 import 'package:my_people/model/chat_message.dart';
-import 'package:my_people/modules/chat/widgets/message_bubble.dart';
+import 'package:my_people/model/person.dart';
+import 'package:my_people/modules/chat/chat_controller.dart';
+import 'package:my_people/modules/chat/widgets/chat_input_section.dart';
+import 'package:my_people/modules/chat/widgets/chat_message_list.dart';
+import 'package:my_people/modules/chat/widgets/chat_unavailable_view.dart';
+import 'package:my_people/modules/chat/widgets/scroll_to_bottom_button.dart';
+import 'package:my_people/modules/chat/widgets/suggestion_chips.dart';
 import 'package:my_people/utility/constants.dart';
-import 'package:my_people/utility/debug_print.dart';
 
 class ChatScreen extends StatefulWidget {
   final Person person;
@@ -22,99 +21,73 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  static final Map<String, ChatSession> _chatSessions = {};
-  late ChatSession _currentSession;
-  final TextEditingController _controller = TextEditingController();
+  late final ChatController _chatController;
+  final TextEditingController _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
-  late final GeminiAIService _geminiAIService;
   bool _isTextFieldEmpty = true;
-  bool _loading = false;
-  bool _isAiThinking = false;
   bool _showScrollToBottomButton = false;
   bool _isFirstFocus = true;
 
   @override
   void initState() {
     super.initState();
-    _currentSession = _chatSessions.putIfAbsent(
-        widget.person.uuid, () => ChatSession(widget.person.uuid));
-    _geminiAIService = GeminiAIService();
-    _isFirstFocus = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _sendInitialPrompt();
-    });
-    _scrollController.addListener(_scrollListener);
-    _controller.addListener(_handleTextFieldChange);
+    _chatController = ChatController(person: widget.person);
+    _chatController.addListener(_onControllerUpdated);
+    _scrollController.addListener(_onScrollChanged);
+    _textController.addListener(_onTextChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initChat());
     AnalyticsHelper.trackFeatureUsage('chat_screen_opened');
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_handleTextFieldChange);
-    _scrollController.removeListener(_scrollListener);
-    _controller.dispose();
+    _chatController.removeListener(_onControllerUpdated);
+    _chatController.dispose();
+    _textController.removeListener(_onTextChanged);
+    _scrollController.removeListener(_onScrollChanged);
+    _textController.dispose();
     _scrollController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _sendInitialPrompt() async {
-    final initialPrompt = '''
-  This is the information about the person I'm talking about:
-  Name: ${widget.person.name}
-  Info: ${widget.person.info.map((e) => e.text).join(', ')}
-  Extra Info: ${widget.person.birthday}, ${widget.person.dietaryRestrictions}, ${widget.person.interests}, ${widget.person.introvertExtrovert}, ${widget.person.occupation}, ${widget.person.relationshipType}, ${widget.person.relationshipStatus}, 
+  // ---------------------------------------------------------------------------
+  // Controller listener
+  // ---------------------------------------------------------------------------
 
-  Strictly use this info while answering in effective and concise manner in any of the next prompts. Do not hallucinate or generate information that is not present in this info. If you understood, say "Hi, how may I help you?"
-  ''';
+  void _onControllerUpdated() {
+    if (mounted) setState(() {});
 
-    setState(() {
-      _loading = true;
-    });
-
-    try {
-      final aiResponse =
-          await _geminiAIService.sendInitialPrompt(initialPrompt);
-      if (aiResponse.trim().toLowerCase() == "hi, how may i help you?") {
-        setState(() {
-          _currentSession.messages.add(ChatMessage(
-            text: aiResponse,
-            sender: AppStrings.bot,
-          ));
-        });
-      }
-      _enableTextFieldAndFocus();
-    } catch (e) {
-      DebugPrint.log(
-        'Error sending initial prompt: $e',
-        color: DebugColor.red,
-        tag: 'ChatScreen',
-      );
-      _enableTextFieldAndFocus();
-    }
-  }
-
-  void _enableTextFieldAndFocus() {
-    setState(() {
-      _loading = false;
-    });
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted) {
-        if (_isFirstFocus) {
+    // Auto-focus on first successful load
+    if (!_chatController.isLoading && _isFirstFocus) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
           FocusScope.of(context).requestFocus(_focusNode);
           _isFirstFocus = false;
         }
-      }
-    });
+      });
+    }
   }
 
-  void _scrollListener() {
+  // ---------------------------------------------------------------------------
+  // Initialisation
+  // ---------------------------------------------------------------------------
+
+  Future<void> _initChat() async {
+    await _chatController.initChat();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Scroll
+  // ---------------------------------------------------------------------------
+
+  void _onScrollChanged() {
     if (_scrollController.hasClients) {
-      final currentScroll = _scrollController.position.pixels;
-      setState(() {
-        _showScrollToBottomButton = currentScroll != 0;
-      });
+      final shouldShow = _scrollController.position.pixels != 0;
+      if (_showScrollToBottomButton != shouldShow) {
+        setState(() => _showScrollToBottomButton = shouldShow);
+      }
     }
   }
 
@@ -126,231 +99,140 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _handleTextFieldChange() {
-    bool isEmpty = _controller.text.isEmpty;
+  // ---------------------------------------------------------------------------
+  // Text field
+  // ---------------------------------------------------------------------------
+
+  void _onTextChanged() {
+    final isEmpty = _textController.text.isEmpty;
     if (_isTextFieldEmpty != isEmpty) {
-      setState(() {
-        _isTextFieldEmpty = isEmpty;
-      });
+      setState(() => _isTextFieldEmpty = isEmpty);
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Send message
+  // ---------------------------------------------------------------------------
 
   Future<void> _sendMessage() async {
-    if (_controller.text.isNotEmpty) {
-      AnalyticsHelper.trackFeatureUsage('send_AI_message');
-      final userMessage = _controller.text;
-      setState(() {
-        _currentSession.messages.add(ChatMessage(
-          text: userMessage,
-          sender: AppStrings.user,
-        ));
-        _controller.clear();
-        _isTextFieldEmpty = true;
-        _loading = true;
-        _isAiThinking = true;
-      });
+    if (_textController.text.isEmpty) return;
 
-      if (userMessage.toLowerCase().contains(AppStrings.prompt)) {
-        setState(() {
-          _currentSession.messages.add(ChatMessage(
-            text: AppStrings.blockedResponse,
-            sender: AppStrings.bot,
-          ));
-          _loading = false;
-          _isAiThinking = false;
-        });
-        _enableTextFieldAndFocus();
-      } else {
-        setState(() {
-          _loading = true;
-          _isAiThinking = true;
-        });
+    final text = _textController.text;
+    _textController.clear();
+    setState(() => _isTextFieldEmpty = true);
 
-        try {
-          final aiResponse = await _geminiAIService.sendMessage(userMessage);
-          if (!mounted) return;
-
-          String finalResponseText;
-          if (aiResponse.toLowerCase().contains(AppStrings.prompt)) {
-            finalResponseText = AppStrings.blockedResponse;
-          } else {
-            finalResponseText = aiResponse;
-          }
-
-          setState(() {
-            _isAiThinking = false;
-            _currentSession.messages.add(ChatMessage(
-              text: finalResponseText,
-              sender: AppStrings.bot,
-            ));
-          });
-          _enableTextFieldAndFocus();
-        } catch (e) {
-          if (!mounted) return;
-          if (e.toString().contains('SocketException')) {
-            _showError(AppStrings.checkInternetConnection);
-          } else {
-            _showError(AppStrings.errorSendingMessage);
-          }
-          setState(() {
-            _isAiThinking = false;
-          });
-          _enableTextFieldAndFocus();
-        }
-      }
+    final error = await _chatController.sendMessage(text);
+    if (error != null && mounted) {
+      _showError(error);
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Report
+  // ---------------------------------------------------------------------------
+
+  Future<void> _onReport(ChatMessage chatMessage) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(AppStrings.reportMessageTitle),
+        content: const Text(AppStrings.reportMessageContent),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text(AppStrings.cancelAction),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(AppStrings.reportAction),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && mounted) {
+      final success = _chatController.reportMessage(chatMessage);
+      if (!success) _showError(AppStrings.couldntReport);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Error dialog
+  // ---------------------------------------------------------------------------
 
   void _showError(String message) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text(AppStrings.wentWrong),
-          content: SingleChildScrollView(
-            child: SelectableText(message),
+      builder: (context) => AlertDialog(
+        title: const Text(AppStrings.wentWrong),
+        content: SingleChildScrollView(child: SelectableText(message)),
+        titlePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+        actionsPadding: const EdgeInsets.only(right: 8, bottom: 8),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text(AppStrings.ok),
           ),
-          titlePadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          actionsPadding: const EdgeInsets.only(right: 8, bottom: 8),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text(AppStrings.ok),
-            )
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
 
-  Future<void> _reportMessage(ChatMessage messageToReport) async {
-    final bool? confirmReport = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text(AppStrings.reportMessageTitle),
-          content: const Text(AppStrings.reportMessageContent),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text(AppStrings.cancelAction),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text(AppStrings.reportAction),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (confirmReport == true && mounted) {
-      final int messageIndex =
-          _currentSession.messages.indexOf(messageToReport);
-
-      if (messageIndex != -1) {
-        AnalyticsHelper.trackReportAIMessage(messageToReport.text);
-
-        setState(() {
-          _currentSession.messages[messageIndex] = ChatMessage(
-            text: AppStrings.reportedMessageThankYou,
-            sender: AppStrings.bot,
-          );
-        });
-      } else {
-        DebugPrint.log(
-          'Error reporting message: Message not found in list.',
-          color: DebugColor.red,
-          tag: 'ChatScreen',
-        );
-        _showError(AppStrings.couldntReport);
-      }
-    }
-  }
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.chat)),
-      body: Stack(
-        children: [
-          Column(
-            children: <Widget>[
-              Expanded(
-                child: Stack(
+      body: _chatController.isChatUnavailable
+          ? const ChatUnavailableView()
+          : Stack(
+              children: [
+                Column(
                   children: [
-                    ListView.builder(
-                      itemCount: _currentSession.messages.length +
-                          (_isAiThinking ? 1 : 0),
-                      controller: _scrollController,
-                      reverse: true,
-                      itemBuilder: (context, index) {
-                        if (_isAiThinking && index == 0) {
-                          return const ThinkingIndicator();
-                        }
-
-                        final messageIndex = _isAiThinking ? index - 1 : index;
-                        final actualMessageIndex =
-                            _currentSession.messages.length - 1 - messageIndex;
-
-                        if (actualMessageIndex < 0 ||
-                            actualMessageIndex >=
-                                _currentSession.messages.length) {
-                          return const SizedBox.shrink();
-                        }
-
-                        final message =
-                            _currentSession.messages[actualMessageIndex];
-                        final bool isUserMessage =
-                            message.sender == AppStrings.user;
-
-                        return MessageBubble(
-                          message: message,
-                          isMe: isUserMessage,
-                          onReport: isUserMessage ||
-                                  message.text ==
-                                      AppStrings.reportedMessageThankYou
-                              ? null
-                              : () => _reportMessage(message),
-                        );
-                      },
+                    Expanded(
+                      child: ChatMessageList(
+                        messages: _chatController.messages,
+                        isThinking: _chatController.isThinking,
+                        scrollController: _scrollController,
+                        onReport: _onReport,
+                      ),
                     ),
-                    if (_currentSession.messages
-                            .any((m) => m.sender != AppStrings.user) &&
-                        _currentSession.messages.length <= 1)
-                      ReportTooltip(),
+                    const SizedBox(height: 16),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: _chatController.userMessageCount < 2
+                          ? Padding(
+                              key: const ValueKey('suggestions'),
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: SuggestionChips(
+                                personName: widget.person.name,
+                                onSuggestionTap: (suggestion) {
+                                  _textController.text = suggestion;
+                                  _onTextChanged();
+                                  _sendMessage();
+                                },
+                              ),
+                            )
+                          : const SizedBox.shrink(
+                              key: ValueKey('no-suggestions')),
+                    ),
+                    ChatInputSection(
+                      controller: _textController,
+                      focusNode: _focusNode,
+                      loading: _chatController.isLoading,
+                      isTextFieldEmpty: _isTextFieldEmpty,
+                      onSendMessage: _sendMessage,
+                    ),
                   ],
                 ),
-              ),
-              ChatInputSection(
-                controller: _controller,
-                focusNode: _focusNode,
-                loading: _loading,
-                isTextFieldEmpty: _isTextFieldEmpty,
-                onSendMessage: _sendMessage,
-              ),
-            ],
-          ),
-          if (_showScrollToBottomButton)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 90),
-                child: FloatingActionButton(
-                  mini: true,
-                  backgroundColor: Theme.of(context).colorScheme.tertiary,
-                  onPressed: _scrollToBottom,
-                  child: Icon(
-                    Icons.arrow_downward,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                ),
-              ),
+                if (_showScrollToBottomButton)
+                  ScrollToBottomButton(onPressed: _scrollToBottom),
+              ],
             ),
-        ],
-      ),
     );
   }
 }
