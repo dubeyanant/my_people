@@ -110,7 +110,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
       final String name = preview['name'];
       final DateTime date = preview['date'];
-      final String filePath = preview['filePath'];
+      final Map<String, dynamic> payload = preview['payload'];
       final dateStr = DateFormat.yMMMd().add_jm().format(date);
 
       if (!mounted) return;
@@ -130,7 +130,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 final scaffoldMsg = ScaffoldMessenger.of(context);
                 Navigator.pop(context);
                 try {
-                  await ProfileSharingHelper.importProfile(filePath);
+                  await ProfileSharingHelper.importProfile(payload);
                   if (mounted) {
                     scaffoldMsg.showSnackBar(
                       SnackBar(
@@ -314,8 +314,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ListTile(
             leading: const Icon(Icons.coffee),
             title: const Text('Buy Me A Coffee'),
-            subtitle: const Text(
-                'Support future updates and keep this project alive'),
+            subtitle: const Text('You can support me if you like my work!'),
             onTap: _donation,
           ),
           ListTile(

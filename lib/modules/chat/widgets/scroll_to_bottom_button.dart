@@ -14,7 +14,7 @@ class ScrollToBottomButton extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 90),
         child: FloatingActionButton(
           mini: true,
-          backgroundColor: Theme.of(context).colorScheme.tertiary,
+          backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
           onPressed: onPressed,
           child: Icon(
             Icons.arrow_downward,

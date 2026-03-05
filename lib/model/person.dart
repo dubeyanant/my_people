@@ -100,6 +100,14 @@ class Person {
     };
   }
 
+  // Convert a Person into a Map object for profile sharing (includes events)
+  Map<String, dynamic> toSharingMap() {
+    final map = toMap();
+    final eventList = events.map((item) => item.toMap()).toList();
+    map['events'] = jsonEncode(eventList);
+    return map;
+  }
+
   // Create a Person object from a Map object
   factory Person.fromMap(Map<String, dynamic> map) {
     List<PersonInfo> parsedInfo = [];
@@ -124,11 +132,22 @@ class Person {
       return b.date!.compareTo(a.date!);
     });
 
+    List<Event> parsedEvents = [];
+    if (map['events'] != null) {
+      final decodedEventsList = jsonDecode(map['events']) as List;
+      for (var element in decodedEventsList) {
+        if (element is Map<String, dynamic>) {
+          parsedEvents.add(Event.fromMap(element));
+        }
+      }
+    }
+
     return Person(
       uuid: map['uuid'],
       name: map['name'],
       photo: map['photo'],
       info: parsedInfo, // Decode JSON string to list
+      events: parsedEvents,
       birthday:
           map['birthday'] != null ? DateTime.tryParse(map['birthday']) : null,
       relationshipType: map['relationshipType'] != null

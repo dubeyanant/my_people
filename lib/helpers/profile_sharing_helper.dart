@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uuid/uuid.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:file_picker/file_picker.dart';
@@ -11,87 +14,85 @@ import 'package:share_plus/share_plus.dart';
 import 'package:my_people/helpers/database_helper.dart';
 import 'package:my_people/model/person.dart';
 
-class _EncryptArgs {
-  final int versionCode;
-  final Map<String, dynamic> personData;
-  final Uint8List? photoBytes;
-
-  _EncryptArgs(this.versionCode, this.personData, this.photoBytes);
-}
-
-Uint8List _encryptInIsolate(_EncryptArgs args) {
-  String? photoBase64;
-  if (args.photoBytes != null) {
-    photoBase64 = base64Encode(args.photoBytes!);
-  }
-
-  final Map<String, dynamic> payload = {
-    'versionCode': args.versionCode,
-    'personData': args.personData,
-    'photoBase64': photoBase64,
-  };
-
-  final jsonString = jsonEncode(payload);
-
-  final key = enc.Key.fromUtf8('my_people_secure_profile_key_32!');
-  final iv = enc.IV.fromLength(16);
-  final encrypter = enc.Encrypter(enc.AES(key));
-
-  return encrypter.encrypt(jsonString, iv: iv).bytes;
-}
-
-Map<String, dynamic> _decryptAndDecodeInIsolate(Uint8List bytes) {
-  final key = enc.Key.fromUtf8('my_people_secure_profile_key_32!');
-  final iv = enc.IV.fromLength(16);
-  final encrypter = enc.Encrypter(enc.AES(key));
-
-  final encrypted = enc.Encrypted(bytes);
-  final decryptedJson = encrypter.decrypt(encrypted, iv: iv);
-  final payload = jsonDecode(decryptedJson) as Map<String, dynamic>;
-
-  Uint8List? photoBytes;
-  if (payload['photoBase64'] != null) {
-    photoBytes = base64Decode(payload['photoBase64']);
-  }
-
-  return {
-    'versionCode': payload['versionCode'],
-    'personData': payload['personData'],
-    'photoBytes': photoBytes,
-  };
-}
-
 class ProfileSharingHelper {
+  static final _aesKeyStr = dotenv.env['AES_KEY']!;
+  static final _hmacKeyStr = dotenv.env['HMAC_KEY']!;
+  static final _magic = dotenv.env['MAGIC_KEY']!;
+
+  static Uint8List _encrypt(String plainText) {
+    final key = enc.Key.fromUtf8(_aesKeyStr);
+    final iv = enc.IV.fromSecureRandom(16);
+    final encrypter =
+        enc.Encrypter(enc.AES(key, mode: enc.AESMode.sic, padding: null));
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+    return Uint8List.fromList([...iv.bytes, ...encrypted.bytes]);
+  }
+
+  static String _decrypt(Uint8List bytes) {
+    final key = enc.Key.fromUtf8(_aesKeyStr);
+    final iv = enc.IV(bytes.sublist(0, 16));
+    final cipherBytes = bytes.sublist(16);
+    final encrypter =
+        enc.Encrypter(enc.AES(key, mode: enc.AESMode.sic, padding: null));
+    return encrypter.decrypt(enc.Encrypted(cipherBytes), iv: iv);
+  }
+
+  static String _computeHmac(Uint8List data) {
+    final hmacKey = utf8.encode(_hmacKeyStr);
+    final hmac = Hmac(sha256, hmacKey);
+    return hmac.convert(data).toString();
+  }
+
+  static Future<void> _cleanupTempFiles() async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final dir = Directory(tempDir.path);
+      await for (final entity in dir.list()) {
+        if (entity is File && entity.path.endsWith('.prf.myppl')) {
+          await entity.delete();
+        }
+      }
+    } catch (_) {}
+  }
+
   static Future<void> shareProfile(Person person) async {
     final packageInfo = await PackageInfo.fromPlatform();
     final int currentVersionCode = int.tryParse(packageInfo.buildNumber) ?? 0;
 
-    Uint8List? photoBytes;
+    String? photoBase64;
     if (person.photo.isNotEmpty && !person.photo.startsWith('assets/')) {
       final photoFile = File(person.photo);
       if (await photoFile.exists()) {
-        photoBytes = await photoFile.readAsBytes();
+        final photoBytes = await photoFile.readAsBytes();
+        photoBase64 = base64Encode(photoBytes);
       }
     }
 
-    final args = _EncryptArgs(
-      currentVersionCode,
-      person.toMap(),
-      photoBytes,
-    );
+    final Map<String, dynamic> payload = {
+      'magic': _magic,
+      'versionCode': currentVersionCode,
+      'personData': person.toSharingMap(),
+      'photoBase64': photoBase64,
+    };
 
-    // Run encryption on background isolate to avoid UI freezing
-    final encryptedBytes = await compute(_encryptInIsolate, args);
+    final jsonString = jsonEncode(payload);
+    final encryptedBytes = _encrypt(jsonString);
+    final hmacDigest = _computeHmac(encryptedBytes);
+
+    final fileContent = '$hmacDigest\n${base64Encode(encryptedBytes)}';
+
+    await _cleanupTempFiles();
 
     final String safeName =
         person.name.replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), '').trim();
+    final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     final String fileName =
-        '${safeName.isEmpty ? "profile" : safeName.replaceAll(" ", "")}.prf.myppl';
+        '${safeName.isEmpty ? "profile" : safeName.replaceAll(" ", "")}_$timestamp.prf.myppl';
 
     final tempDir = await getTemporaryDirectory();
     final tempFile = File('${tempDir.path}/$fileName');
 
-    await tempFile.writeAsBytes(encryptedBytes);
+    await tempFile.writeAsString(fileContent, flush: true);
 
     await SharePlus.instance.share(ShareParams(
       files: [XFile(tempFile.path)],
@@ -99,14 +100,51 @@ class ProfileSharingHelper {
     ));
   }
 
+  static Map<String, dynamic> _readAndDecryptFile(String fileContent) {
+    final lines = fileContent.trim().split(RegExp(r'\r?\n'));
+
+    if (lines.length < 2) {
+      throw Exception(
+          'Invalid profile file format. The file appears to be corrupted.');
+    }
+
+    final storedHmac = lines[0].trim();
+    final encryptedBase64 = lines.sublist(1).map((l) => l.trim()).join();
+
+    final Uint8List encryptedBytes;
+    try {
+      encryptedBytes = base64Decode(encryptedBase64);
+    } catch (e) {
+      throw Exception('Invalid profile file. Could not decode file data.');
+    }
+
+    final computedHmac = _computeHmac(encryptedBytes);
+    if (storedHmac != computedHmac) {
+      throw Exception(
+          'Integrity check failed. File corrupted or tampered with.');
+    }
+
+    final decryptedJson = _decrypt(encryptedBytes);
+
+    final payload = jsonDecode(decryptedJson.trim().replaceAll('\uFEFF', ''))
+        as Map<String, dynamic>;
+
+    if (payload['magic'] != _magic) {
+      throw Exception(
+          'Invalid profile file. Not created by this version of My People.');
+    }
+
+    return payload;
+  }
+
   static Future<Map<String, dynamic>?> getProfilePreview() async {
+    await FilePicker.platform.clearTemporaryFiles();
+
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
 
-    if (result == null || result.files.single.path == null) {
-      return null; // User canceled the picker
-    }
+    if (result == null || result.files.single.path == null) return null;
 
     final String filePath = result.files.single.path!;
     if (!filePath.endsWith('.prf.myppl')) {
@@ -114,18 +152,13 @@ class ProfileSharingHelper {
     }
 
     final file = File(filePath);
-    if (!await file.exists()) {
-      throw Exception('File does not exist.');
-    }
-
-    final bytes = await file.readAsBytes();
+    if (!await file.exists()) throw Exception('File does not exist.');
 
     Map<String, dynamic> payload;
     try {
-      payload = await compute(_decryptAndDecodeInIsolate, bytes);
+      payload = _readAndDecryptFile(await file.readAsString());
     } catch (e) {
-      throw Exception(
-          'Failed to decrypt profile data. The file might be corrupted or not a valid profile backup.');
+      throw Exception('$e');
     }
 
     final packageInfo = await PackageInfo.fromPlatform();
@@ -141,44 +174,40 @@ class ProfileSharingHelper {
     return {
       'name': personMap['name'],
       'date': await file.lastModified(),
-      'filePath': filePath
+      'payload': payload,
     };
   }
 
-  // Returns the name of the imported person and the file date
-  static Future<Map<String, dynamic>> importProfile(String filePath) async {
-    final file = File(filePath);
-    if (!await file.exists()) {
-      throw Exception('File does not exist.');
-    }
-
-    final bytes = await file.readAsBytes();
-
-    Map<String, dynamic> payload;
-    try {
-      payload = await compute(_decryptAndDecodeInIsolate, bytes);
-    } catch (e) {
-      throw Exception(
-          'Failed to decrypt profile data. The file might be corrupted or not a valid profile backup.');
-    }
-
-    final packageInfo = await PackageInfo.fromPlatform();
-    final int currentVersionCode = int.tryParse(packageInfo.buildNumber) ?? 0;
-    final int payloadVersionCode = payload['versionCode'] ?? 0;
-
-    if (currentVersionCode < payloadVersionCode) {
-      throw Exception(
-          'This profile requires a newer version of the My People app. Please update your app.');
-    }
-
+  static Future<Map<String, dynamic>> importProfile(
+      Map<String, dynamic> payload) async {
     final Map<String, dynamic> personMap = payload['personData'];
 
-    // We want to add it as a new profile
-    personMap.remove('uuid');
+    final String newUuid = const Uuid().v4();
+    personMap['uuid'] = newUuid;
+
+    if (personMap['info'] != null) {
+      final decodedList = jsonDecode(personMap['info']) as List;
+      personMap['info'] = jsonEncode(decodedList.whereType<Map>().map((item) {
+        return Map<String, dynamic>.from(item)
+          ..['personUuid'] = newUuid
+          ..remove('id');
+      }).toList());
+    }
+
+    if (personMap['events'] != null) {
+      final decodedList = jsonDecode(personMap['events']) as List;
+      personMap['events'] = jsonEncode(decodedList.whereType<Map>().map((item) {
+        return Map<String, dynamic>.from(item)
+          ..['personUuid'] = newUuid
+          ..remove('id');
+      }).toList());
+    }
+
     final Person importedPerson = Person.fromMap(personMap);
 
-    final Uint8List? photoBytes = payload['photoBytes'];
-    if (photoBytes != null && photoBytes.isNotEmpty) {
+    final String? photoBase64 = payload['photoBase64'];
+    if (photoBase64 != null && photoBase64.isNotEmpty) {
+      final Uint8List photoBytes = base64Decode(photoBase64);
       final docDir = await getApplicationDocumentsDirectory();
       final newPhotoFile = File(
           '${docDir.path}/profile_${DateTime.now().millisecondsSinceEpoch}.jpg');
@@ -188,6 +217,13 @@ class ProfileSharingHelper {
 
     await DatabaseHelper.instance.insertPerson(importedPerson);
 
-    return {'name': importedPerson.name, 'date': await file.lastModified()};
+    for (var infoItem in importedPerson.info) {
+      await DatabaseHelper.instance.insertInfo(infoItem);
+    }
+    for (var eventItem in importedPerson.events) {
+      await DatabaseHelper.instance.insertEvent(eventItem);
+    }
+
+    return {'name': importedPerson.name};
   }
 }

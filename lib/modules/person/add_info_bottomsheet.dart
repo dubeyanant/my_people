@@ -42,6 +42,7 @@ class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
       final dateToSave = _selectedDate ?? DateTime.now();
 
       final newInfo = PersonInfo(
+        id: widget.initialInfo?.id,
         personUuid: widget.personId,
         text: capitalize(infoText),
         date: dateToSave,
@@ -144,7 +145,7 @@ class _AddInfoBottomSheetState extends ConsumerState<AddInfoBottomSheet> {
                         Text(
                           _selectedDate == null
                               ? AppStrings.selectDateLabel
-                              : '${_selectedDate!.month}/${_selectedDate!.day}/${_selectedDate!.year}',
+                              : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
                           style: TextStyle(
                             fontSize: 16,
                             color: Theme.of(context).colorScheme.onSurface,

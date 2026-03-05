@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/chat_message.dart';
 import 'package:my_people/model/person.dart';
-import 'package:my_people/modules/chat/chat_controller.dart';
+import 'package:my_people/services/chat_controller.dart';
 import 'package:my_people/modules/chat/widgets/chat_input_section.dart';
 import 'package:my_people/modules/chat/widgets/chat_message_list.dart';
 import 'package:my_people/modules/chat/widgets/chat_unavailable_view.dart';

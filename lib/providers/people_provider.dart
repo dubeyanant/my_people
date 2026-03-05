@@ -105,7 +105,10 @@ class People extends _$People {
   }
 
   Future<void> updatePersonInfo(
-      String uuid, PersonInfo newInfo, int index) async {
+    String uuid,
+    PersonInfo newInfo,
+    int index,
+  ) async {
     final person = state.firstWhere((p) => p.uuid == uuid);
 
     await _dbHelper.updateInfo(newInfo);

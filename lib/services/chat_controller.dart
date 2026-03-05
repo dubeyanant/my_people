@@ -4,7 +4,7 @@ import 'package:my_people/helpers/analytics_helper.dart';
 import 'package:my_people/model/chat_message.dart';
 import 'package:my_people/model/chat_session.dart';
 import 'package:my_people/model/person.dart';
-import 'package:my_people/modules/chat/chat_prompt_builder.dart';
+import 'package:my_people/helpers/chat_prompt_builder.dart';
 import 'package:my_people/services/gemini_ai_service.dart';
 import 'package:my_people/utility/constants.dart';
 import 'package:my_people/utility/debug_print.dart';
