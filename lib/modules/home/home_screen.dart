@@ -223,20 +223,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
-        if (ref.watch(peopleProvider).isNotEmpty)
-          RadialMenuOption(
-            label: 'Settings',
-            icon: Icons.settings_rounded,
-            degrees: 0,
-            onSelected: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
-                ),
-              );
-            },
-          ),
+        RadialMenuOption(
+          label: 'Settings',
+          icon: Icons.settings_rounded,
+          degrees: 0,
+          onSelected: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SettingsScreen(),
+              ),
+            );
+          },
+        ),
         if (ref.watch(peopleProvider).isNotEmpty)
           RadialMenuOption(
             label: 'Search',

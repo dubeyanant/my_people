@@ -69,5 +69,5 @@ class Event {
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => "{title: $title, date: $date}";
+  String toString() => "{title: $title, description: $description}";
 }

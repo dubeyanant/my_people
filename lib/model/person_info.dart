@@ -33,5 +33,5 @@ class PersonInfo {
   }
 
   @override
-  String toString() => "{text: $text, date: $date}";
+  String toString() => "{text: $text}";
 }
